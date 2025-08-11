@@ -1,0 +1,82 @@
+<?php
+
+namespace App\Livewire\LandingSite;
+
+use App\Helper\Files;
+use Livewire\Component;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
+use Livewire\Attributes\On;
+use Livewire\WithFileUploads;
+use Livewire\WithPagination;
+
+class EditFrontFeature extends Component
+{
+    use WithFileUploads, LivewireAlert, WithPagination;
+
+    public $languageSettingid;
+    public $featureTitle;
+    public $featureDescription;
+    public $featureImage;
+    public $existingImageUrl;
+    public $frontDetail;
+    public $languageEnable;
+    public $showEditFrontFeatureModal = false;
+
+
+    public function mount()
+    {
+        $this->languageSettingid = $this->frontDetail->language_setting_id;
+        $this->featureTitle = $this->frontDetail->title;
+        $this->featureDescription = $this->frontDetail->description;
+        $defaults = [
+            'Simplified Resident Management'   => asset('landing/tenant.png'),
+            'Optimized Service Provider Coordination'   => asset('landing/service-provider.png'),
+            'Smart Amenity Management'    => asset('landing/book-amenity.png'),
+        ];
+
+        $titleKey = ($this->frontDetail->title ?? '');
+
+        if (!empty($this->frontDetail->image)) {
+            $this->existingImageUrl = $this->frontDetail->image_url;
+        } else {
+            $this->existingImageUrl = $defaults[$titleKey];
+        }
+    }
+
+    public function editFrontFeature()
+    {
+        $this->validate([
+            'languageSettingid' => 'required',
+            'featureTitle' => 'required',
+            'featureDescription' => 'required',
+        ]);
+
+        $this->frontDetail->language_setting_id = $this->languageSettingid;
+        $this->frontDetail->title = $this->featureTitle;
+        $this->frontDetail->description = $this->featureDescription;
+        $this->frontDetail->save();
+
+        if ($this->featureImage) {
+            $this->frontDetail->update([
+                'image' => Files::uploadLocalOrS3($this->featureImage, 'front_feature', width: 350),
+            ]);
+        }
+        $this->showEditFrontFeatureModal = false;
+
+         $this->alert('success', __('messages.settingsUpdated'), [
+            'toast' => true,
+            'position' => 'top-end',
+            'showCancelButton' => false,
+            'cancelButtonText' => __('app.close')
+        ]);
+
+        $this->dispatch('closeFeatureModal');
+    }
+
+    public function render()
+    {
+        return view('livewire.landing-site.edit-front-feature');
+    }
+
+
+}

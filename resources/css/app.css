@@ -1,0 +1,60 @@
+@import url('/public/vendor/Trix/trix.min.css');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer base {
+    :root {
+      --color-base: 219, 41, 41;
+    }
+}
+
+
+[x-cloak] {
+    display: none;
+}
+
+
+/* Hide Specific Trix Buttons */
+.trix-button-group--file-tools,
+.trix-button--icon-heading-1,
+.trix-button--icon-code,
+.trix-button--icon-decrease-nesting-level,
+.trix-button--icon-increase-nesting-level,
+.trix-button--icon-strike,
+.trix-button--icon-quote {
+    display: none !important;
+}
+
+/* Trix Button Customization */
+.trix-button-group,
+.trix-button {
+    border: none !important;
+    border-top: none !important;
+    margin-left: 2px !important;
+    margin-right: 2px !important;
+    font-size: 13px !important;
+    padding: 0 !important;
+}
+
+/* Active Button Style */
+.trix-button.trix-active {
+    border: 1px solid #000000 !important;
+    background: white !important;
+    color: #000;
+    border-radius: 3px;
+}
+
+/* Trix Content Styles */
+.trix-content a {
+    text-decoration: underline !important;
+}
+
+.trix-content ol {
+    list-style-type: decimal !important;
+}
+
+.trix-content ul {
+    list-style-type: disc !important;
+}

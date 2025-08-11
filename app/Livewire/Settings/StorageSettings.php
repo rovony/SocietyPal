@@ -1,0 +1,317 @@
+<?php
+
+namespace App\Livewire\Settings;
+
+use Livewire\Component;
+use App\Models\FileStorage;
+use Livewire\Attributes\On;
+use App\Models\StorageSetting;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Storage;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
+
+class StorageSettings extends Component
+{
+    use LivewireAlert;
+
+    public $settings;
+    public $storage;
+    public $awsKeys;
+    public $digitaloceanKeys;
+    public $wasabiKeys;
+    public $minioKeys;
+    public $digitaloceanKey;
+    public $digitaloceanSecretKey;
+    public $digitaloceanBucket;
+    public $digitaloceanRegion;
+    public $wasabiAccessKey;
+    public $wasabiSecretKey;
+    public $wasabiBucket;
+    public $wasabiRegion;
+    public $awsRegion;
+    public $awsBucket;
+    public $awsSecretKey;
+    public $awsAccessKey;
+    public $minioAccessKey;
+    public $minioSecretKey;
+    public $minioBucket;
+    public $minioRegion;
+    public $minioEndpoint;
+    public $showTestStorageModal = false;
+    public $showMoveFilesToCloudModal = false;
+    public $localFilesCount;
+    public $awsCredentials;
+    public $wasabiCredentials;
+    public $digitalOceanCredentials;
+    public $minioCredentials;
+    public $localCredentials;
+
+    public function mount()
+    {
+        $this->awsCredentials = StorageSetting::where('filesystem', 'aws_s3')->first();
+        $this->digitalOceanCredentials = StorageSetting::where('filesystem', 'digitalocean')->first();
+        $this->wasabiCredentials = StorageSetting::where('filesystem', 'wasabi')->first();
+        $this->minioCredentials = StorageSetting::where('filesystem', 'minio')->first();
+        $this->localCredentials = StorageSetting::where('filesystem', 'local')->first();
+
+        if (!is_null($this->awsCredentials)) {
+            $this->awsKeys = json_decode($this->awsCredentials->auth_keys);
+            $this->awsRegion = $this->awsKeys->region;
+            $this->awsBucket = $this->awsKeys->bucket;
+            $this->awsSecretKey = $this->awsKeys->secret_key;
+            $this->awsAccessKey = $this->awsKeys->access_key;
+        }
+
+        if (!is_null($this->digitalOceanCredentials)) {
+            $this->digitaloceanKeys = json_decode($this->digitalOceanCredentials->auth_keys);
+            $this->digitaloceanKey = $this->digitaloceanKeys->access_key;
+            $this->digitaloceanSecretKey = $this->digitaloceanKeys->secret_key;
+            $this->digitaloceanBucket = $this->digitaloceanKeys->bucket;
+            $this->digitaloceanRegion = $this->digitaloceanKeys->region;
+        }
+
+        if (!is_null($this->wasabiCredentials)) {
+            $this->wasabiKeys = json_decode($this->wasabiCredentials->auth_keys);
+            $this->wasabiAccessKey = $this->wasabiKeys->access_key;
+            $this->wasabiSecretKey = $this->wasabiKeys->secret_key;
+            $this->wasabiBucket = $this->wasabiKeys->bucket;
+            $this->wasabiRegion = $this->wasabiKeys->region;
+        }
+
+        if (!is_null($this->minioCredentials)) {
+            $this->minioKeys = json_decode($this->minioCredentials->auth_keys);
+            $this->minioAccessKey = $this->minioKeys->access_key;
+            $this->minioSecretKey = $this->minioKeys->secret_key;
+            $this->minioBucket = $this->minioKeys->bucket;
+            $this->minioRegion = $this->minioKeys->region;
+            $this->minioEndpoint = $this->minioKeys->endpoint;
+        }
+
+        $this->settings = StorageSetting::where('status', 'enabled')->first();
+        $this->localFilesCount = FileStorage::where('storage_location', 'local')->count();
+
+        $this->storage = $this->settings ? $this->settings->filesystem : null;
+    }
+
+    public function showTestStorage()
+    {
+        $this->showTestStorageModal = true;
+    }
+
+    #[On('hideTestStorageModal')]
+    public function hideTestStorageModal()
+    {
+        $this->showTestStorageModal = false;
+    }
+
+    public function showMoveFilesToCloud()
+    {
+        $this->showMoveFilesToCloudModal = true;
+    }
+
+    #[On('hideMoveFilesToCloudModal')]
+    public function hideMoveFilesToCloudModal()
+    {
+        $this->showMoveFilesToCloudModal = false;
+    }
+
+    public function submitForm()
+    {
+
+        $this->validate([
+            'storage' => 'required',
+            'digitaloceanKey' => 'required_if:storage,digitalocean',
+            'digitaloceanSecretKey' => 'required_if:storage,digitalocean',
+            'digitaloceanBucket' => 'required_if:storage,digitalocean',
+            'digitaloceanRegion' => 'required_if:storage,digitalocean',
+            'wasabiAccessKey' => 'required_if:storage,wasabi',
+            'wasabiSecretKey' => 'required_if:storage,wasabi',
+            'wasabiBucket' => 'required_if:storage,wasabi',
+            'wasabiRegion' => 'required_if:storage,wasabi   ',
+            'awsAccessKey' => 'required_if:storage,aws_s3',
+            'awsSecretKey' => 'required_if:storage,aws_s3',
+            'awsBucket' => 'required_if:storage,aws_s3',
+            'awsRegion' => 'required_if:storage,aws_s3',
+            'minioAccessKey' => 'required_if:storage,minio',
+            'minioSecretKey' => 'required_if:storage,minio',
+            'minioBucket' => 'required_if:storage,minio',
+            'minioRegion' => 'required_if:storage,minio',
+            'minioEndpoint' => 'required_if:storage,minio',
+        ]);
+
+        StorageSetting::query()->update(['status' => 'disabled']);
+
+        $storage = StorageSetting::firstorNew(['filesystem' => $this->storage]);
+
+        switch ($this->storage) {
+        case 'digitalocean':
+            if (!$this->validateDigitalOceanCredentials()) {
+                $this->alert('error', __('Invalid request'), [
+                    'toast' => true,
+                    'position' => 'top-end',
+                    'showCancelButton' => false,
+                    'cancelButtonText' => __('app.close')
+                ]);
+                return;
+                }
+            $arrayResponse = [
+                'driver' => 's3',
+                'access_key' => $this->digitaloceanKey,
+                'secret_key' => $this->digitaloceanSecretKey,
+                'region' => $this->digitaloceanRegion,
+                'bucket' => $this->digitaloceanBucket,
+            ];
+            $storage->auth_keys = json_encode($arrayResponse);
+            break;
+        case 'wasabi':
+            if (!$this->validateWasabiCredentials()) {
+                $this->alert('error', __('Invalid request'), [
+                    'toast' => true,
+                    'position' => 'top-end',
+                    'showCancelButton' => false,
+                    'cancelButtonText' => __('app.close')
+                ]);
+                return;
+                }
+            $arrayResponse = [
+                'driver' => 's3',
+                'access_key' => $this->wasabiAccessKey,
+                'secret_key' => $this->wasabiSecretKey,
+                'region' => $this->wasabiRegion,
+                'bucket' => $this->wasabiBucket,
+            ];
+            $storage->auth_keys = json_encode($arrayResponse);
+            break;
+
+        case 'aws_s3':
+            if (!$this->validateS3Credentials()) {
+            $this->alert('error', __('Invalid request'), [
+                'toast' => true,
+                'position' => 'top-end',
+                'showCancelButton' => false,
+                'cancelButtonText' => __('app.close')
+            ]);
+            return;
+            }
+            $arrayResponse = [
+                'driver' => 's3',
+                'access_key' => $this->awsAccessKey,
+                'secret_key' => $this->awsSecretKey,
+                'region' => $this->awsRegion,
+                'bucket' => $this->awsBucket,
+            ];
+            $storage->auth_keys = json_encode($arrayResponse);
+            break;
+
+        case 'minio':
+            if (!$this->validateMinioCredentials()) {
+                $this->alert('error', __('Invalid request'), [
+                    'toast' => true,
+                    'position' => 'top-end',
+                    'showCancelButton' => false,
+                    'cancelButtonText' => __('app.close')
+                ]);
+                return;
+                }
+            $arrayResponse = [
+                'driver' => 's3',
+                'access_key' => $this->minioAccessKey,
+                'secret_key' => $this->minioSecretKey,
+                'region' => $this->minioRegion,
+                'bucket' => $this->minioBucket,
+                'endpoint' => $this->minioEndpoint,
+            ];
+            $storage->auth_keys = json_encode($arrayResponse);
+            break;
+        }
+
+        $storage->filesystem = $this->storage;
+        $storage->status = 'enabled';
+        $storage->save();
+
+        cache()->forget('storage-setting');
+        session()->forget('storage-setting');
+        session(['storage_setting' => $storage]);
+
+        $this->alert('success', __('messages.settingsUpdated'), [
+            'toast' => true,
+            'position' => 'top-end',
+            'showCancelButton' => false,
+            'cancelButtonText' => __('app.close')
+        ]);
+    }
+
+    private function validateS3Credentials()
+    {
+        try {
+            Config::set('filesystems.disks.s3', [
+                'driver' => 's3',
+                'key'    => $this->awsAccessKey,
+                'secret' => $this->awsSecretKey,
+                'region' => $this->awsRegion,
+                'bucket' => $this->awsBucket,
+            ]);
+            Storage::disk('s3')->files('/');
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    private function validateDigitalOceanCredentials()
+    {
+        try {
+            Config::set('filesystems.disks.digitalocean', [
+                'driver' => 's3',
+                'key'    => $this->digitaloceanKey,
+                'secret' => $this->digitaloceanSecretKey,
+                'region' => $this->digitaloceanRegion,
+                'bucket' => $this->digitaloceanBucket,
+            ]);
+            Storage::disk('digitalocean')->files('/');
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    private function validateWasabiCredentials()
+    {
+        try {
+            Config::set('filesystems.disks.wasabi', [
+                'driver' => 's3',
+                'key'    => $this->wasabiAccessKey,
+                'secret' => $this->wasabiSecretKey,
+                'region' => $this->wasabiRegion,
+                'bucket' => $this->wasabiBucket,
+            ]);
+            Storage::disk('wasabi')->files('/');
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    private function validateMinioCredentials()
+    {
+        try {
+            Config::set('filesystems.disks.minio', [
+                'driver' => 's3',
+                'key'    => $this->minioAccessKey,
+                'secret' => $this->minioSecretKey,
+                'region' => $this->minioRegion,
+                'bucket' => $this->minioBucket,
+                'endpoint' => $this->minioEndpoint,
+            ]);
+            Storage::disk('minio')->files('/');
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    public function render()
+    {
+        return view('livewire.settings.storage-settings');
+    }
+}

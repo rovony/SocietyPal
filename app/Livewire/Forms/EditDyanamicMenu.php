@@ -1,0 +1,78 @@
+<?php
+
+namespace App\Livewire\Forms;
+
+use Livewire\Component;
+use App\Models\CustomMenu;
+use App\Models\CustomWebPage;
+use Livewire\Attributes\On;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
+use Illuminate\Support\Str;
+
+class EditDyanamicMenu extends Component
+{
+    use LivewireAlert; // Include the trait
+
+    public $editMenuName;
+    public $editMenuSlug;
+    public $editMenuContent;
+    public $trixId;
+    public $menuId;
+    public $customMenuEdit;
+    public $showEditDynamicMenuModal = false;
+
+    // protected $listeners = ['refreshCustomers' => '$refresh'];
+
+    public function mount()
+    {
+        $this->customMenuEdit = CustomWebPage::findOrFail($this->menuId);
+        $this->editMenuName = $this->customMenuEdit->menu_name;
+        $this->editMenuSlug = $this->customMenuEdit->menu_slug;
+        $this->editMenuContent = $this->customMenuEdit->menu_content;
+        $this->trixId = 'trix-' . uniqid();
+    }
+
+    public function showEditDynamicMenu($id)
+    {
+        $this->menuId = $id;
+        $this->showEditDynamicMenuModal = true;
+    }
+
+    public function generateSlug()
+    {
+        $this->editMenuSlug = Str::slug($this->editMenuName);
+    }
+
+   
+
+
+    public function editDynamicMenu()
+    {
+        $this->validate([
+            'editMenuName' => 'required',
+            'editMenuSlug' => 'required',
+            'editMenuContent' => 'required',
+        ]);
+
+        $this->customMenuEdit->update([
+            'menu_name' => $this->editMenuName,
+            'menu_slug' => $this->editMenuSlug,
+            'menu_content' => $this->editMenuContent,
+        ]);
+
+        $this->alert('success', __('messages.menuUpdate'), [
+            'toast' => true,
+            'position' => 'top-end',
+            'showCancelButton' => false,
+            'cancelButtonText' => __('app.close')
+        ]);
+
+        $this->dispatch('closeEditDynamicMenu');
+    }
+
+    public function render()
+    {
+        return view('livewire.forms.edit-dyanamic-menu');
+    }
+
+}
