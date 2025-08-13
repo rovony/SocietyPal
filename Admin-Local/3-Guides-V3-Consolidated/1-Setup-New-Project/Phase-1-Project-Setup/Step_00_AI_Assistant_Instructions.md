@@ -520,6 +520,82 @@ What special considerations should I have for:
 
 ---
 
+## **🚨 CRITICAL: HUMAN TASK CONFIRMATION PROTOCOL**
+
+### **🏷️ Tag Instruct-User 👤 Usage Rules**
+
+**ONLY use "🏷️ Tag Instruct-User 👤" for tasks that require human interaction OUTSIDE the codebase/terminal:**
+
+✅ **Valid Human Task Examples:**
+- Going to Herd GUI interface and configuring settings
+- Visiting GitHub.com to create repositories or manage settings
+- Logging into hosting control panels (cPanel, Hostinger, etc.)
+- Creating databases through hosting provider interfaces
+- Configuring SSH keys in GitHub/hosting dashboards
+- Manual file uploads through hosting file managers
+- Accessing external services or third-party platforms
+
+❌ **NOT Valid for Human Task Tags:**
+- Terminal commands that AI can execute (`ls`, `cp`, `php artisan`, `git`, etc.)
+- File operations within the codebase (reading, writing, editing files)
+- Environment file creation or modification via commands
+- Any task the AI can perform programmatically
+
+### **📋 Mandatory Confirmation Process**
+
+**For ANY step containing "🏷️ Tag Instruct-User 👤" tags:**
+
+1. **AI MUST confirm completion before proceeding to next step**
+2. **Use `ask_followup_question` tool with this MANDATORY template:**
+
+```
+Step XX: [Step Title]
+🚨 HUMAN TASK REQUIRED 🚨
+
+Short Description: [Brief task summary]
+
+Steps for human to follow:
+1. [Specific numbered action]
+2. [Specific numbered action]
+3. [Specific numbered action]
+
+Confirmation Question: [Specific question with multiple choice options when possible]
+```
+
+3. **Supplement with verification when possible:**
+   - Use non-destructive commands to inspect results
+   - Check codebase files that should have been affected
+   - Verify system states that can be programmatically checked
+
+4. **NEVER proceed without explicit human confirmation**
+
+### **📁 Step File Structure for Human Tasks**
+
+**When a step file contains human tasks, include at the TOP:**
+
+```markdown
+# 🚨 HUMAN INTERACTION REQUIRED
+
+**⚠️ This step includes tasks that must be performed manually outside this codebase:**
+- [Brief list of what human needs to do]
+- **All other operations in this step are automated/AI-executable**
+
+**🏷️ Tag Instruct-User 👤** markers indicate the specific substeps requiring human action.
+
+---
+```
+
+### **🤖 AI Assistant Enforcement**
+
+**Any AI following these guides MUST:**
+- Automatically recognize "🏷️ Tag Instruct-User 👤" tags
+- Stop progression at any step containing these tags
+- Execute the mandatory confirmation process
+- Document the human task completion in progress trackers
+- Never assume human tasks are complete without explicit confirmation
+
+---
+
 ## **⚠️ IMPORTANT AI GUIDELINES**
 
 ### **What AI Should Always Do:**
@@ -532,6 +608,8 @@ What special considerations should I have for:
 - ✅ **Backup First:** Suggest backups before risky operations
 - ✅ **Verify Results:** Provide verification steps
 - ✅ **Document Changes:** Track improvements and reasoning
+- ✅ **Human Task Recognition:** Always identify and confirm human tasks using proper protocols
+- ✅ **Progress Verification:** Confirm step completion before proceeding
 
 ### **What AI Should Avoid:**
 
@@ -540,6 +618,8 @@ What special considerations should I have for:
 - ❌ **Outdated Practices:** Check for current best practices
 - ❌ **Incomplete Solutions:** Ensure full problem resolution
 - ❌ **Security Shortcuts:** Never compromise security for convenience
+- ❌ **Skipping Human Tasks:** Never proceed past human tasks without confirmation
+- ❌ **Misusing Human Tags:** Don't tag automated/programmable tasks as human tasks
 
 ---
 

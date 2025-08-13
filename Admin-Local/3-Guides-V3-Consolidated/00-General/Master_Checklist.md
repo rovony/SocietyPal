@@ -1,15 +1,7 @@
-# V3 Master Checklist - Comp#### **Project Setup (Steps 0-5)**
+# V3 Master Checklist - 
+## ⚠️ **NEW PROJECT - START HERE: Ensure to update project info as ones used in guides are for example project may not be the current workspace project Customization Required**
 
-- [ ] **Step 0:** AI Assistant Instructions & Setup
-- [ ] **Step 1:** Document Project Information Card
-- [ ] **Step 2:** Create GitHub Repository
-- [ ] **Step 3:** Setup Local Project Structure
-- [ ] **Step 4:** Clone GitHub Repository
-- [ ] **Step 5:** Setup Git Branching Strategyravel CodeCanyon Deployment
-
-## ⚠️ **START HERE: Project Customization Required**
-
-**📖 READ FIRST:** [QUICK_START_CUSTOMIZATION_GUIDE.md](QUICK_START_CUSTOMIZATION_GUIDE.md)
+**📖 READ FIRST:** [Admin-Local/3-Guides-V3-Consolidated/00-General/QUICK_START_GUIDE_Example.md](Admin-Local/3-Guides-V3-Consolidated/00-General/QUICK_START_GUIDE_Example.md)
 
 **🎯 This guide uses SocietyPal as an example - you MUST customize for your specific project!**
 
@@ -51,8 +43,8 @@
 - [ ] **Step 10.1:** Branch Synchronization & Progress Checkpoint - Sync progress to all branches with professional checkpoint naming
 
 #### **Local Environment (Steps 11-14)**
-- [ ] **Step 11:** Setup Local Development Site in Herd
-- [ ] **Step 12:** Create Environment Files
+- [ ] **Step 11:** Create Environment Files
+- [ ] **Step 12:** Setup Local Development Site in Herd
 - [ ] **Step 13:** Create Local Database
 - [ ] **Step 14:** Run Local Installation & CodeCanyon Setup
 
