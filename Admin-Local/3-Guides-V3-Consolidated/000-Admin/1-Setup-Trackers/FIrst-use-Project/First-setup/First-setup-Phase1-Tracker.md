@@ -967,7 +967,7 @@ _No unresolved issues. See each step for QC and fixes._
 _All known issues for steps 11 and 12 have been addressed and documented for QC._
 
 ---
-
+guide 12 and 13.
 ## 📋 **PENDING STEPS**
 
 ### **Phase 1: Project Setup**

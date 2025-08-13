@@ -213,6 +213,56 @@ production ← Live deployment
 customized ← Personal modifications & snapshots (parallel branch for backup)
 ```
 
+---
+
+## **⚡ TLDR: Herd Development Environment for AI**
+
+### **Quick Herd Commands for AI Agents:**
+
+**Basic Site Management:**
+```bash
+# Link current Laravel project as local site
+herd link
+
+# Open site in browser (non-interactive)
+herd open
+
+# Unlink a site
+herd unlink mysite.test
+
+# List all sites
+herd sites
+```
+
+**Essential Services:**
+```bash
+# Check service status
+herd services
+
+# Start specific service
+herd services start mysql
+
+# Connect to database
+mysql -u root -h 127.0.0.1 -P 3306
+
+# Run Laravel commands with Herd PHP
+herd php artisan migrate
+herd php artisan serve
+```
+
+**Quick Reference:**
+- **MySQL:** Port 3306, user: root, no password
+- **Site URLs:** Automatic `.test` domains (e.g., `myproject.test`)
+- **PHP Versions:** Managed per-site via Herd UI
+- **HTTPS:** Automatic SSL certificates
+- **File Path:** Projects typically in `~/Projects/` or similar
+
+**AI Agent Note:** Herd automates PHP, Nginx, and database services. All `php artisan` commands should use `herd php artisan` prefix. GUI interactions in Herd app require human assistance (marked with 🏷️ Tag Instruct-User 👤).
+
+**📖 Full Reference:** See `99-Tools/HERD-Guide-1.md` for comprehensive details.
+
+---
+
 ### **📌 Checkpoint Naming System**
 
 **Strategic Checkpoints** (Not after every step - only at critical milestones):

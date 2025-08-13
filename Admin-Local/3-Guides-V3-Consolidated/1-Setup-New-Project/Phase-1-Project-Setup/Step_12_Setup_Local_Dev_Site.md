@@ -12,16 +12,81 @@
 
 **⚠️ This step includes tasks that must be performed manually outside this codebase:**
 
+-   Upgrading to Herd Pro for advanced development services
 -   Opening Herd application GUI and configuring site settings
 -   Clicking through Herd interface menus and buttons
 -   Logging into Herd and providing license key
+-   Enabling MySQL and Redis services in Herd Pro
 -   **All other operations in this step are automated/AI-executable**
 
 **🏷️ Tag Instruct-User 👤** markers indicate the specific substeps requiring human action.
 
 ---
 
-## 1. Human Interactive Step Preparation
+## 1. Herd Pro Upgrade and Services Setup
+
+### 1.1. Upgrade to Herd Pro
+
+**🏷️ Tag Instruct-User 👤** Herd Pro Requirements:
+
+1. Open Herd application from system tray
+2. Navigate to **Account/License** section
+3. **Upgrade to Herd Pro** (required for MySQL and Redis services)
+4. Complete license activation process
+5. Restart Herd application after upgrade
+
+### 1.2. Enable Development Services
+
+**🏷️ Tag Instruct-User 👤** Service Configuration:
+
+1. In Herd Pro, navigate to **Services** tab
+2. **Enable MySQL Service:**
+   - Toggle **MySQL** service to **ON**
+   - Confirm MySQL is running (green status indicator)
+   - **Default Configuration:** Port 3306, root user with no password
+3. **Enable Redis Service:**
+   - Toggle **Redis** service to **ON**
+   - Confirm Redis is running (green status indicator)
+   - **Default Configuration:** Port 6379, no authentication
+
+### 1.3. Directory Structure Considerations
+
+**🏷️ Tag Instruct-User 👤** Directory Organization Options:
+
+1. In Herd Pro **Settings**, navigate to **Sites** section
+2. **Choose your preferred development structure:**
+   
+   **Option A - Default Herd Structure:**
+   ```
+   ~/Herd/Sites/
+   ├── societypal/           # Main project
+   └── [other-projects]/     # Future projects
+   ```
+   
+   **Option B - Custom Project Organization:**
+   ```
+   ~/Development/
+   ├── societypal/           # Main project
+   ├── client-projects/      # Client work
+   └── experiments/          # Testing environments
+   ```
+   
+   **Option C - Existing Workspace Structure:**
+   ```
+   ~/Zaj_Master/MyApps/MyLaravel_Apps/2_Apps/
+   ├── SocietyPal-Project/   # Current location
+   └── [other-laravel-apps]/ # Other projects
+   ```
+
+3. **Configure default settings:**
+   - **PHP Version:** 8.2+ (project requirement)
+   - **HTTPS:** Enabled by default
+   - **Database:** Auto-create databases for new sites
+   - **Path Flexibility:** Herd can manage sites from any directory structure
+
+---
+
+## 2. Human Interactive Step Preparation
 
 ### 1.1. Interactive Guide Access
 
