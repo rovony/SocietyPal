@@ -8,269 +8,299 @@
 
 ---
 
-## 🚨 Human Interaction Required
+## Legend for Tags
 
-**⚠️ This step includes tasks that must be performed manually outside this codebase:**
+- **`🏷️ Tag Instruct-User 👤`** = Manual task for human operator  
+  ➡️ AI agent must follow ### **📋 Mandatory Confirmation Process** to ask the user to complete it
 
--   Completing CodeCanyon web installation through browser interface (filling forms, clicking buttons)
--   **Non-Interactive alternatives are provided for AI agents where possible**
-
-**🏷️ Tag Instruct-User 👤** markers indicate the specific substeps requiring human action.
+- **No tag** = AI can execute or verify directly
 
 ---
 
-## **🔍 FYI: Herd Debugging & Logs for Installation Issues**
+## ℹ️ Pre-Installation Checks & Troubleshooting
 
-**📌 Important Note:** CodeCanyon applications are vetted by authors and typically work reliably. Installation issues in Step 14 are usually related to local Herd environment setup, not the application itself.
+**0. Verify Environment & Services**
 
-### **Quick Herd Diagnostics (AI Agent Compatible):**
-
+0.1 Check PHP binary and extensions:
 ```bash
-# Check all Herd services status
-herd services
-echo "=== Services Status Above ==="
-
-# Test database connection
-mysql -u root -h 127.0.0.1 -P 3306 -e "SELECT 'Database OK' as status;"
-
-# Check PHP version and configuration
-herd php -v
-herd php -m | grep -E "(pdo_mysql|curl|openssl|mbstring)"
-
-# Verify site linking
-herd sites
-
-# Test site accessibility
-curl -I https://societypal.test
-echo "=== Site Response Above ==="
+which php
+php -v
+php -m | grep -E "(pdo_mysql|curl|openssl|mbstring)"
 ```
 
-### **Herd Log Locations for Troubleshooting:**
+0.2 **🏷️ Tag Instruct-User 👤** Verify Herd services via GUI:
+1. Open Herd App → **Services** tab
+2. Ensure **MySQL** is ON (green) and port is **3306**
+3. Verify other required services are ON
 
-**🏷️ Tag Instruct-User 👤** Access Herd logs via GUI:
+0.3 Test database connection:
+```bash
+mysql -u root -h 127.0.0.1 -P 3306 -e "SELECT 'Database OK' as status;"
+```
+
+0.4 Test site accessibility:
+```bash
+curl -I https://societypal.test
+```
+
+0.5 **🏷️ Tag Instruct-User 👤** Trust SSL certificate:
+1. Visit https://societypal.test → **Not secure → Certificate → View Certificate**
+2. Drag to Keychain Access → Double-click → **Trust → Always Trust**
+
+### Additional Troubleshooting Tools
+
+0.6 Check Herd-managed services (unofficial - identifiers may change):
+```bash
+launchctl list | grep -i herd
+echo "=== Herd LaunchAgents Above (Unofficial) ==="
+```
+
+0.7 **🏷️ Tag Instruct-User 👤** Access Herd logs via GUI:
 1. **Herd App → Logs** (Primary log viewer)
 2. **Select your site** from dropdown
 3. **Filter by error level** if needed
 
-**CLI Log Access (AI Agent Compatible):**
+0.8 CLI Log Access:
 ```bash
-# Laravel application logs
-tail -f storage/logs/laravel.log
+# Laravel application logs (more comprehensive view)
+tail -n 100 storage/logs/laravel.log
 
-# Check for recent errors
-grep -i error storage/logs/laravel.log | tail -20
+# Check for recent errors with context
+tail -n 50 storage/logs/laravel.log | grep -A5 -B5 -i error
 
 # System-level Herd logs (macOS)
 tail -f ~/Library/Application\ Support/Herd/Log/herd.log
-
-# PHP error logs
-sudo tail -f /opt/homebrew/var/log/php-error.log
-```
-
-### **Common Herd-Related Installation Issues:**
-
-**Database Connection Issues:**
-```bash
-# Verify MySQL is running
-herd services | grep mysql
-
-# Test direct connection
-mysql -u root -h 127.0.0.1 -P 3306 -e "SHOW DATABASES;"
-
-# Check Laravel database config
-herd php artisan config:show database.connections.mysql
-```
-
-**Permission Issues:**
-```bash
-# Fix Laravel storage permissions
-chmod -R 775 storage bootstrap/cache
-chown -R $(whoami):staff storage bootstrap/cache
-
-# Clear all caches
-herd php artisan config:clear
-herd php artisan cache:clear
-herd php artisan view:clear
-```
-
-**Site Access Issues:**
-```bash
-# Verify Herd site is linked
-herd sites | grep societypal
-
-# Re-link if needed
-herd unlink societypal.test
-herd link
-
-# Check HTTPS certificate
-curl -k -I https://societypal.test
-```
-
-### **If Installation Fails - Report These Details:**
-
-**📋 Copy this diagnostic info when seeking help:**
-```bash
-# Generate comprehensive debug report
-echo "=== HERD DEBUG REPORT ==="
-echo "Date: $(date)"
-echo "Herd Version: $(herd --version)"
-echo "PHP Version: $(herd php -v | head -1)"
-echo "MySQL Status: $(herd services | grep mysql)"
-echo "Site Status: $(herd sites | grep societypal)"
-echo "Laravel Version: $(herd php artisan --version)"
-echo "Environment: $(cat .env | grep -E '(APP_ENV|DB_)')"
-echo "Recent Errors:"
-tail -20 storage/logs/laravel.log
-echo "=== END REPORT ==="
-```
-
-**🎯 Most Common Fix:** Restart Herd services:
-```bash
-# Stop and start MySQL
-herd services stop mysql
-herd services start mysql
-
-# Or restart all services via Herd GUI
 ```
 
 ---
 
-## **Start Local Development Server**
+## 1. Set Up Environment & Application Key
 
-1. **Set environment for local development:**
-   ```bash
-   # Copy local environment file
-   cp .env.local .env
-   
-   # Generate application key (multiple options)
-   php artisan key:generate
-   # OR using Herd CLI:
-   herd php artisan key:generate
-   ```
+1.1 Copy local environment to active:
+```bash
+cp .env.local .env
+```
 
-2. **Start required services (Non-Interactive | AI Agent Compatible):**
-   ```bash
-   # Check Herd services status
-   herd services
-   
-   # Start MySQL if not running (command line)
-   herd services start mysql
-   
-   # Verify database connection
-   herd php artisan migrate:status
-   ```
+1.2 Generate application key:
+```bash
+php artisan key:generate
+```
 
-3. **Access application via Herd URL:**
-   ```bash
-   # Open in browser automatically (Non-Interactive | AI Agent can execute)
-   herd open
-   
-   # OR manual URL check
-   echo "🌐 Visit: https://societypal.test"
-   echo "🔍 Expected: CodeCanyon installer or application homepage"
-   
-   # Verify site is accessible (Non-Interactive | AI Agent test)
-   curl -I https://societypal.test
-   ```
+---
 
-## **Complete CodeCanyon Installation (if applicable)**
+## 2. Clear & Rebuild Laravel Caches
 
-3. **Pre-installation checks (Non-Interactive | AI Agent Compatible):**
-   ```bash
-   # Verify database exists and is accessible
-   herd php artisan migrate:status
-   
-   # Check if installer is accessible
-   curl -I https://societypal.test/install || curl -I https://societypal.test/installer
-   
-   # Verify environment configuration
-   herd php artisan config:show database
-   ```
+2.1 Clear all caches:
+```bash
+php artisan config:clear
+php artisan cache:clear
+php artisan view:clear
+```
 
-4. **Access CodeCanyon installer:**
-   ```bash
-   # If CodeCanyon app, visit installer URL
-   echo "🛠️ Visit: https://societypal.test/install"
-   echo "   OR"
-   echo "🛠️ Visit: https://societypal.test/installer"
-   
-   # Non-Interactive: Open installer automatically (AI Agent)
-   herd open /install
-   ```
+---
 
-5. **Installation via CLI (Non-Interactive Alternative | AI Agents):**
-   ```bash
-   # If application supports CLI installation
-   herd php artisan install:app \
-     --db-host=127.0.0.1 \
-     --db-port=3306 \
-     --db-name=societypal_local \
-     --db-user=root \
-     --db-password=zaj123 \
-     --app-name="SocietyPal Local" \
-     --app-url=https://societypal.test \
-     --admin-email=admin@societypal.test \
-     --admin-password=SecurePassword123
-   
-   # OR run specific artisan commands if available
-   herd php artisan migrate --seed
-   herd php artisan db:seed --class=AdminSeeder
-   ```
+## 3. Start Required Services
 
-6. **Fill installation details (Manual/Web Interface):**
+3.1 **🏷️ Tag Instruct-User 👤** Turn services ON in Herd GUI:
+1. Herd App → **Services** tab
+2. Toggle **MySQL** ON (green status)
+3. Enable any other needed services
 
-**🏷️ Tag Instruct-User 👤** CodeCanyon Web Installation:
+3.2 Confirm via CLI (unofficial - names may vary):
+```bash
+launchctl list | grep -i herd
+```
 
-   ```bash
-   # Database Configuration (for installer form):
-   # Database Host: 127.0.0.1
-   # Database Port: 3306  
-   # Database Name: societypal_local
-   # Database Username: root
-   # Database Password: zaj123
-   
-   # Application Configuration:
-   # App Name: SocietyPal Local
-   # App URL: https://societypal.test
-   # Admin Email: admin@societypal.test
-   # Admin Password: [Choose secure password]
-   ```
+3.3 Verify DB connection:
+```bash
+php artisan migrate:status
+```
 
-**🏷️ Tag Instruct-User 👤** Required Manual Steps:
+---
 
+## 4. Access Application & Installer
+
+4.1 **🏷️ Tag Instruct-User 👤** Open site via Herd GUI:
+1. **Herd App → Sites** tab → Find `societypal.test` → Click **Open**
+2. This handles SSL trust automatically
+
+4.2 Or open installer URL directly:
+```bash
+open "https://societypal.test/install"
+```
+
+4.3 Verify site accessibility:
+```bash
+curl -I https://societypal.test
+echo "🌐 Visit: https://societypal.test"
+echo "🔍 Expected: CodeCanyon installer or application homepage"
+```
+
+---
+
+## 5. (Optional) CLI Installation
+
+5.1 Check if CLI install command exists:
+```bash
+php artisan list | grep install
+```
+
+5.2 Run if available (adjust to actual package):
+```bash
+php artisan install:app \
+  --db-host=127.0.0.1 \
+  --db-port=3306 \
+  --db-name=societypal_local \
+  --db-user=root \
+  --db-password="" \
+  --app-name="SocietyPal Local" \
+  --app-url=https://societypal.test \
+  --admin-email=admin@societypal.test \
+  --admin-password=SecurePassword123
+```
+
+5.3 Otherwise run migrations/seeds:
+```bash
+php artisan migrate --seed
+php artisan db:seed --class=AdminSeeder
+```
+
+**⚠️ Note:** Not all CodeCanyon packages provide CLI installation. Check package documentation first.
+
+---
+
+## 6. Manual Web-Based Installation
+
+6.1 **🏷️ Tag Instruct-User 👤** Complete installer form:
+- **Database Host:** 127.0.0.1
+- **Port:** 3306
+- **Name:** societypal_local
+- **Username:** root
+- **Password:** _(leave blank - Herd default)_
+- **App Name:** SocietyPal Local
+- **App URL:** https://societypal.test
+- **Admin Email:** admin@societypal.test
+- **Admin Password:** secure password of choice
+
+6.2 **🏷️ Tag Instruct-User 👤** Finalize in browser:
 1. Navigate to https://societypal.test/install in your browser
-2. Complete the installation wizard by filling out the forms
+2. Fill out required details using credentials above
 3. Click through each installation step until completion
-4. Verify successful installation by accessing the dashboard
+4. Confirm application loads without installer prompt
 
-7. **Post-installation verification (Non-Interactive | AI Agent Compatible):**
-   ```bash
-   echo "📋 Installation verification checklist:"
-   
-   # Check database tables exist
-   herd php artisan migrate:status
-   echo "□ Database connection successful"
-   
-   # Verify admin user exists
-   herd php artisan tinker --execute="echo App\Models\User::where('email', 'admin@societypal.test')->exists() ? 'Admin user exists' : 'Admin user missing';"
-   echo "□ Admin user created"
-   
-   # Test application access
-   curl -s https://societypal.test | grep -q "login\|dashboard" && echo "□ Can access application"
-   
-   # Verify installation completed
-   [ -f storage/installed ] && echo "□ Installation completed" || echo "⚠️ Installation file not found"
-   
-   echo "□ Installation process complete"
-   ```
+---
 
-**Expected Result:** CodeCanyon application installed and running locally at https://societypal.test.
+## 7. Post-Installation Verification
+
+7.1 Check database tables exist:
+```bash
+php artisan migrate:status
+echo "□ Database connection successful"
+```
+
+7.2 Verify admin user exists (if applicable):
+```bash
+php artisan tinker --execute="echo App\\Models\\User::where('email', 'admin@societypal.test')->exists() ? 'Admin user exists' : 'Admin user missing';"
+echo "□ Admin user verification"
+```
+
+7.3 Test application access:
+```bash
+curl -s https://societypal.test | grep -qE "login|dashboard" && echo "□ Can access application"
+```
+
+7.4 Check for common installation completion indicators:
+```bash
+[ -f storage/installed ] && echo "□ Installation file found" || echo "ℹ️ No installation file (not all packages create this)"
+[ -f .env ] && grep -q "APP_INSTALLED=true" .env && echo "□ APP_INSTALLED flag found" || echo "ℹ️ No APP_INSTALLED flag"
+echo "□ Installation process verification complete"
+```
+
+---
+
+## 8. Diagnostic Info Collection
+
+8.1 Generate comprehensive debug report:
+```bash
+echo "=== HERD DEBUG REPORT ==="
+echo "Date: $(date)"
+echo "PHP Binary: $(which php)"
+echo "PHP Version: $(php -v | head -1)"
+echo "Herd LaunchAgents: $(launchctl list | grep -i herd)"
+echo "Laravel Version: $(php artisan --version)"
+echo "Environment: $(cat .env | grep -E '(APP_ENV|DB_)')"
+echo "Recent Laravel Logs:"
+tail -50 storage/logs/laravel.log
+echo "=== END REPORT ==="
+```
+
+---
+
+## 🛠️ Common Issues & Solutions
+
+### Database Connection Issues
+
+8.2 Check if MySQL is running (unofficial - service names may change):
+```bash
+launchctl list | grep -i herd | grep -i mysql
+```
+
+8.3 Test direct connection with correct credentials:
+```bash
+mysql -u root -h 127.0.0.1 -P 3306 -e "SHOW DATABASES;"
+```
+
+8.4 **🏷️ Tag Instruct-User 👤** Verify MySQL via Herd GUI:
+1. **Open Herd App → Services tab**
+2. **Check MySQL toggle is ON (green)**
+3. **Click gear ⚙️ icon to verify port 3306 and credentials**
+4. **Note:** Herd MySQL default is root user with NO password
+
+### Permission Issues
+
+8.5 Fix Laravel storage permissions:
+```bash
+chmod -R 775 storage bootstrap/cache
+chown -R $(whoami):staff storage bootstrap/cache
+```
+
+### Site Access Issues
+
+8.6 **🏷️ Tag Instruct-User 👤** Re-link site if needed:
+1. **Check Herd App → Sites tab** for societypal.test
+2. **If missing, navigate to project directory and run:** `herd link`
+
+8.7 Check HTTPS certificate and trust status:
+```bash
+curl -k -I https://societypal.test
+```
+
+### Service Restart
+
+8.8 **🏷️ Tag Instruct-User 👤** Restart via Herd GUI (Recommended):
+1. **Open Herd App → Services tab**
+2. **Toggle MySQL OFF then ON**
+3. **Wait for green status**
+
+8.9 CLI Alternative (Unofficial - service names may change):
+```bash
+# Find actual service name
+launchctl list | grep -i herd | grep -i mysql
+
+# Stop and start MySQL via launchctl (example name)
+launchctl stop com.beyondco.herd.mysql
+sleep 2
+launchctl start com.beyondco.herd.mysql
+
+# Verify service is running
+launchctl list | grep -i herd | grep -i mysql
+```
 
 ---
 
 ## ✅ **Phase 1 Complete**
 
-You have successfully completed the project setup and configuration:
+**Expected Outcome:** CodeCanyon application installed and running locally at https://societypal.test with verified database, admin user, and UI accessibility.
 
 **✅ Accomplished:**
 - GitHub project repository created with proper branching strategy

@@ -34,7 +34,9 @@ This guide provides exhaustive, step-by-step instructions for installing, config
      – **Path:** `/Users/you/Projects/my-laravel-app`  
      – **PHP Version:** select from installed list  
      – **HTTPS:** toggle ON  
-  3. Click **Save**, then **Open**.  
+  3. Click **Save**, then **Open**.
+
+**📌 Important:** Site management (listing, detailed configuration) is primarily GUI-based. Use `herd link/unlink` for basic operations.  
 
 ### 2.2 Managing PHP Versions
 1. Herd UI → **Settings → PHP Versions**.  
@@ -61,6 +63,20 @@ All services run on localhost and are managed via the Herd UI's **Services** tab
 1. Herd UI → **Services**.  
 2. Toggle desired service to **ON**; confirm green status.  
 3. Click **Settings** for any service to customize port, password, or persistence directory.
+
+**📌 Important:** Service management is **GUI-only**. The Herd CLI does not include a `services` command.
+
+**CLI Alternative (Unofficial):**
+```bash
+# List all Herd-managed services
+launchctl list | grep herd
+
+# Example: stop/start Herd's MySQL service
+launchctl stop com.tiny.team.Herd.MySQL
+launchctl start com.tiny.team.Herd.MySQL
+```
+
+**⚠️ Note:** `launchctl` commands are not officially supported by Herd. Use the GUI for reliable service management.
 
 ### 3.2 CLI Access Examples
 - MySQL:
@@ -281,7 +297,16 @@ All services run on localhost and are managed via the Herd UI's **Services** tab
   chown -R $(whoami):staff storage bootstrap/cache
   ```
 - **Service Restarts**: Toggle problematic services off/on in Herd UI.  
-- **Expose URL**: Use for remote testing; ensure firewall allows outbound connections.
+- **PHP Binary**: Verify correct PHP with `which php` and `php -v`.
+- **SSL Certificates**: Use Herd GUI Sites → Open for automatic certificate trust.
+
+***
+
+**Important Notes:**
+- Service management is **GUI-only** - no `herd services` command exists
+- Site listing requires GUI - use Sites tab in Herd app
+- For CLI automation, use `launchctl` commands (unofficial) or standard `php artisan` commands
+- Most reliable approach: Use Herd GUI for service/site management, CLI for Laravel operations
 
 ***
 

@@ -8,7 +8,7 @@
 
 ---
 
-## **⚠️ CRITICAL: TEMPLATE CUSTOMIZATION REQUIRED**
+## **🧠 HUMAN INTERACTION FRAMEWORK**
 
 ### **🎯 THIS GUIDE USES EXAMPLE PROJECT DATA - CUSTOMIZE FOR YOUR PROJECT**
 
@@ -236,19 +236,20 @@ herd sites
 
 **Essential Services:**
 ```bash
-# Check service status
-herd services
-
-# Start specific service
-herd services start mysql
+# Check Herd services status (unofficial method)
+launchctl list | grep herd
 
 # Connect to database
 mysql -u root -h 127.0.0.1 -P 3306
 
-# Run Laravel commands with Herd PHP
-herd php artisan migrate
-herd php artisan serve
+# Run Laravel commands with standard PHP
+php artisan migrate
+php artisan serve
 ```
+
+**🏷️ Tag Instruct-User 👤** Service Management via GUI:
+- **Herd App → Services tab** to toggle services ON/OFF
+- **Click gear ⚙️ icon** to configure ports/credentials
 
 **Quick Reference:**
 - **MySQL:** Port 3306, user: root, no password
@@ -257,9 +258,11 @@ herd php artisan serve
 - **HTTPS:** Automatic SSL certificates
 - **File Path:** Projects typically in `~/Projects/` or similar
 
-**AI Agent Note:** Herd automates PHP, Nginx, and database services. All `php artisan` commands should use `herd php artisan` prefix. GUI interactions in Herd app require human assistance (marked with 🏷️ Tag Instruct-User 👤).
+**AI Agent Note:** Herd automates PHP, Nginx, and database services. All `php artisan` commands should use standard `php artisan` syntax. GUI interactions in Herd app require human assistance (marked with 🏷️ Tag Instruct-User 👤).
 
 **📖 Full Reference:** See `99-Tools/HERD-Guide-1.md` for comprehensive details.
+
+**🏷️ Tag Legend:** Steps or substeps marked with `🏷️ Tag Instruct-User 👤` require human interaction via GUI or browser. AI agents must prompt users for these tasks using the Step 00 Question Template. note that sometimes a step md file may have substeps reuqier human but otherwise can be done by you.
 
 ---
 
