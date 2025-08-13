@@ -74,11 +74,11 @@ git commit -m "${CHECKPOINT_MSG}"
 
 The synchronization script has been created and stored in the Admin-Local operations directory:
 
-**Script Location:** `Admin-Local/0-Setup-Operations/1-First-Setup/multi_branch_sync.sh`
+**Script Location:** `Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/multi_branch_sync.sh`
 
 ```bash
 # Navigate to the Admin-Local operations directory
-cd Admin-Local/0-Setup-Operations/1-First-Setup/
+cd Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/
 
 # Make the script executable
 chmod +x multi_branch_sync.sh
