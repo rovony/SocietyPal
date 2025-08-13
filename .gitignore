@@ -6,12 +6,16 @@
 ###############################################################################
 
 # -------------------------
-# 1) DEPENDENCIES (always rebuilt)
+# 1) DEPENDENCIES (rebuilt during deployment)
 # -------------------------
 /vendor/
 /node_modules/
 npm-debug.log
 yarn-error.log
+
+# Lock files COMMITTED for deployment consistency across all scenarios (A,B,C,D)
+# This ensures identical dependency versions in: local builds, CI/CD, DeployHQ, server pulls
+# composer.lock and package-lock.json are included in repository
 
 # -------------------------
 # 2) FRONTEND BUILD OUTPUTS (rebuilt during deployment)
@@ -21,6 +25,12 @@ yarn-error.log
 /public/mix-manifest.json
 /public/js/app.js
 /public/css/app.css
+/public/assets/build/
+vite.config.js.timestamp-*
+/.vite/
+/dist/
+*-manifest.json
+*.manifest
 
 # -------------------------
 # 3) RUNTIME FILES (recreated by application)
@@ -33,6 +43,10 @@ yarn-error.log
 /storage/logs/*
 /storage/app/public/*
 /storage/pail
+/writable/cache/*
+/writable/logs/*
+/writable/session/*
+/writable/uploads/*
 
 # -------------------------
 # 4) ENVIRONMENT FILES (contain secrets)
@@ -53,6 +67,9 @@ yarn-error.log
 /coverage
 auth.json
 .phpactor.json
+.phpmd.xml
+.php_cs.cache
+.php-cs-fixer.cache
 
 # -------------------------
 # 6) OS & IDE FILES
@@ -73,6 +90,7 @@ ehthumbs.db
 *.swo
 *.tmp
 *~
+desktop.ini
 
 # -------------------------
 # 7) LARAVEL SPECIFIC
@@ -83,21 +101,32 @@ Homestead.json
 /.vagrant
 /public_html/storage
 /public_html/hot
+/nova/
+.rr.yaml
+rr
 
 # -------------------------
 # 8) CODEIGNITER 4 (if applicable)
 # -------------------------
 /writable/*
 !/writable/.gitkeep
+!/writable/index.html
 
 # -------------------------
-# 9) CODEIGNITER 3 (if applicable)  
+# 9) CODEIGNITER 3 (if applicable)
 # -------------------------
 /application/cache/*
 /application/logs/*
+!/application/cache/.gitkeep
+!/application/logs/.gitkeep
 
 # -------------------------
-# 10) ARCHIVES & DUMPS (never needed to run)
+# 10) CODECANYON SPECIFIC
+# -------------------------
+#/admin-local/
+Admin-Local/codecanyon_management/installer_backup/*
+# -------------------------
+# 11) BACKUP & TEMP FILES
 # -------------------------
 /*.zip
 /*.tar
@@ -109,18 +138,34 @@ Homestead.json
 /*.iso
 /*.jar
 /*.rar
+*.backup
+*.bak
+*.sql
+*.dump
+/backups/
+/dumps/
+/tmp/
+/temp/
+# -------------------------
+# 12) SECURITY FILES (never commit)
+# -------------------------
+.htpasswd
+.htaccess.backup
+/.well-known/
+/ssl/
+*.pem
+*.key
+*.crt
+*.csr
 
 # -------------------------
-# 11) CUSTOMIZATION PROTECTION
+# 13) DEPLOYMENT SPECIFIC
 # -------------------------
-# Backup files from customization layer
-custom_backup_*.tar.gz
-
-# -------------------------
-# 12) SERVER DEPLOYMENT FILES (generated during deployment)
-# -------------------------
-deploy-*.tar.gz
-deployment_manifest.json
+.deployment
+deployment-config.php
+deploy.php
+/.deployer/
+.dep/
 
 ###############################################################################
 # DEPLOYMENT STRATEGY DOCUMENTATION
@@ -179,3 +224,9 @@ deployment_manifest.json
 #   4) Result: Updates applied, $15K customizations preserved
 #
 ###############################################################################
+
+# DEPLOYMENT READY: This .gitignore works with:
+# • Scenario A: Local build + SSH deploy
+# • Scenario B: GitHub Actions build + deploy
+# • Scenario C: DeployHQ professional deploy
+# • Scenario D: Server pull + local build upload

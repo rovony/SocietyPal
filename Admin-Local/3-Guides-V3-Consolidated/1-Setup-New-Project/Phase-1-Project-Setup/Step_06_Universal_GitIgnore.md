@@ -33,8 +33,9 @@ cat > .gitignore << 'EOF'
 /node_modules/
 npm-debug.log
 yarn-error.log
-composer.lock*
-package-lock.json*
+# Lock files COMMITTED for deployment consistency across all scenarios (A,B,C,D)
+# This ensures identical dependency versions in: local builds, CI/CD, DeployHQ, server pulls
+# composer.lock and package-lock.json are included in repository
 
 # -------------------------
 # 2) FRONTEND BUILD OUTPUTS (rebuilt during deployment)
@@ -142,8 +143,9 @@ rr
 # 10) CODECANYON SPECIFIC
 # -------------------------
 # Keep original vendor files trackable but ignore customizations that should be in separate branches
-/Admin-Local/
+# Admin-Local included except secrets folder
 /admin-local/
+/Admin-Local/secrets/
 install.php
 setup.php
 /install/
@@ -243,18 +245,44 @@ echo "🎯 Perfect for any deployment scenario (A, B, C, or D)"
 
 **Expected Results:**
 
-- ✅ Comprehensive .gitignore file created in project root
-- ✅ Ready for any deployment scenario (Local, GitHub Actions, DeployHQ, Server pull)
-- ✅ Supports Laravel, CodeIgniter 4/3, and generic PHP applications
-- ✅ CodeCanyon-specific exclusions included
-- ✅ Security files and secrets properly excluded
-- ✅ Dependencies and build artifacts ignored (will be rebuilt during deployment)
+-   ✅ Comprehensive .gitignore file created in project root
+-   ✅ Ready for any deployment scenario (Local, GitHub Actions, DeployHQ, Server pull)
+-   ✅ Supports Laravel, CodeIgniter 4/3, and generic PHP applications
+-   ✅ CodeCanyon-specific exclusions included
+-   ✅ Security files and secrets properly excluded
+-   ✅ Dependencies and build artifacts ignored (will be rebuilt during deployment)
 
 ---
 
 ## **Why This .gitignore is Universal**
 
-### **Deployment Scenario Coverage:**
+### **Comprehensive Deployment Scenario Compatibility:**
+
+| Scenario | Status | Key Alignment Points |
+|----------|--------|---------------------|
+| **A: Local Build + SSH** | ✅ **PERFECT** | Lock files committed → consistent builds; guides preserved |
+| **B: GitHub Actions** | ✅ **PERFECT** | CI gets exact dependencies; no secrets exposed |
+| **C: DeployHQ** | ✅ **PERFECT** | Professional pipeline has all needed files |
+| **D: Git Pull + Manual** | ✅ **PERFECT** | Server pulls exact dependencies; manual guides available |
+
+### **Universal Laravel App Readiness:**
+- ✅ **Multi-Framework Support:** Laravel, CodeIgniter 4/3, Generic PHP
+- ✅ **Modern Dependency Management:** Lock files committed per best practices
+- ✅ **CodeCanyon Ready:** Handles vendor files, licenses, installation cleanup
+- ✅ **Security First:** All sensitive files properly ignored
+- ✅ **Development Friendly:** IDE files ignored, but source preserved
+
+### **Future Scenario Compatibility:**
+**✅ CONFIRMED:** This `.gitignore` is architecturally designed to support **any future deployment scenarios** we may add (E, F, G, etc.) because it follows the universal principle:
+
+- **Track:** All source code, configurations, and deployment guides
+- **Ignore:** Only dependencies (rebuilt), secrets (environment-specific), and build artifacts (regenerated)
+- **Lock Files:** Committed for reproducible builds across all environments
+- **Guides:** Admin-Local deployment guides preserved for any scenario
+
+This approach ensures **100% compatibility** with emerging deployment technologies (containerization, serverless, edge computing, etc.) without requiring `.gitignore` modifications.
+
+### **Original Deployment Scenario Coverage:**
 
 | Scenario                | Build Location   | .gitignore Compatibility                       |
 | ----------------------- | ---------------- | ---------------------------------------------- |
@@ -265,18 +293,18 @@ echo "🎯 Perfect for any deployment scenario (A, B, C, or D)"
 
 ### **Framework Coverage:**
 
-- ✅ **Laravel**: All Laravel-specific cache and build directories
-- ✅ **CodeIgniter 4**: Writable directory patterns
-- ✅ **CodeIgniter 3**: Cache and logs directories
-- ✅ **Generic PHP**: Common PHP application patterns
-- ✅ **CodeCanyon**: Installation files, licenses, vendor archives
+-   ✅ **Laravel**: All Laravel-specific cache and build directories
+-   ✅ **CodeIgniter 4**: Writable directory patterns
+-   ✅ **CodeIgniter 3**: Cache and logs directories
+-   ✅ **Generic PHP**: Common PHP application patterns
+-   ✅ **CodeCanyon**: Installation files, licenses, vendor archives
 
 ### **Security Benefits:**
 
-- 🔒 Never commits .env files with database passwords
-- 🔒 Excludes SSL certificates and keys
-- 🔒 Ignores deployment configurations with server details
-- 🔒 Protects API keys and sensitive credentials
+-   🔒 Never commits .env files with database passwords
+-   🔒 Excludes SSL certificates and keys
+-   🔒 Ignores deployment configurations with server details
+-   🔒 Protects API keys and sensitive credentials
 
 ---
 

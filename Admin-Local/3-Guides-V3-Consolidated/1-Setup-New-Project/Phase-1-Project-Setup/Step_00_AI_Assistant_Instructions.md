@@ -8,6 +8,297 @@
 
 ---
 
+## **⚠️ CRITICAL: TEMPLATE CUSTOMIZATION REQUIRED**
+
+### **🎯 THIS GUIDE USES EXAMPLE PROJECT DATA - CUSTOMIZE FOR YOUR PROJECT**
+
+> **⚠️ IMPORTANT:** All steps in this guide contain example data that MUST be customized for your specific project:
+>
+> - **Project Name:** Examples use "SocietyPal" → Replace with YOUR project name
+> - **CodeCanyon App:** Examples use "SocietyPro v1.0.42" → Replace with YOUR app and version
+> - **Domains:** Examples use "societypal.com" → Replace with YOUR domain
+> - **Paths:** Examples use specific user paths → Replace with YOUR system paths
+> - **Hosting:** Examples use "Hostinger" → Replace with YOUR hosting provider
+> - **Versions:** Examples use specific versions → Confirm YOUR actual versions
+
+### **📋 Before Starting ANY Step:**
+
+1. **✅ Read Step 01:** Configure all your project-specific variables first
+2. **✅ Confirm Current State:** Check what already exists in your project
+3. **✅ Verify Versions:** Use actual versions from your project files, not guide examples
+4. **✅ Ask When Unsure:** Request clarification for anything unclear or mismatched
+
+### **🤖 When Using AI Assistant:**
+
+Always provide your specific project details, not the example data from the guides. AI should customize ALL commands, paths, and configurations for YOUR project setup.
+
+## **📚 GUIDE TERMINOLOGY & CONVENTIONS**
+
+### **⚠️ CRITICAL: "Vendor" Terminology Clarification**
+
+**When we say "Vendor" in these guides, we mean:**
+
+✅ **CodeCanyon Author/Upstream Vendor:**
+- The original author/company who created the CodeCanyon application
+- The third-party software provider you purchased the script from
+- Example: The developer team behind SocietyPro, TaskGo, etc.
+
+✅ **Vendor Files Include:**
+- Application code: `app/`, `config/`, `resources/`, `public/`, `database/`, `routes/`
+- Framework files: Laravel core application structure
+- Author's custom modules, controllers, views, and business logic
+
+❌ **"Vendor" does NOT refer to:**
+- **`vendor/` directory:** Composer dependencies folder
+- **Composer packages:** Third-party PHP libraries (installed via `composer install`)
+- **Laravel framework itself:** The underlying Laravel installation
+
+**Why This Matters:**
+- Prevents confusion between "vendor files" (CodeCanyon author's work) and "vendor/ folder" (Composer dependencies)
+- Ensures clear understanding when preserving original author files vs managing dependencies
+- Critical for proper Git branching and update management strategies
+
+### **File Path Conventions**
+- `PROJECT_ROOT` = Base Laravel application directory
+- `ADMIN_LOCAL` = Administrative documentation directory
+- All paths are relative to PROJECT_ROOT unless specified otherwise
+
+### **Placeholder Conventions**
+- `{YOUR_PROJECT}` = Replace with actual project name
+- `{YOUR_VERSION}` = Replace with actual version number  
+- `{YOUR_DOMAIN}` = Replace with actual domain name
+- Text in `{}` requires customization per project
+
+### **Environment Conventions**
+- **Local:** Development environment on developer machine
+- **Staging:** Pre-production testing environment
+- **Production:** Live environment serving end users
+
+---
+
+## **📋 DEPLOYMENT GUIDE BACKGROUND**
+
+### **🎯 Complete Guide System Structure**
+
+📚 **V3 Laravel CodeCanyon Deployment Guide Organization:**
+
+#### **0️⃣ Setup Computer & Server** (Prerequisites)
+- **Step 01:** Herd Installation - Local Laravel development environment
+- **Step 02:** SSH Configuration - Secure server access setup
+- **Step 03:** Server Setup - Production server preparation
+
+#### **1️⃣ Setup New Project** (First-Time Deployment)
+
+**Phase 1: Project Setup (Steps 01-14)**
+- **Step 01:** Project Information Card - Environment variables and project metadata
+- **Step 02:** Create GitHub Repository - Repository setup and remote configuration
+- **Step 03:** Setup Local Structure - Directory hierarchy and organization
+- **Step 04:** Clone Repository - Git repository local setup
+- **Step 05:** Git Branching Strategy - Multi-environment deployment branches
+- **Step 06:** Universal GitIgnore - Deployment-compatible version control exclusions
+- **Step 07:** Download CodeCanyon - Vendor application integration
+- **Step 08:** Commit Original Vendor Files - Pristine vendor file preservation
+- **Step 09:** Admin-Local Directory Structure - Project organization and customization layer
+- **Step 10:** CodeCanyon Configuration & License Management - License tracking and update safety
+- **Step 11:** Setup Local Development Site - Local development environment configuration
+- **Step 12:** Create Environment Files - Environment-specific configuration management
+- **Step 13:** Create Local Database - Database setup and initial configuration
+- **Step 14:** Run Local Installation - Complete local application installation
+
+**Phase 2: Pre-Deployment Preparation (Steps 15-20)**
+- **Step 15:** Install Dependencies - Composer and NPM dependency management
+- **Step 16:** Test Build Process - Build verification and optimization
+- **Step 17:** Setup Customization Protection System - Custom code protection and backup
+- **Step 18:** Data Persistence Planning - Database migration and backup strategies
+- **Step 19:** Documentation Preparation - Deployment documentation and procedures
+- **Step 20:** Commit Pre-Deploy State - Pre-deployment checkpoint and verification
+
+**Phase 3: Deployment Execution (Steps 21-24)**
+- **Step 21:** Choose Deployment Scenario - Select appropriate deployment method
+- **Step 22A:** Local Build Process - Manual build and upload workflow
+- **Step 22B:** GitHub Actions Workflow Setup - Automated CI/CD pipeline configuration
+- **Step 22C:** DeployHQ Professional Setup - Enterprise deployment platform setup
+- **Step 22D:** Git Pull Configuration - Server-side git deployment setup
+- **Step 23:** Server Deployment - Execute chosen deployment scenario
+- **Step 24:** Post-Deployment Verification - Production deployment validation and testing
+
+**Phase 4: Post-Deployment Maintenance (Steps 25-28)**
+- **Step 25:** Setup Server Monitoring - Infrastructure monitoring and alerting
+- **Step 26:** Setup Security Hardening - Production security configuration
+- **Step 27:** Performance Monitoring - Application performance optimization
+- **Step 28:** Emergency Procedures - Incident response and disaster recovery
+
+#### **2️⃣ Subsequent Deployment** (Updates & Maintenance)
+- **Step 01:** Pre-Update Backup - Safe backup procedures before updates
+- **Step 02:** Download New CodeCanyon Version - Vendor update management
+- **Step 03:** Compare Changes - Advanced diff analysis for safe updates
+- **Step 04:** Update Vendor Files - Controlled vendor file updates
+- **Step 05:** Test Custom Functions - Compatibility verification
+- **Step 06:** Update Dependencies - Composer and NPM dependency management
+- **Step 07:** Test Build Process - Build verification before deployment
+- **Step 08:** Deploy Updates - Production update deployment
+- **Step 09:** Verify Deployment - Post-update verification and rollback procedures
+
+#### **3️⃣ Maintenance** (Ongoing Operations)
+- **Backup Management:** Automated backup systems and recovery procedures
+- **Emergency Procedures:** Incident response and disaster recovery
+- **Performance Monitoring:** System performance optimization and monitoring
+- **Security Updates:** Security patch management and hardening
+- **Server Monitoring:** Infrastructure monitoring and alerting
+
+#### **9️⃣9️⃣ Understanding** (Reference Documentation)
+- **Best Practices:** Laravel and deployment best practices
+- **CodeCanyon Specifics:** Vendor-specific considerations and management
+- **Deployment Concepts:** Technical concepts and methodologies
+- **FAQ & Common Issues:** Troubleshooting and problem resolution
+- **Introduction Complete Overview:** Comprehensive system overview
+- **Terminology Definitions:** Technical term definitions and conventions
+- **Troubleshooting Guide:** Systematic problem diagnosis and resolution
+
+### **🌟 Current Progress Status** (Phase 1 - Steps 1-10 Complete):
+- ✅ **Step 01:** Project Information Card - Environment variables and project metadata configured
+- ✅ **Step 02:** Create GitHub Repository - Repository setup and SSH/HTTPS configuration
+- ✅ **Step 03:** Setup Local Structure - Directory hierarchy established for multi-project organization
+- ✅ **Step 04:** Clone Repository - Git repository cloned and verified locally
+- ✅ **Step 05:** Git Branching Strategy - Multi-environment deployment branches created
+- ✅ **Step 06:** Universal GitIgnore - Deployment-compatible .gitignore with lock file strategy
+- ✅ **Step 07:** Download CodeCanyon - Vendor application integrated (SocietyPro v1.0.42)
+- ✅ **Step 08:** Commit Original Vendor Files - Pristine vendor files preserved in dedicated branch
+- ✅ **Step 09:** Admin-Local Directory Structure - Project organization and customization layer established
+- ✅ **Step 10:** CodeCanyon Configuration & License Management - License tracking and update safety implemented
+
+### **🎯 Deployment Scenarios Supported**
+The guide supports 4 different deployment approaches (all involve build processes):
+
+1. **🔧 Scenario A:** Local Build + Manual Upload - Build locally, upload manually to simple hosting environments
+2. **🤖 Scenario B:** GitHub Actions - Automated CI/CD with GitHub workflows (builds on GitHub servers)
+3. **🏢 Scenario C:** DeployHQ Professional - Enterprise deployment platform (builds on DeployHQ servers)
+4. **📡 Scenario D:** Local Build + Git Pull Deployment - Build locally, deploy via git pull on server
+
+**Build Process Notes:**
+- **All scenarios require a build process** for Laravel applications (Composer, NPM, optimization)
+- **Local build scenarios (A & D):** Build on your development machine, then deploy
+- **Remote build scenarios (B & C):** Build occurs on remote servers/services during deployment
+- **Professional approach:** Ensures consistent builds regardless of deployment method
+
+### **🌳 Git Branching Strategy**
+
+**Branch Structure** (6 branches total):
+- 🔵 **`main`** - Primary development branch, integration point for all features (current primary)
+- 🟢 **`development`** - Feature development and testing branch (may become primary later)
+- 🟠 **`staging`** - Pre-production testing environment branch
+- 🔴 **`production`** - Live production deployment branch
+- ⚪ **`vendor/original`** - Pristine CodeCanyon vendor files (protected, no custom changes)
+- 🟣 **`customized`** - Personal customizations and snapshots for CodeCanyon update safety
+
+**Branch Purpose & Strategy:**
+- **`vendor/original`**: Protected branch containing pristine CodeCanyon files, never modified
+- **`main`**: Currently serves as primary development branch (may transition to `development` later)
+- **`development`**: Feature development and testing (potential future primary branch)
+- **`staging`**: Pre-production testing environment for deployment validation
+- **`production`**: Live production deployment branch
+- **`customized`**: Stores personal customizations and modifications as snapshots/backups for when CodeCanyon vendor pushes updates, ensuring custom work is preserved and easily accessible
+
+**Workflow Pattern:**
+```
+vendor/original (protected) ← Pristine CodeCanyon files (never modified)
+    ↓
+main/development ← Primary development work
+    ↓
+staging ← Pre-production testing
+    ↓
+production ← Live deployment
+    
+customized ← Personal modifications & snapshots (parallel branch for backup)
+```
+
+### **📌 Checkpoint Naming System**
+
+**Strategic Checkpoints** (Not after every step - only at critical milestones):
+
+**Format:** `[COLOR_EMOJI] PHASE-STEP: Descriptive Title - YYYY-MM-DD`
+
+**Color-Coded Visual System:**
+
+#### **🔴 Critical Issues & Errors**
+- **Purpose:** Critical problems, system errors, deployment failures, security issues
+- **Examples:**
+  - `🔴 P1-S12: Database Connection Error Fixed - 2025-01-13`
+  - `🔴 P2-S03: Vendor Update Conflict Resolved - 2025-01-13`
+- **Usage:** Emergency fixes, critical system failures, blocking issues
+
+#### **🟠 Bugs & Uncertainties**
+- **Purpose:** Non-critical bugs, warnings, unclear situations requiring investigation
+- **Examples:**
+  - `🟠 P1-S15: Build Warning Investigation - 2025-01-13`
+  - `🟠 P3-S02: Performance Issue Under Review - 2025-01-13`
+- **Usage:** Minor bugs, performance issues, warnings, investigation points
+
+#### **🟢 Working Snapshots & Milestones**
+- **Purpose:** Successfully completed work, verified milestones, tested functionality
+- **Examples:**
+  - `🟢 P1-S10: CodeCanyon Integration Complete - 2025-01-13`
+  - `🟢 P1-S14: Local Environment Verified Working - 2025-01-13`
+  - `🟢 P1-S10.1: Progress Synced to All Branches - 2025-01-13`
+- **Usage:** Major completions, verified working states, successful deployments
+
+#### **🟣 Customization Snapshots**
+- **Purpose:** Personal modifications, custom features, customization backups before vendor updates
+- **Examples:**
+  - `🟣 P1-S17: Custom Auth System Snapshot - 2025-01-13`
+  - `🟣 PRE-UPDATE: Custom Features Backed Up - 2025-01-13`
+- **Usage:** Before vendor updates, custom feature milestones, personalization checkpoints
+
+#### **⚪ Vendor & Tag-Based Commits**
+- **Purpose:** Pristine vendor files, version-specific commits, tag-based releases
+- **Examples:**
+  - `⚪ VENDOR: SocietyPro v1.0.42 - 2025-01-13`
+  - `⚪ TAG: v1.0.42-custom-base - 2025-01-13`
+- **Usage:** Vendor/original branch commits, version tags, baseline establishment
+
+#### **Additional Categories:**
+
+**⬛ Major Phase Completion**
+- **Purpose:** End of major phases, significant architectural milestones
+- **Examples:**
+  - `⬛ P1-COMPLETE: First Deployment Ready - 2025-01-13`
+  - `⬛ P2-COMPLETE: Update System Established - 2025-01-13`
+
+**⬜ Feature Implementation**
+- **Purpose:** New feature additions, functional enhancements, capability extensions
+- **Examples:**
+  - `⬜ FEATURE: Multi-tenant Support Added - 2025-01-13`
+  - `⬜ FEATURE: Advanced Reporting System - 2025-01-13`
+
+**📋 Documentation & Review**
+- **Purpose:** Documentation updates, review points, knowledge capture
+- **Examples:**
+  - `📋 DOC: Deployment Guide Updated - 2025-01-13`
+  - `📋 REVIEW: Security Audit Complete - 2025-01-13`
+
+**🔄 Synchronization & Maintenance**
+- **Purpose:** Branch syncing, maintenance tasks, housekeeping operations
+- **Examples:**
+  - `🔄 SYNC: All Branches Updated - 2025-01-13`
+  - `🔄 MAINT: Dependencies Updated - 2025-01-13`
+
+**Checkpoint Strategy & Guidelines:**
+- **Strategic Timing**: Only at critical milestones, not after every step
+- **Visual Recognition**: Colors enable quick identification of checkpoint types
+- **Version Correlation**: White (⚪) commits correlate with vendor version tags
+- **Customization Safety**: Purple (🟣) snapshots before any vendor updates
+- **Professional Organization**: Easy scanning of git history for specific issue types
+
+### **🎯 CodeCanyon Integration Context**
+
+**Application:** SocietyPro v1.0.42 - Society Management Software
+- **Vendor Management Strategy:** Minimal vendor file modification, protected customization layer
+- **License Management:** Comprehensive tracking with Admin-Local integration
+- **Update Safety:** Advanced comparison scripts and integrity verification
+- **Version Authority:** Git tags as source of truth (v1.0.42)
+
+---
+
 ## **🚀 QUICK START WITH AI ASSISTANT**
 
 ### **1. Initial Setup Prompt**

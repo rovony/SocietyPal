@@ -5,6 +5,8 @@
 > 📋 **Analysis Source:** V2 Step 6 - V1 had nothing, taking V2 entirely
 >
 > 🎯 **Purpose:** Extract CodeCanyon application files into Git-managed project root
+>
+> ⚠️ **Template Note:** This guide uses SocietyPro v1.0.42 as example - customize version for your specific CodeCanyon application
 
 ---
 
@@ -18,11 +20,12 @@ echo "📦 CodeCanyon Download Process:"
 echo "==============================="
 echo "1. Login to your CodeCanyon account"
 echo "2. Navigate to your downloads/purchases"
-echo "3. Download SocietyPro v1.0.4 from CodeCanyon"
-echo "4. Rename to: SocietyPro-v1.0.4.zip"
+echo "3. Download SocietyPro v1.0.42 from CodeCanyon"
+echo "4. Rename to: SocietyPro-v1.0.42.zip"
 echo "5. Move to: tmp-zip-extract/ directory"
 echo ""
 echo "💡 Return here after download completes"
+echo "📝 NOTE: Customize version number for your specific application"
 ```
 
 **END-INSTRUCT-USER**
@@ -35,15 +38,15 @@ echo "💡 Return here after download completes"
 
 2. **Download CodeCanyon ZIP:**
 
-   - Download SocietyPro v1.0.4 from CodeCanyon
-   - Rename to `SocietyPro-v1.0.4.zip`
+   - Download SocietyPro v1.0.42 from CodeCanyon
+   - Rename to `SocietyPro-v1.0.42.zip`
    - Move to `tmp-zip-extract/` directory
 
 3. **Extract CodeCanyon files:**
 
    ```bash
    cd tmp-zip-extract
-   unzip SocietyPro-v1.0.4.zip
+   unzip SocietyPro-v1.0.42.zip
    ```
 
 4. **Copy application files to project root:**

@@ -41,16 +41,16 @@
 - [ ] **Step 4:** Clone GitHub Repository
 - [ ] **Step 5:** Setup Git Branching Strategy
 
-#### **CodeCanyon Setup (Steps 6-9)**
+#### **CodeCanyon Setup (Steps 6-10.1)**
 
 - [ ] **Step 6:** Create Universal .gitignore (V1 Advanced)
 - [ ] **Step 7:** Download & Extract CodeCanyon Application
-- [ ] **Step 8:** CodeCanyon Configuration & License Management (V2 Amendment + V1 Tools)
-- [ ] **Step 9:** Commit Original Vendor Files (V1 Strategy)
+- [ ] **Step 8:** Commit Original Vendor Files - Preserve pristine CodeCanyon files first (V1 Strategy)
+- [ ] **Step 9:** Create Admin-Local Directory Structure - Create organizational structure
+- [ ] **Step 10:** CodeCanyon Configuration & License Management - Use the structure to set up management systems (V2 Amendment + V1 Tools)
+- [ ] **Step 10.1:** Branch Synchronization & Progress Checkpoint - Sync progress to all branches with professional checkpoint naming
 
-#### **Local Environment (Steps 10-14)**
-
-- [ ] **Step 10:** Create Admin-Local Directory Structure
+#### **Local Environment (Steps 11-14)**
 - [ ] **Step 11:** Setup Local Development Site in Herd
 - [ ] **Step 12:** Create Environment Files
 - [ ] **Step 13:** Create Local Database
