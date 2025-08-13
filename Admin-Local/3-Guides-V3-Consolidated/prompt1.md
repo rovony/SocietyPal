@@ -1,4 +1,10 @@
 
+
+read @/Admin-Local/3-Guides-V3-Consolidated/prompt1.md and we need to proceed, also read @/Admin-Local/3-Guides-V3-Consolidated/1-Setup-New-Project/Phase-1-Project-Setup/Step_00_AI_Assistant_Instructions.md
+
+
+
+
 here is my initial request again
 
 - i just wrote Admin-Local/3-Guides-V3-Consolidated/1-Setup-New-Project/

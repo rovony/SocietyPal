@@ -100,8 +100,8 @@ Always provide your specific project details, not the example data from the guid
 - **Step 08:** Commit Original Vendor Files - Pristine vendor file preservation
 - **Step 09:** Admin-Local Directory Structure - Project organization and customization layer
 - **Step 10:** CodeCanyon Configuration & License Management - License tracking and update safety
-- **Step 11:** Setup Local Development Site - Local development environment configuration
-- **Step 12:** Create Environment Files - Environment-specific configuration management
+- **Step 11:** Create Environment Files - Environment-specific configuration management
+- **Step 12:** Setup Local Development Site - Local development environment configuration
 - **Step 13:** Create Local Database - Database setup and initial configuration
 - **Step 14:** Run Local Installation - Complete local application installation
 
