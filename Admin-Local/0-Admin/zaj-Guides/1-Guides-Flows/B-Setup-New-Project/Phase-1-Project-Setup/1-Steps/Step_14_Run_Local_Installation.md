@@ -492,7 +492,7 @@ After successful installation, the CodeCanyon installer typically displays super
 
 ```bash
 # Run the universal credential capture script
-./Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/Post-Installation-Analysis/2-capture-credentials.sh
+./Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-1-Project-Setup/2-Files/Step-14-Files/3-Post-Installation/1-Scripts/2-capture-credentials.sh
 
 echo "✅ Credential capture completed using universal script"
 ```
@@ -512,7 +512,7 @@ echo "✅ Credential capture completed using universal script"
 
 **📖 Script Documentation:**
 ```bash
-cat Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/Post-Installation-Analysis/README.md
+cat Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-1-Project-Setup/2-Files/Step-14-Files/3-Post-Installation/2-Documentation/Post-Installation-Tools-Guide.md
 ```
 
 ---
@@ -528,10 +528,10 @@ The installation process required temporary elevated permissions (775). Now we m
 This project includes pre-built, production-ready permission management scripts located at:
 
 ```
-Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/
-├── 1-permissions-pre-install.sh      # Before CodeCanyon install/update
-├── 2-permissions-post-install.sh     # After CodeCanyon install/update
-├── permissions-emergency-security.sh # Emergency security recovery
+Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-1-Project-Setup/2-Files/Step-14-Files/3-Post-Installation/1-Scripts/
+├── 1-permissions-post-install.sh     # After CodeCanyon install/update
+├── 2-capture-credentials.sh          # Universal credential capture script
+├── 3-analyze-file-changes.sh         # Post-installation analysis script
 └── README.md                         # Complete script documentation
 ```
 
@@ -547,7 +547,7 @@ Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/
 
 ```bash
 # Run the production-ready post-installation security script
-./Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/2-permissions-post-install.sh
+./Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-1-Project-Setup/2-Files/Step-14-Files/3-Post-Installation/1-Scripts/1-permissions-post-install.sh
 
 echo "✅ Post-installation security lockdown completed using production script"
 ```
@@ -566,7 +566,7 @@ For reference, the script performs environment-appropriate security lockdown:
 For detailed script options, modes, and troubleshooting, see:
 
 ```bash
-cat Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/README.md
+cat Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-1-Project-Setup/2-Files/Step-14-Files/README.md
 ```
 
 **🚨 Emergency Recovery:**
@@ -574,7 +574,7 @@ cat Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/
 If you need immediate security recovery, use:
 
 ```bash
-./Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/permissions-emergency-security.sh --auto
+./Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-1-Project-Setup/2-Files/Step-14-Files/3-Post-Installation/3-Emergency/emergency-security-lockdown.sh --auto
 ```
 
 **🔗 Reference Guide:**
@@ -612,7 +612,7 @@ echo "✅ Post-installation analysis completed using universal script"
 
 **📖 Script Documentation:**
 ```bash
-cat Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/Post-Installation-Analysis/README.md
+cat Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-1-Project-Setup/2-Files/Step-14-Files/3-Post-Installation/2-Documentation/Post-Installation-Tools-Guide.md
 ```
 
 **⚙️ Manual Override (if needed):**

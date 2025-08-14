@@ -25,14 +25,14 @@
 # Create persistence automation script
 echo "🛡️ Setting up data persistence strategy..."
 
-mkdir -p scripts
+mkdir -p Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-2-Pre-Deployment-Preparation/2-Files/Step-18-Files
 
 # Create shared directory linking script with exclusion strategy
-cat > scripts/link_persistent_dirs.sh << 'EOF'
+cat > Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-2-Pre-Deployment-Preparation/2-Files/Step-18-Files/link_persistent_dirs.sh << 'EOF'
 #!/bin/bash
 
 # Data Persistence Script - Prevents User Data Loss During Deployments
-# Usage: bash scripts/link_persistent_dirs.sh "/path/to/release" "/path/to/shared"
+# Usage: bash Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-2-Pre-Deployment-Preparation/2-Files/Step-18-Files/link_persistent_dirs.sh "/path/to/release" "/path/to/shared"
 
 RELEASE_PATH="${1:-$(pwd)}"
 SHARED_PATH="${2:-$(pwd)/../shared}"
@@ -190,7 +190,7 @@ echo "✅ Result: User data survives ALL deployments"
 EOF
 
 # Make script executable
-chmod +x scripts/link_persistent_dirs.sh
+chmod +x Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-2-Pre-Deployment-Preparation/2-Files/Step-18-Files/link_persistent_dirs.sh
 
 echo "✅ Enhanced data persistence script created with smart exclusion strategy"
 ```
@@ -215,7 +215,7 @@ echo "📋 Before persistence setup:"
 ls -la public/
 
 # Run the enhanced script
-bash scripts/link_persistent_dirs.sh "$(pwd)" "$(pwd)/.local-shared"
+bash Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-2-Pre-Deployment-Preparation/2-Files/Step-18-Files/link_persistent_dirs.sh "$(pwd)" "$(pwd)/.local-shared"
 
 echo "📋 After persistence setup:"
 echo "  Shared public contents:"
@@ -311,7 +311,7 @@ ls -la storage/ public/ .env
 ls -la ../shared/
 
 # Re-run persistence script
-bash scripts/link_persistent_dirs.sh "$(pwd)" "$(pwd)/../shared"
+bash Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-2-Pre-Deployment-Preparation/2-Files/Step-18-Files/link_persistent_dirs.sh "$(pwd)" "$(pwd)/../shared"
 ````
 
 ## Framework Detection
@@ -333,7 +333,7 @@ echo "✅ Data persistence documentation created"
 
 ```bash
 # Create verification script
-cat > scripts/verify_persistence.sh << 'EOF'
+cat > Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-2-Pre-Deployment-Preparation/2-Files/Step-18-Files/verify_persistence.sh << 'EOF'
 #!/bin/bash
 
 echo "🔍 Verifying data persistence setup..."
@@ -389,7 +389,7 @@ fi
 echo "✅ Persistence verification complete"
 EOF
 
-chmod +x scripts/verify_persistence.sh
+chmod +x Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-2-Pre-Deployment-Preparation/2-Files/Step-18-Files/verify_persistence.sh
 
 echo "✅ Persistence verification script created"
 ````
@@ -401,14 +401,14 @@ echo "✅ Persistence verification script created"
 echo "🔍 Running comprehensive persistence verification..."
 
 # Test script execution
-if [ -f "scripts/link_persistent_dirs.sh" ]; then
+if [ -f "Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-2-Pre-Deployment-Preparation/2-Files/Step-18-Files/link_persistent_dirs.sh" ]; then
     echo "✅ Persistence script exists"
 else
     echo "❌ Persistence script missing"
 fi
 
 # Check script permissions
-if [ -x "scripts/link_persistent_dirs.sh" ]; then
+if [ -x "Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-2-Pre-Deployment-Preparation/2-Files/Step-18-Files/link_persistent_dirs.sh" ]; then
     echo "✅ Persistence script is executable"
 else
     echo "❌ Persistence script not executable"
@@ -465,7 +465,7 @@ echo "✅ Data persistence system ready for deployment"
 ls -la storage/ public/ .env
 
 # Re-run persistence script
-bash scripts/link_persistent_dirs.sh "$(pwd)" "$(pwd)/../shared"
+bash Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-2-Pre-Deployment-Preparation/2-Files/Step-18-Files/link_persistent_dirs.sh "$(pwd)" "$(pwd)/../shared"
 ```
 
 ### **Permissions Issues**

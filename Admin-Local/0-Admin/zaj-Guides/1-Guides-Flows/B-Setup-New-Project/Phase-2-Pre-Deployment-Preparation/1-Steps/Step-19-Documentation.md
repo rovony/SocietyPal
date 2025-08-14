@@ -228,7 +228,7 @@ composer install --no-dev --optimize-autoloader
 npm ci && npm run build
 
 # 4. Setup persistence
-bash scripts/link_persistent_dirs.sh "$(pwd)" "$(pwd)/../../shared"
+bash Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-2-Pre-Deployment-Preparation/2-Files/Step-18-Files/link_persistent_dirs.sh "$(pwd)" "$(pwd)/../../shared"
 
 # 5. Laravel optimizations
 php artisan config:cache
@@ -425,10 +425,10 @@ npm run dev
 
 ```bash
 # Standard deployment (zero downtime)
-bash scripts/deploy.sh
+bash Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-3-Deployment-Execution/2-Files/deploy.sh
 
 # Emergency rollback
-bash scripts/rollback.sh
+bash Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-3-Deployment-Execution/2-Files/rollback.sh
 ```
 
 ## Project Structure
@@ -437,7 +437,7 @@ bash scripts/rollback.sh
 societypal/
 ├─ app/Custom/              # Protected customizations (NEVER LOST)
 ├─ config/custom.php        # Custom configuration
-├─ scripts/                 # Deployment automation
+├─ Admin-Local/            # Project documentation & automation
 ├─ Admin-Local/myDocs/      # Complete documentation
 └─ [standard Laravel structure]
 ```

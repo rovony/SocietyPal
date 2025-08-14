@@ -103,8 +103,8 @@ Admin-Local/myDocs/          # Documentation (PROTECTED)
 
 ### **Automated Systems:**
 ```
-scripts/link_persistent_dirs.sh    # Data persistence automation
-scripts/verify_persistence.sh      # Verification automation
+Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-2-Pre-Deployment-Preparation/2-Files/Step-18-Files/link_persistent_dirs.sh    # Data persistence automation
+Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-2-Pre-Deployment-Preparation/2-Files/Step-18-Files/verify_persistence.sh      # Verification automation
 CustomLayerServiceProvider.php     # Vendor override system
 ```
 
