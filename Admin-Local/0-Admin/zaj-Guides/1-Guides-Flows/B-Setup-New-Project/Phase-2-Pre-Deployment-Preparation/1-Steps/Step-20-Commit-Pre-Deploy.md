@@ -316,7 +316,7 @@ else
 fi
 
 # Check verification script
-VERIFY_CUSTOM_SCRIPT="Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-2-Pre-Deployment-Preparation/2-Files/Step-17-Files/verify-customizations.php"
+VERIFY_CUSTOM_SCRIPT="app/Custom/Scripts/verify-customizations.php"
 if [ -f "$VERIFY_CUSTOM_SCRIPT" ]; then
     check_pass "Customization verification script exists"
     if [ -x "$VERIFY_CUSTOM_SCRIPT" ]; then
@@ -406,6 +406,31 @@ if [ "$FRAMEWORK" = "laravel" ]; then
         check_pass "Laravel investment commands setup script exists"
         if [ -x "$LARAVEL_CMD_SCRIPT" ]; then
             check_pass "create_laravel_commands.sh executable"
+        fi
+        
+        # Verify Laravel commands are actually registered
+        if command -v php >/dev/null 2>&1 && [ -f "artisan" ]; then
+            INVESTMENT_COMMANDS=("investment:generate-docs" "investment:show-summary" "investment:track-changes" "investment:export")
+            REGISTERED_COMMANDS=0
+            
+            for cmd in "${INVESTMENT_COMMANDS[@]}"; do
+                if php artisan list | grep -q "$cmd" 2>/dev/null; then
+                    check_pass "Laravel command '$cmd' registered"
+                    ((REGISTERED_COMMANDS++))
+                else
+                    check_warn "Laravel command '$cmd' not registered (run create_laravel_commands.sh)"
+                fi
+            done
+            
+            if [ $REGISTERED_COMMANDS -eq ${#INVESTMENT_COMMANDS[@]} ]; then
+                check_pass "All investment commands properly registered"
+            elif [ $REGISTERED_COMMANDS -gt 0 ]; then
+                check_warn "$REGISTERED_COMMANDS/${#INVESTMENT_COMMANDS[@]} investment commands registered"
+            else
+                check_warn "No investment commands registered yet (run Step 19 setup)"
+            fi
+        else
+            check_warn "Cannot verify Laravel command registration (PHP/artisan unavailable)"
         fi
     else
         check_warn "create_laravel_commands.sh missing (optional Laravel integration)"

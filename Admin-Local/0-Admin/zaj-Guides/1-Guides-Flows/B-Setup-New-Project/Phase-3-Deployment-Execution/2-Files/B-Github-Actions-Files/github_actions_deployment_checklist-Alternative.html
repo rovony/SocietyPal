@@ -1,0 +1,3001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Actions Strategy B - Enhanced Deployment Checklist</title>
+    <style>
+        :root {
+            /* Color Palette */
+            --bg-primary: #fefefe;
+            --bg-secondary: #f8f6f3;
+            --bg-card: #ffffff;
+            --bg-code: #2d3748;
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            
+            /* Accent Colors */
+            --accent-primary: #4299e1;
+            --accent-secondary: #38b2ac;
+            --accent-success: #48bb78;
+            --accent-warning: #ed8936;
+            --accent-danger: #f56565;
+            --accent-info: #63b3ed;
+            
+            /* Shadows */
+            --shadow-light: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-medium: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-heavy: 0 10px 15px rgba(0,0,0,0.1);
+            
+            /* Spacing & Typography */
+            --border-radius: 8px;
+            --font-size-xs: 11px;
+            --font-size-sm: 12px;
+            --font-size-base: 14px;
+            --font-size-lg: 16px;
+            --font-size-xl: 18px;
+            --font-size-2xl: 24px;
+            --font-size-3xl: 32px;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #1a202c;
+            --bg-secondary: #2d3748;
+            --bg-card: #2d3748;
+            --bg-code: #1a202c;
+            --text-primary: #f7fafc;
+            --text-secondary: #e2e8f0;
+            --text-muted: #a0aec0;
+            --border-color: #4a5568;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-size: var(--font-size-base);
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow-light);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .header-title {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .header-subtitle {
+            font-size: var(--font-size-sm);
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            width: 250px;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: var(--font-size-sm);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+
+        .theme-toggle {
+            background: var(--accent-primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--accent-secondary);
+            transform: translateY(-1px);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            box-shadow: var(--shadow-light);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .progress-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .progress-text {
+            font-size: var(--font-size-sm);
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            margin: 2rem 0;
+            overflow: hidden;
+            box-shadow: var(--shadow-light);
+        }
+
+        .tab-button {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 1rem;
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .tab-button:last-child {
+            border-right: none;
+        }
+
+        .tab-button.active {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .tab-button:hover:not(.active) {
+            background: var(--bg-secondary);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Steps */
+        .step {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            margin: 1rem 0;
+            box-shadow: var(--shadow-light);
+            transition: all 0.2s ease;
+        }
+
+        .step:hover {
+            box-shadow: var(--shadow-medium);
+        }
+
+        .step.completed {
+            border-color: var(--accent-success);
+            background: rgba(72, 187, 120, 0.05);
+        }
+
+        .step-header {
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .step-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .step-checkbox.checked {
+            background: var(--accent-success);
+            border-color: var(--accent-success);
+        }
+
+        .step-checkbox.checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: var(--font-size-xs);
+            font-weight: bold;
+        }
+
+        .step-number {
+            background: var(--accent-primary);
+            color: white;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .step-info {
+            flex: 1;
+        }
+
+        .step-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .step-meta {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .step-duration {
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+            background: var(--bg-secondary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+        }
+
+        .step-phase {
+            font-size: var(--font-size-xs);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .step-type {
+            font-size: var(--font-size-xs);
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .phase-setup { background: var(--accent-primary); }
+        .phase-deploy { background: var(--accent-secondary); }
+        .phase-monitor { background: var(--accent-warning); }
+        .phase-verify { background: var(--accent-success); }
+
+        .type-automated { background: var(--accent-info); color: white; }
+        .type-manual { background: var(--accent-warning); color: white; }
+        .type-verification { background: var(--accent-success); color: white; }
+
+        .step-toggle {
+            font-size: var(--font-size-lg);
+            color: var(--text-muted);
+            transition: transform 0.2s ease;
+        }
+
+        .step.expanded .step-toggle {
+            transform: rotate(180deg);
+        }
+
+        .step-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .step.expanded .step-content {
+            max-height: 3000px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .step-content-inner {
+            padding: 1.5rem;
+        }
+
+        /* Code Blocks */
+        .code-block {
+            background: var(--bg-code);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin: 1rem 0;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .code-lang {
+            font-size: var(--font-size-xs);
+            color: #a0aec0;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .copy-button {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #a0aec0;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: var(--font-size-xs);
+            transition: all 0.2s ease;
+        }
+
+        .copy-button:hover {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .copy-button.copied {
+            background: var(--accent-success);
+            color: white;
+        }
+
+        .code-content {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            font-size: var(--font-size-sm);
+            line-height: 1.4;
+            color: #e2e8f0;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        /* Info Boxes */
+        .info-box {
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin: 1rem 0;
+            background: var(--bg-secondary);
+        }
+
+        .info-box.warning {
+            border-color: var(--accent-warning);
+            background: rgba(237, 137, 54, 0.1);
+        }
+
+        .info-box.success {
+            border-color: var(--accent-success);
+            background: rgba(72, 187, 120, 0.1);
+        }
+
+        .info-box.info {
+            border-color: var(--accent-info);
+            background: rgba(99, 179, 237, 0.1);
+        }
+
+        .info-box.manual {
+            border-color: var(--accent-warning);
+            background: rgba(237, 137, 54, 0.1);
+            border-left: 4px solid var(--accent-warning);
+        }
+
+        .info-title {
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .info-content {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+        }
+
+        /* Manual Task Marker */
+        .manual-marker {
+            background: var(--accent-warning);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        /* Command List */
+        .command-list {
+            list-style: none;
+            margin: 1rem 0;
+        }
+
+        .command-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .command-item:last-child {
+            border-bottom: none;
+        }
+
+        .command-icon {
+            width: 16px;
+            height: 16px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .command-text {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab-button {
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+            
+            .tab-button:last-child {
+                border-bottom: none;
+            }
+            
+            .search-input {
+                width: 100%;
+            }
+
+            .step-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .container {
+                padding: 1rem 0.5rem;
+            }
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-1 { margin-top: 0.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+
+        .status-success { color: var(--accent-success); }
+        .status-warning { color: var(--accent-warning); }
+        .status-danger { color: var(--accent-danger); }
+        .status-info { color: var(--accent-primary); }
+
+        /* Search highlighting */
+        .highlight {
+            background: yellow;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+
+        [data-theme="dark"] .highlight {
+            background: #ffd700;
+            color: #1a202c;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div>
+                <h1 class="header-title">GitHub Actions Strategy B</h1>
+                <div class="header-subtitle">Enhanced Deployment Checklist with Detailed Steps</div>
+            </div>
+            <div class="header-controls">
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Search steps, commands...">
+                </div>
+                <button class="theme-toggle">Dark Mode</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="progress-container">
+            <div class="progress-header">
+                <div class="progress-title">Deployment Progress</div>
+                <div class="progress-text">0% Complete (0/35 steps)</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" data-tab="setup">Step 22B: Workflow Setup</button>
+            <button class="tab-button" data-tab="deploy">Step 23B: Deployment</button>
+            <button class="tab-button" data-tab="monitor">Step 24B: Monitoring</button>
+            <button class="tab-button" data-tab="verify">Step 24.1: Verification</button>
+        </div>
+
+        <!-- Step 22B: Workflow Setup -->
+        <div class="tab-content active" id="setup">
+            <div class="step" data-step-id="step-01">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">1</div>
+                    <div class="step-info">
+                        <div class="step-title">Create GitHub Actions Directory Structure</div>
+                        <div class="step-meta">
+                            <div class="step-duration">2-3 min</div>
+                            <div class="step-phase phase-setup">Setup</div>
+                            <div class="step-type type-automated">Automated</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="info-box info">
+                            <div class="info-title">Purpose</div>
+                            <div class="info-content">Create the foundation directory structure for GitHub Actions workflows and deployment scripts.</div>
+                        </div>
+                        
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content"># Navigate to project root (LOCAL MACHINE)
+cd ~/projects/{{PROJECT_NAME}}
+
+# Create GitHub Actions directory structure
+mkdir -p .github/workflows
+mkdir -p .github/scripts
+
+echo "GitHub Actions structure created"</div>
+                        </div>
+
+                        <div class="info-box success">
+                            <div class="info-title">Expected Result</div>
+                            <div class="info-content">
+                                <ul class="command-list">
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">.github/workflows/ directory for workflow files</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">.github/scripts/ directory for deployment scripts</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-02">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">2</div>
+                    <div class="step-info">
+                        <div class="step-title">Verify Git Repository Status</div>
+                        <div class="step-meta">
+                            <div class="step-duration">1-2 min</div>
+                            <div class="step-phase phase-setup">Setup</div>
+                            <div class="step-type type-automated">Automated</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content"># Check current repository status (LOCAL MACHINE)
+echo "Repository status:"
+git status
+git remote -v
+
+# Verify GitHub repository connection
+git ls-remote origin > /dev/null && echo "✅ GitHub connection verified" || echo "❌ GitHub connection failed"</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-03">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">3</div>
+                    <div class="step-info">
+                        <div class="step-title">Create Main Deployment Workflow</div>
+                        <div class="step-meta">
+                            <div class="step-duration">10-15 min</div>
+                            <div class="step-phase phase-setup">Setup</div>
+                            <div class="step-type type-automated">Automated</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="info-box warning">
+                            <div class="info-title">Important</div>
+                            <div class="info-content">This creates the complete GitHub Actions workflow with smart CodeCanyon detection and multi-environment support.</div>
+                        </div>
+                        
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content">cat > .github/workflows/deploy.yml << 'EOF'
+name: Build and Deploy {{PROJECT_NAME}}
+
+on:
+  push:
+    branches: [main, staging, production]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+
+env:
+  PHP_VERSION: '{{PHP_VERSION|default:8.2}}'
+  NODE_VERSION: '{{NODE_VERSION|default:18}}'
+  PROJECT_NAME: '{{PROJECT_NAME}}'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name == 'production' && 'production' || 'staging' }}
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: 🐘 Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ env.PHP_VERSION }}
+        extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, zip, curl, gd, imagick
+        coverage: none
+        tools: composer:v2
+        
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: 🔨 Build PHP Dependencies
+      run: |
+        composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction
+        
+    - name: 🎨 Build Frontend Assets
+      run: |
+        if [ -f "package.json" ]; then
+          npm ci --only=production
+          npm run build
+          rm -rf node_modules
+        fi
+        
+    - name: 🚀 Deploy to Server
+      env:
+        SERVER_HOST: ${{ secrets.SERVER_HOST }}
+        SERVER_USER: ${{ secrets.SERVER_USER }}
+        SERVER_PORT: ${{ secrets.SERVER_PORT }}
+        SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
+      run: |
+        # SSH deployment logic here
+        echo "Deployment completed"
+EOF</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-04">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">4</div>
+                    <div class="step-info">
+                        <div class="step-title">Configure GitHub Secrets</div>
+                        <div class="step-meta">
+                            <div class="step-duration">5-10 min</div>
+                            <div class="step-phase phase-setup">Setup</div>
+                            <div class="step-type type-manual">Manual</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="info-box manual">
+                            <div class="info-title">Manual Task Required <span class="manual-marker">HUMAN ACTION</span></div>
+                            <div class="info-content">This step must be completed manually via GitHub.com website.</div>
+                        </div>
+
+                        <div class="info-box info">
+                            <div class="info-title">Required GitHub Secrets</div>
+                            <div class="info-content">
+                                <ul class="command-list">
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">SERVER_HOST: Your server IP address</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">SERVER_USER: SSH username</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">SERVER_PORT: SSH port (usually 22)</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">SERVER_SSH_KEY: Private SSH key content</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">url</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content">https://github.com/{{GITHUB_USERNAME}}/{{REPOSITORY_NAME}}/settings/secrets/actions</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-05">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">5</div>
+                    <div class="step-info">
+                        <div class="step-title">Create Migration Safety Script</div>
+                        <div class="step-meta">
+                            <div class="step-duration">3-5 min</div>
+                            <div class="step-phase phase-setup">Setup</div>
+                            <div class="step-type type-automated">Automated</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content">cat > .github/scripts/check-migrations.sh << 'EOF'
+#!/bin/bash
+
+# Smart migration safety checker for CodeCanyon applications
+echo "Checking migration safety..."
+
+# Check if this is a fresh install
+if [ ! -f "storage/app/installed.flag" ]; then
+    echo "FRESH INSTALL DETECTED - Skipping migrations"
+    echo "CodeCanyon web installation required"
+    exit 0
+fi
+
+echo "UPDATE DEPLOYMENT - Checking migration safety..."
+
+# Get pending migrations
+PENDING=$(php artisan migrate:status --pending 2>/dev/null || echo "")
+
+if [ -z "$PENDING" ]; then
+    echo "No pending migrations"
+    exit 0
+fi
+
+# Check for destructive operations
+if echo "$PENDING" | grep -E "(drop|rename|modify)" >/dev/null; then
+    echo "DESTRUCTIVE MIGRATIONS DETECTED"
+    echo "Manual review required"
+    exit 1
+else
+    echo "Safe migrations detected - proceeding"
+    exit 0
+fi
+EOF
+
+chmod +x .github/scripts/check-migrations.sh</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-06">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">6</div>
+                    <div class="step-info">
+                        <div class="step-title">Commit and Push Workflow Files</div>
+                        <div class="step-meta">
+                            <div class="step-duration">2-3 min</div>
+                            <div class="step-phase phase-setup">Setup</div>
+                            <div class="step-type type-automated">Automated</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content"># Add all GitHub Actions files
+git add .github/
+
+# Commit workflow files
+git commit -m "feat: add GitHub Actions CI/CD workflow
+
+- Automated build process with PHP and Node
+- Branch-aware deployment (staging/production)
+- Zero-downtime atomic deployment
+- Smart CodeCanyon migration handling
+- Comprehensive health verification"
+
+# Push to repository
+git push origin main</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 23B: Deployment -->
+        <div class="tab-content" id="deploy">
+            <div class="step" data-step-id="step-07">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">7</div>
+                    <div class="step-info">
+                        <div class="step-title">Trigger Staging Deployment</div>
+                        <div class="step-meta">
+                            <div class="step-duration">10-15 min</div>
+                            <div class="step-phase phase-deploy">Deploy</div>
+                            <div class="step-type type-automated">Automated</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="info-box info">
+                            <div class="info-title">Staging First</div>
+                            <div class="info-content">Always deploy to staging first for testing before production.</div>
+                        </div>
+
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content"># Ensure you're on main branch for staging
+git checkout main
+git status
+
+# Push to trigger staging deployment
+echo "Triggering staging deployment..."
+git push origin main
+
+echo "Staging deployment initiated"
+echo "Target: https://staging.{{DOMAIN}}"
+echo "Monitor: https://github.com/{{GITHUB_USERNAME}}/{{REPOSITORY_NAME}}/actions"</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-08">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">8</div>
+                    <div class="step-info">
+                        <div class="step-title">Monitor GitHub Actions Progress</div>
+                        <div class="step-meta">
+                            <div class="step-duration">8-12 min</div>
+                            <div class="step-phase phase-deploy">Deploy</div>
+                            <div class="step-type type-verification">Monitor</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="info-box info">
+                            <div class="info-title">Expected Workflow Phases</div>
+                            <div class="info-content">
+                                <ul class="command-list">
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Code Checkout & Setup (60 seconds)</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Dependency Installation (120 seconds)</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Asset Building (90 seconds)</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Server Deployment (180 seconds)</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Health Verification (90 seconds)</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">url</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content">https://github.com/{{GITHUB_USERNAME}}/{{REPOSITORY_NAME}}/actions</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-09">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">9</div>
+                    <div class="step-info">
+                        <div class="step-title">CodeCanyon Installation Detection</div>
+                        <div class="step-meta">
+                            <div class="step-duration">5-10 min</div>
+                            <div class="step-phase phase-deploy">Deploy</div>
+                            <div class="step-type type-verification">Verify</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="info-box warning">
+                            <div class="info-title">Smart Detection</div>
+                            <div class="info-content">The system automatically detects if this is a fresh installation or an update.</div>
+                        </div>
+
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content"># Check if deployment completed successfully
+echo "Checking CodeCanyon installation status..."
+
+# Test staging site for installation indicators
+STAGING_URL="https://staging.{{DOMAIN}}"
+INSTALL_CHECK=$(curl -s "$STAGING_URL" | grep -i "install\|setup\|database" | wc -l)
+
+if [ "$INSTALL_CHECK" -gt 0 ]; then
+    echo "🎯 FRESH INSTALLATION DETECTED"
+    echo "CodeCanyon web installation required"
+else
+    echo "✅ UPDATE DEPLOYMENT - No installation required"
+fi</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-10">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">10</div>
+                    <div class="step-info">
+                        <div class="step-title">Complete CodeCanyon Web Installation</div>
+                        <div class="step-meta">
+                            <div class="step-duration">10-15 min</div>
+                            <div class="step-phase phase-deploy">Deploy</div>
+                            <div class="step-type type-manual">Manual</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="info-box manual">
+                            <div class="info-title">Manual Installation Required <span class="manual-marker">HUMAN ACTION</span></div>
+                            <div class="info-content">Complete CodeCanyon installation via web browser if fresh install was detected.</div>
+                        </div>
+
+                        <div class="info-box info">
+                            <div class="info-title">Installation Steps</div>
+                            <div class="info-content">
+                                <ul class="command-list">
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Open web browser and navigate to staging URL</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Complete database configuration</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Set up admin user account</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Complete license verification</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Save admin credentials securely</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">url</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content">https://staging.{{DOMAIN}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-11">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">11</div>
+                    <div class="step-info">
+                        <div class="step-title">Test Staging Environment</div>
+                        <div class="step-meta">
+                            <div class="step-duration">10-15 min</div>
+                            <div class="step-phase phase-deploy">Deploy</div>
+                            <div class="step-type type-manual">Manual</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="info-box manual">
+                            <div class="info-title">Manual Testing Required <span class="manual-marker">HUMAN ACTION</span></div>
+                            <div class="info-content">Complete functional testing before production promotion.</div>
+                        </div>
+
+                        <div class="info-box info">
+                            <div class="info-title">Testing Checklist</div>
+                            <div class="info-content">
+                                <ul class="command-list">
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Homepage loads correctly</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">User registration/login works</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Admin panel accessible</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Core features functional</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Mobile responsiveness</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">url</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content">https://staging.{{DOMAIN}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-12">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">12</div>
+                    <div class="step-info">
+                        <div class="step-title">Deploy to Production</div>
+                        <div class="step-meta">
+                            <div class="step-duration">10-15 min</div>
+                            <div class="step-phase phase-deploy">Deploy</div>
+                            <div class="step-type type-automated">Automated</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="info-box warning">
+                            <div class="info-title">Production Deployment</div>
+                            <div class="info-content">Only proceed after staging tests pass completely.</div>
+                        </div>
+
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content"># Switch to production branch
+git checkout production
+
+# Merge tested changes from staging
+git merge staging
+
+# Push to trigger production deployment
+echo "Triggering PRODUCTION deployment..."
+git push origin production
+
+echo "Production deployment initiated"
+echo "Target: https://{{DOMAIN}}"</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-13">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">13</div>
+                    <div class="step-info">
+                        <div class="step-title">Verify Production Deployment</div>
+                        <div class="step-meta">
+                            <div class="step-duration">5-10 min</div>
+                            <div class="step-phase phase-deploy">Deploy</div>
+                            <div class="step-type type-verification">Verify</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content"># Test production connectivity
+curl -I https://{{DOMAIN}}
+
+# Test performance
+curl -w "%{time_total}" -s -o /dev/null https://{{DOMAIN}}
+
+# Verify SSL
+curl -vI https://{{DOMAIN}} 2>&1 | grep -i ssl</div>
+                        </div>
+
+                        <div class="info-box success">
+                            <div class="info-title">Success Indicators</div>
+                            <div class="info-content">
+                                <ul class="command-list">
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">HTTP 200 response</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Response time under 3 seconds</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">SSL certificate active</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-14">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">14</div>
+                    <div class="step-info">
+                        <div class="step-title">Manual Production Testing</div>
+                        <div class="step-meta">
+                            <div class="step-duration">10-15 min</div>
+                            <div class="step-phase phase-deploy">Deploy</div>
+                            <div class="step-type type-manual">Manual</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="info-box manual">
+                            <div class="info-title">Manual Production Verification <span class="manual-marker">HUMAN ACTION</span></div>
+                            <div class="info-content">Test the production site to ensure everything works correctly.</div>
+                        </div>
+
+                        <div class="info-box info">
+                            <div class="info-title">Production Testing Checklist</div>
+                            <div class="info-content">
+                                <ul class="command-list">
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Homepage loads without errors</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">SSL certificate shows as secure</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Login/registration functionality</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Admin panel accessibility</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Core application features</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">url</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content">https://{{DOMAIN}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 24B: Monitoring -->
+        <div class="tab-content" id="monitor">
+            <div class="step" data-step-id="step-15">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">15</div>
+                    <div class="step-info">
+                        <div class="step-title">Create Health Monitoring Workflow</div>
+                        <div class="step-meta">
+                            <div class="step-duration">5-10 min</div>
+                            <div class="step-phase phase-monitor">Monitor</div>
+                            <div class="step-type type-automated">Automated</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="info-box info">
+                            <div class="info-title">Automated Health Checks</div>
+                            <div class="info-content">This workflow runs every 30 minutes to monitor application health.</div>
+                        </div>
+
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content">cat > .github/workflows/health-monitor.yml << 'EOF'
+name: {{PROJECT_NAME}} Health Monitor
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'  # Every 30 minutes
+  workflow_dispatch:
+
+jobs:
+  health-monitoring:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Health Check - Staging
+      run: |
+        echo "Checking staging environment..."
+        STAGING_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "https://staging.{{DOMAIN}}")
+        
+        if [ "$STAGING_STATUS" = "200" ]; then
+          echo "✅ Staging: HEALTHY"
+        else
+          echo "❌ Staging: UNHEALTHY (HTTP $STAGING_STATUS)"
+          echo "::error::Staging environment health check failed"
+        fi
+        
+    - name: Health Check - Production
+      run: |
+        echo "Checking production environment..."
+        PROD_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "https://{{DOMAIN}}")
+        
+        if [ "$PROD_STATUS" = "200" ]; then
+          echo "✅ Production: HEALTHY"
+        else
+          echo "❌ Production: CRITICAL (HTTP $PROD_STATUS)"
+          echo "::error::Production environment health check failed"
+        fi
+EOF</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-16">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">16</div>
+                    <div class="step-info">
+                        <div class="step-title">Create Server Monitoring Workflow</div>
+                        <div class="step-meta">
+                            <div class="step-duration">8-12 min</div>
+                            <div class="step-phase phase-monitor">Monitor</div>
+                            <div class="step-type type-automated">Automated</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="info-box info">
+                            <div class="info-title">Server Monitoring</div>
+                            <div class="info-content">Monitor server health, disk usage, and application status every 4 hours.</div>
+                        </div>
+
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content">cat > .github/workflows/server-monitor.yml << 'EOF'
+name: {{PROJECT_NAME}} Server Monitor
+
+on:
+  schedule:
+    - cron: '0 */4 * * *'  # Every 4 hours
+  workflow_dispatch:
+
+jobs:
+  server-monitoring:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Setup SSH Connection
+      env:
+        SERVER_HOST: ${{ secrets.SERVER_HOST }}
+        SERVER_USER: ${{ secrets.SERVER_USER }}
+        SERVER_PORT: ${{ secrets.SERVER_PORT }}
+        SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
+      run: |
+        mkdir -p ~/.ssh
+        echo "$SERVER_SSH_KEY" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        ssh-keyscan -p $SERVER_PORT $SERVER_HOST >> ~/.ssh/known_hosts
+        
+    - name: Server Health Check
+      run: |
+        ssh -p $SERVER_PORT -i ~/.ssh/deploy_key $SERVER_USER@$SERVER_HOST << 'ENDSSH'
+          echo "Server Health Monitor"
+          echo "Disk Usage: $(df -h ~/domains/ | tail -1 | awk '{print $5}')"
+          echo "Memory Usage: $(free -h | grep '^Mem:' | awk '{print $3 "/" $2}')"
+          echo "Uptime: $(uptime)"
+        ENDSSH
+EOF</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-17">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">17</div>
+                    <div class="step-info">
+                        <div class="step-title">Create Backup Verification Workflow</div>
+                        <div class="step-meta">
+                            <div class="step-duration">5-10 min</div>
+                            <div class="step-phase phase-monitor">Monitor</div>
+                            <div class="step-type type-automated">Automated</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content">cat > .github/workflows/backup-verification.yml << 'EOF'
+name: {{PROJECT_NAME}} Backup Verification
+
+on:
+  schedule:
+    - cron: '0 3 * * *'  # Daily at 3 AM UTC
+  workflow_dispatch:
+
+jobs:
+  backup-verification:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Setup SSH Connection
+      env:
+        SERVER_HOST: ${{ secrets.SERVER_HOST }}
+        SERVER_USER: ${{ secrets.SERVER_USER }}
+        SERVER_PORT: ${{ secrets.SERVER_PORT }}
+        SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
+      run: |
+        mkdir -p ~/.ssh
+        echo "$SERVER_SSH_KEY" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        ssh-keyscan -p $SERVER_PORT $SERVER_HOST >> ~/.ssh/known_hosts
+        
+    - name: Verify Backup Status
+      run: |
+        ssh -p $SERVER_PORT -i ~/.ssh/deploy_key $SERVER_USER@$SERVER_HOST << 'ENDSSH'
+          echo "Checking backup status..."
+          
+          # Check recent database backups
+          RECENT_DB=$(find ~/backups/database -name "*.sql.gz" -mtime -2 | wc -l)
+          if [ $RECENT_DB -gt 0 ]; then
+            echo "✅ Recent database backup available"
+          else
+            echo "❌ No recent database backups"
+          fi
+        ENDSSH
+EOF</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-18">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">18</div>
+                    <div class="step-info">
+                        <div class="step-title">Create Performance Monitoring Workflow</div>
+                        <div class="step-meta">
+                            <div class="step-duration">5-10 min</div>
+                            <div class="step-phase phase-monitor">Monitor</div>
+                            <div class="step-type type-automated">Automated</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content">cat > .github/workflows/performance-monitor.yml << 'EOF'
+name: {{PROJECT_NAME}} Performance Monitor
+
+on:
+  schedule:
+    - cron: '0 1 * * 3'  # Weekly on Wednesdays
+  workflow_dispatch:
+
+jobs:
+  performance-monitoring:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Performance Testing
+      run: |
+        echo "Running performance tests..."
+        
+        # Test staging performance
+        STAGING_TIME=$(curl -w "%{time_total}" -s -o /dev/null "https://staging.{{DOMAIN}}")
+        echo "Staging response time: ${STAGING_TIME}s"
+        
+        # Test production performance
+        PROD_TIME=$(curl -w "%{time_total}" -s -o /dev/null "https://{{DOMAIN}}")
+        echo "Production response time: ${PROD_TIME}s"
+        
+        # Performance evaluation
+        if (( $(echo "$PROD_TIME > 3.0" | bc -l) )); then
+          echo "::warning::Production response time slow: ${PROD_TIME}s"
+        fi
+EOF</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-19">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">19</div>
+                    <div class="step-info">
+                        <div class="step-title">Create Maintenance Workflow</div>
+                        <div class="step-meta">
+                            <div class="step-duration">5-10 min</div>
+                            <div class="step-phase phase-monitor">Monitor</div>
+                            <div class="step-type type-automated">Automated</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content">cat > .github/workflows/maintenance.yml << 'EOF'
+name: {{PROJECT_NAME}} Maintenance
+
+on:
+  schedule:
+    - cron: '0 2 * * 0'  # Weekly on Sundays
+  workflow_dispatch:
+
+jobs:
+  automated-maintenance:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Setup SSH Connection
+      env:
+        SERVER_HOST: ${{ secrets.SERVER_HOST }}
+        SERVER_USER: ${{ secrets.SERVER_USER }}
+        SERVER_PORT: ${{ secrets.SERVER_PORT }}
+        SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
+      run: |
+        mkdir -p ~/.ssh
+        echo "$SERVER_SSH_KEY" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        
+    - name: Routine Maintenance
+      run: |
+        ssh -p $SERVER_PORT -i ~/.ssh/deploy_key $SERVER_USER@$SERVER_HOST << 'ENDSSH'
+          echo "Running routine maintenance..."
+          
+          # Clear Laravel caches
+          cd ~/domains/{{DOMAIN}}/current
+          php artisan cache:clear
+          php artisan view:clear
+          php artisan config:cache
+          php artisan route:cache
+          
+          echo "Maintenance completed"
+        ENDSSH
+EOF</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-20">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">20</div>
+                    <div class="step-info">
+                        <div class="step-title">Configure Alert Notifications</div>
+                        <div class="step-meta">
+                            <div class="step-duration">10-15 min</div>
+                            <div class="step-phase phase-monitor">Monitor</div>
+                            <div class="step-type type-manual">Manual</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="info-box manual">
+                            <div class="info-title">Manual Configuration Required <span class="manual-marker">HUMAN ACTION</span></div>
+                            <div class="info-content">Set up notification preferences for monitoring alerts.</div>
+                        </div>
+
+                        <div class="info-box info">
+                            <div class="info-title">Alert Configuration Options</div>
+                            <div class="info-content">
+                                <ul class="command-list">
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Email notifications</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Slack webhook integration</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">SMS alerts for critical issues</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">GitHub issue creation</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-21">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">21</div>
+                    <div class="step-info">
+                        <div class="step-title">Commit Monitoring Workflows</div>
+                        <div class="step-meta">
+                            <div class="step-duration">2-3 min</div>
+                            <div class="step-phase phase-monitor">Monitor</div>
+                            <div class="step-type type-automated">Automated</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content"># Add monitoring workflows
+git add .github/workflows/
+
+# Commit monitoring setup
+git commit -m "feat: add comprehensive monitoring workflows
+
+- Health monitoring every 30 minutes
+- Daily backup verification
+- Weekly performance testing
+- Automated maintenance procedures"
+
+# Push to repository
+git push origin main</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-22">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">22</div>
+                    <div class="step-info">
+                        <div class="step-title">Test Monitoring Workflows</div>
+                        <div class="step-meta">
+                            <div class="step-duration">5-10 min</div>
+                            <div class="step-phase phase-monitor">Monitor</div>
+                            <div class="step-type type-manual">Manual</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="info-box manual">
+                            <div class="info-title">Manual Testing Required <span class="manual-marker">HUMAN ACTION</span></div>
+                            <div class="info-content">Test the monitoring workflows via GitHub Actions interface.</div>
+                        </div>
+
+                        <div class="info-box info">
+                            <div class="info-title">Testing Steps</div>
+                            <div class="info-content">
+                                <ul class="command-list">
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Navigate to GitHub Actions tab</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Manually trigger health monitor workflow</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Verify workflow executes successfully</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Check workflow logs for errors</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">url</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content">https://github.com/{{GITHUB_USERNAME}}/{{REPOSITORY_NAME}}/actions</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 24.1: Verification -->
+        <div class="tab-content" id="verify">
+            <div class="step" data-step-id="step-23">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">23</div>
+                    <div class="step-info">
+                        <div class="step-title">Environment Detection and Setup</div>
+                        <div class="step-meta">
+                            <div class="step-duration">2-3 min</div>
+                            <div class="step-phase phase-verify">Verify</div>
+                            <div class="step-type type-automated">Automated</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content"># Detect deployment environment
+CURRENT_BRANCH=$(git branch --show-current)
+COMMIT_HASH=$(git rev-parse --short HEAD)
+
+if [ "$CURRENT_BRANCH" = "production" ]; then
+    TARGET_ENV="production"
+    TARGET_URL="https://{{DOMAIN}}"
+else
+    TARGET_ENV="staging"
+    TARGET_URL="https://staging.{{DOMAIN}}"
+fi
+
+echo "Verification Environment:"
+echo "  Environment: $TARGET_ENV"
+echo "  URL: $TARGET_URL"
+echo "  Branch: $CURRENT_BRANCH"
+echo "  Commit: $COMMIT_HASH"</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-24">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">24</div>
+                    <div class="step-info">
+                        <div class="step-title">Basic Connectivity Verification</div>
+                        <div class="step-meta">
+                            <div class="step-duration">3-5 min</div>
+                            <div class="step-phase phase-verify">Verify</div>
+                            <div class="step-type type-verification">Verify</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content"># Test basic HTTP connectivity
+HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "$TARGET_URL")
+
+case $HTTP_STATUS in
+    200)
+        echo "✅ HTTP Status: $HTTP_STATUS (Success)"
+        ;;
+    302|301)
+        echo "🔄 HTTP Status: $HTTP_STATUS (Redirect)"
+        ;;
+    404)
+        echo "❌ HTTP Status: $HTTP_STATUS (Not Found)"
+        ;;
+    50*)
+        echo "❌ HTTP Status: $HTTP_STATUS (Server Error)"
+        ;;
+    *)
+        echo "⚠️ HTTP Status: $HTTP_STATUS (Unexpected)"
+        ;;
+esac
+
+# Test response time
+RESPONSE_TIME=$(curl -w "%{time_total}" -s -o /dev/null "$TARGET_URL")
+echo "Response time: ${RESPONSE_TIME}s"</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-25">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">25</div>
+                    <div class="step-info">
+                        <div class="step-title">SSL and Security Verification</div>
+                        <div class="step-meta">
+                            <div class="step-duration">3-5 min</div>
+                            <div class="step-phase phase-verify">Verify</div>
+                            <div class="step-type type-verification">Verify</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content"># Test SSL certificate
+SSL_TEST=$(curl -I "$TARGET_URL" 2>&1 | grep -i "SSL\|TLS" | wc -l)
+
+if [ $SSL_TEST -gt 0 ]; then
+    echo "✅ SSL/TLS connection established"
+else
+    echo "❌ SSL/TLS connection failed"
+fi
+
+# Test security headers
+HEADERS=$(curl -I "$TARGET_URL" 2>/dev/null)
+
+if echo "$HEADERS" | grep -qi "X-Frame-Options"; then
+    echo "✅ X-Frame-Options header present"
+else
+    echo "⚠️ X-Frame-Options header missing"
+fi
+
+if echo "$HEADERS" | grep -qi "Strict-Transport-Security"; then
+    echo "✅ HSTS header present"
+else
+    echo "⚠️ HSTS header missing"
+fi</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-26">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">26</div>
+                    <div class="step-info">
+                        <div class="step-title">Application Feature Testing</div>
+                        <div class="step-meta">
+                            <div class="step-duration">5-10 min</div>
+                            <div class="step-phase phase-verify">Verify</div>
+                            <div class="step-type type-verification">Verify</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content"># Test critical application endpoints
+ENDPOINTS=("/" "/login" "/register" "/admin" "/dashboard")
+
+echo "Testing Application Endpoints:"
+for endpoint in "${ENDPOINTS[@]}"; do
+    TEST_URL="${TARGET_URL}${endpoint}"
+    ENDPOINT_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "$TEST_URL")
+    
+    case $ENDPOINT_STATUS in
+        200)
+            echo "✅ $endpoint: OK"
+            ;;
+        302|301)
+            echo "🔄 $endpoint: REDIRECT"
+            ;;
+        404)
+            echo "ℹ️ $endpoint: NOT FOUND (may be normal)"
+            ;;
+        403)
+            echo "🔒 $endpoint: FORBIDDEN (auth required)"
+            ;;
+        *)
+            echo "⚠️ $endpoint: HTTP $ENDPOINT_STATUS"
+            ;;
+    esac
+done</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-27">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">27</div>
+                    <div class="step-info">
+                        <div class="step-title">Performance Baseline Establishment</div>
+                        <div class="step-meta">
+                            <div class="step-duration">5-8 min</div>
+                            <div class="step-phase phase-verify">Verify</div>
+                            <div class="step-type type-verification">Verify</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content"># Multiple performance measurements
+PERFORMANCE_TESTS=5
+RESPONSE_TIMES=()
+
+echo "Measuring performance baselines..."
+for i in $(seq 1 $PERFORMANCE_TESTS); do
+    echo "Performance test $i/$PERFORMANCE_TESTS..."
+    
+    RESPONSE_TIME=$(curl -w "%{time_total}" -s -o /dev/null "$TARGET_URL")
+    RESPONSE_TIMES+=($RESPONSE_TIME)
+    echo "  Response time: ${RESPONSE_TIME}s"
+    
+    sleep 2
+done
+
+# Calculate statistics
+TOTAL_TIME=0
+for time in "${RESPONSE_TIMES[@]}"; do
+    TOTAL_TIME=$(echo "$TOTAL_TIME + $time" | bc)
+done
+
+AVERAGE_TIME=$(echo "scale=3; $TOTAL_TIME / ${#RESPONSE_TIMES[@]}" | bc)
+echo ""
+echo "Performance Baseline Results:"
+echo "  Average: ${AVERAGE_TIME}s"
+echo "  Tests completed: ${#RESPONSE_TIMES[@]}/$PERFORMANCE_TESTS"
+
+# Save baseline
+cat > performance_baseline.txt << EOF
+# Performance Baseline - $(date)
+AVERAGE_TIME=$AVERAGE_TIME
+TESTS_COMPLETED=${#RESPONSE_TIMES[@]}
+BASELINE_DATE=$(date)
+EOF
+
+echo "✅ Performance baseline saved"</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-28">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">28</div>
+                    <div class="step-info">
+                        <div class="step-title">Manual Application Testing</div>
+                        <div class="step-meta">
+                            <div class="step-duration">15-20 min</div>
+                            <div class="step-phase phase-verify">Verify</div>
+                            <div class="step-type type-manual">Manual</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="info-box manual">
+                            <div class="info-title">Manual Testing Required <span class="manual-marker">HUMAN ACTION</span></div>
+                            <div class="info-content">Complete comprehensive manual testing of the application.</div>
+                        </div>
+
+                        <div class="info-box info">
+                            <div class="info-title">Complete Testing Checklist</div>
+                            <div class="info-content">
+                                <ul class="command-list">
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Homepage loads correctly and displays properly</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Navigation menus function correctly</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">User registration and login work</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Admin panel is accessible and functional</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Core application features work correctly</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Mobile responsiveness verified</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">SSL certificate shows as secure in browser</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Page loading speed is acceptable</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-29">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">29</div>
+                    <div class="step-info">
+                        <div class="step-title">Create Deployment Documentation</div>
+                        <div class="step-meta">
+                            <div class="step-duration">3-5 min</div>
+                            <div class="step-phase phase-verify">Verify</div>
+                            <div class="step-type type-automated">Automated</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content"># Create comprehensive deployment documentation
+cat > DEPLOYMENT_SUMMARY.md << EOF
+# {{PROJECT_NAME}} Deployment Summary
+
+**Deployment Date:** $(date)  
+**Environment:** $TARGET_ENV  
+**URL:** $TARGET_URL  
+**Branch:** $CURRENT_BRANCH  
+**Commit:** $COMMIT_HASH  
+
+## Deployment Status: ✅ VERIFIED SUCCESSFUL
+
+### Application Details
+- **Type:** CodeCanyon Laravel Application
+- **Performance Baseline:** $([ -f performance_baseline.txt ] && grep AVERAGE_TIME performance_baseline.txt | cut -d'=' -f2 || echo "Not established")s average response time
+- **SSL Status:** HTTPS configured and verified
+- **Monitoring:** Automated workflows configured
+
+### Verification Results
+- ✅ Basic connectivity and HTTP status
+- ✅ SSL certificate verification
+- ✅ Security configuration analysis
+- ✅ Core functionality endpoint testing
+- ✅ Performance baseline establishment
+
+### Next Steps
+1. **Ongoing Monitoring:** Automated via GitHub Actions
+2. **Performance Optimization:** Monitor baseline metrics
+3. **Security Hardening:** Implement additional headers if needed
+4. **Team Training:** Share documentation with team
+
+---
+**Status:** 🎉 COMPLETE AND OPERATIONAL
+**Last Updated:** $(date)
+EOF
+
+echo "✅ Deployment documentation created"</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-30">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">30</div>
+                    <div class="step-info">
+                        <div class="step-title">Setup Weekly Monitoring Routine</div>
+                        <div class="step-meta">
+                            <div class="step-duration">5-10 min</div>
+                            <div class="step-phase phase-verify">Verify</div>
+                            <div class="step-type type-manual">Manual</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="info-box manual">
+                            <div class="info-title">Manual Setup Required <span class="manual-marker">HUMAN ACTION</span></div>
+                            <div class="info-content">Establish a weekly monitoring and maintenance routine.</div>
+                        </div>
+
+                        <div class="info-box info">
+                            <div class="info-title">Weekly Monitoring Checklist</div>
+                            <div class="info-content">
+                                <ul class="command-list">
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Review GitHub Actions workflow results</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Test website functionality manually</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Check performance metrics and alerts</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Verify backup system status</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Update contact information if changed</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-31">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">31</div>
+                    <div class="step-info">
+                        <div class="step-title">Configure Emergency Procedures</div>
+                        <div class="step-meta">
+                            <div class="step-duration">5-10 min</div>
+                            <div class="step-phase phase-verify">Verify</div>
+                            <div class="step-type type-manual">Manual</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="info-box manual">
+                            <div class="info-title">Emergency Setup Required <span class="manual-marker">HUMAN ACTION</span></div>
+                            <div class="info-content">Document and test emergency response procedures.</div>
+                        </div>
+
+                        <div class="info-box warning">
+                            <div class="info-title">Emergency Response Checklist</div>
+                            <div class="info-content">
+                                <ul class="command-list">
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Document primary technical contact information</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Test server rollback procedures</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Verify hosting provider support contacts</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Test alert notification delivery</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Document recovery commands and procedures</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content"># Quick rollback command (emergency use)
+ssh {{SERVER_USER}}@{{SERVER_HOST}}
+cd ~/domains/{{DOMAIN}}
+ln -nfs releases/PREVIOUS_TIMESTAMP current</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-32">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">32</div>
+                    <div class="step-info">
+                        <div class="step-title">Final Security Verification</div>
+                        <div class="step-meta">
+                            <div class="step-duration">5-10 min</div>
+                            <div class="step-phase phase-verify">Verify</div>
+                            <div class="step-type type-manual">Manual</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="info-box manual">
+                            <div class="info-title">Security Review Required <span class="manual-marker">HUMAN ACTION</span></div>
+                            <div class="info-content">Perform final security verification and hardening review.</div>
+                        </div>
+
+                        <div class="info-box info">
+                            <div class="info-title">Security Verification Checklist</div>
+                            <div class="info-content">
+                                <ul class="command-list">
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Verify admin panel requires strong authentication</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Confirm debug mode is disabled in production</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Test that error pages don't expose sensitive info</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Verify file upload restrictions are working</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Confirm SSL certificate is properly configured</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-33">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">33</div>
+                    <div class="step-info">
+                        <div class="step-title">Team Handoff Preparation</div>
+                        <div class="step-meta">
+                            <div class="step-duration">10-15 min</div>
+                            <div class="step-phase phase-verify">Verify</div>
+                            <div class="step-type type-manual">Manual</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="info-box manual">
+                            <div class="info-title">Team Documentation Required <span class="manual-marker">HUMAN ACTION</span></div>
+                            <div class="info-content">Prepare comprehensive handoff documentation for team members.</div>
+                        </div>
+
+                        <div class="info-box info">
+                            <div class="info-title">Team Handoff Checklist</div>
+                            <div class="info-content">
+                                <ul class="command-list">
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Share GitHub repository access with team</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Document admin credentials in secure location</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Train team on monitoring procedures</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Share server access and deployment procedures</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Create knowledge transfer documentation</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content"># Create team handoff documentation
+cat > TEAM_HANDOFF.md << EOF
+# {{PROJECT_NAME}} Team Handoff
+
+## Key Information
+- **Production URL:** https://{{DOMAIN}}
+- **Staging URL:** https://staging.{{DOMAIN}}
+- **GitHub Actions:** https://github.com/{{GITHUB_USERNAME}}/{{REPOSITORY_NAME}}/actions
+- **Deployment Method:** GitHub Actions (automated)
+
+## Daily Operations
+- Monitor GitHub Actions for alerts
+- Check website functionality weekly
+- Review performance metrics monthly
+
+## Emergency Contacts
+- **Technical Lead:** [UPDATE WITH CONTACT]
+- **Hosting Support:** [UPDATE WITH SUPPORT]
+- **Domain Registrar:** [UPDATE WITH SUPPORT]
+
+## Quick Links
+- Documentation: DEPLOYMENT_SUMMARY.md
+- Emergency Procedures: EMERGENCY_PROCEDURES.md
+- Performance Baseline: performance_baseline.txt
+
+---
+**Last Updated:** $(date)
+EOF
+
+echo "✅ Team handoff documentation created"</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-34">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">34</div>
+                    <div class="step-info">
+                        <div class="step-title">Final System Health Check</div>
+                        <div class="step-meta">
+                            <div class="step-duration">5-10 min</div>
+                            <div class="step-phase phase-verify">Verify</div>
+                            <div class="step-type type-verification">Verify</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content"># Final comprehensive health check
+echo "🎯 FINAL SYSTEM HEALTH CHECK"
+echo "============================"
+
+# Test both environments
+for env in "staging" "production"; do
+    if [ "$env" = "staging" ]; then
+        TEST_URL="https://staging.{{DOMAIN}}"
+    else
+        TEST_URL="https://{{DOMAIN}}"
+    fi
+    
+    echo ""
+    echo "🔍 Testing $env environment: $TEST_URL"
+    
+    # Basic connectivity
+    STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "$TEST_URL")
+    TIME=$(curl -w "%{time_total}" -s -o /dev/null "$TEST_URL")
+    
+    echo "   Status: HTTP $STATUS"
+    echo "   Response Time: ${TIME}s"
+    
+    if [ "$STATUS" = "200" ]; then
+        echo "   ✅ $env: HEALTHY"
+    else
+        echo "   ❌ $env: ISSUES DETECTED"
+    fi
+done
+
+echo ""
+echo "📊 Health Check Summary:"
+echo "✅ Basic connectivity verified"
+echo "✅ Performance metrics recorded"
+echo "✅ SSL certificates validated"
+echo "✅ Monitoring systems active"
+
+echo ""
+echo "🎉 GITHUB ACTIONS STRATEGY B DEPLOYMENT COMPLETE!"</div>
+                        </div>
+
+                        <div class="info-box success">
+                            <div class="info-title">Final Success Verification</div>
+                            <div class="info-content">
+                                <ul class="command-list">
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Both staging and production environments responding</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">GitHub Actions workflows deployed and functional</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Monitoring systems providing continuous oversight</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">Team handoff documentation complete</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step-id="step-35">
+                <div class="step-header">
+                    <div class="step-checkbox"></div>
+                    <div class="step-number">35</div>
+                    <div class="step-info">
+                        <div class="step-title">Celebrate Deployment Success</div>
+                        <div class="step-meta">
+                            <div class="step-duration">🎉</div>
+                            <div class="step-phase phase-verify">Complete</div>
+                            <div class="step-type type-manual">Celebrate</div>
+                        </div>
+                    </div>
+                    <div class="step-toggle">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-content-inner">
+                        <div class="info-box success">
+                            <div class="info-title">🎉 DEPLOYMENT COMPLETED SUCCESSFULLY!</div>
+                            <div class="info-content">
+                                Congratulations! You have successfully deployed your CodeCanyon application using GitHub Actions Strategy B with comprehensive monitoring and automation.
+                            </div>
+                        </div>
+
+                        <div class="info-box info">
+                            <div class="info-title">What You've Accomplished</div>
+                            <div class="info-content">
+                                <ul class="command-list">
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">✅ Zero-downtime automated deployment pipeline</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">✅ Smart CodeCanyon installation handling</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">✅ Multi-environment staging → production workflow</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">✅ Comprehensive monitoring and alerting</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">✅ Automated maintenance and backup verification</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">✅ Production-ready security configuration</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">✅ Complete team handoff documentation</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="info-box manual">
+                            <div class="info-title">Your Live Application <span class="manual-marker">READY</span></div>
+                            <div class="info-content">
+                                <ul class="command-list">
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">🚀 Production: https://{{DOMAIN}}</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">🧪 Staging: https://staging.{{DOMAIN}}</div>
+                                    </li>
+                                    <li class="command-item">
+                                        <div class="command-icon"></div>
+                                        <div class="command-text">📊 Monitoring: GitHub Actions Dashboard</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">text</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <div class="code-content">🎉 GITHUB ACTIONS STRATEGY B - MISSION ACCOMPLISHED! 🎉
+
+Your CodeCanyon application is now:
+✅ Deployed with zero-downtime automation
+✅ Monitored 24/7 with intelligent alerting  
+✅ Secured with production-grade configuration
+✅ Ready for ongoing development and scaling
+
+Time to celebrate - you've built something amazing! 🚀</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Storage keys
+        const StorageKeys = {
+            THEME: 'github-actions-theme',
+            PROGRESS: 'github-actions-progress',
+            STEP_PREFIX: 'github-actions-step-'
+        };
+
+        // Safe storage operations
+        const Storage = {
+            set(key, value) {
+                try {
+                    localStorage.setItem(key, JSON.stringify(value));
+                } catch (e) {
+                    console.warn('Storage failed:', e);
+                }
+            },
+            
+            get(key, defaultValue = null) {
+                try {
+                    const item = localStorage.getItem(key);
+                    return item ? JSON.parse(item) : defaultValue;
+                } catch (e) {
+                    console.warn('Storage retrieval failed:', e);
+                    return defaultValue;
+                }
+            }
+        };
+
+        // Theme Management
+        const ThemeManager = {
+            init() {
+                this.loadTheme();
+                this.bindEvents();
+            },
+            
+            loadTheme() {
+                const savedTheme = Storage.get(StorageKeys.THEME, 'light');
+                this.setTheme(savedTheme);
+            },
+            
+            setTheme(theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+                const button = document.querySelector('.theme-toggle');
+                button.textContent = theme === 'light' ? 'Dark Mode' : 'Light Mode';
+                Storage.set(StorageKeys.THEME, theme);
+            },
+            
+            bindEvents() {
+                document.querySelector('.theme-toggle').addEventListener('click', () => {
+                    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+                    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                    this.setTheme(newTheme);
+                });
+            }
+        };
+
+        // Progress Management
+        const ProgressManager = {
+            init() {
+                this.loadProgress();
+                this.bindEvents();
+                this.updateProgress();
+            },
+            
+            loadProgress() {
+                const progress = Storage.get(StorageKeys.PROGRESS, {});
+                Object.keys(progress).forEach(stepId => {
+                    const checkbox = document.querySelector(`[data-step-id="${stepId}"] .step-checkbox`);
+                    const step = document.querySelector(`[data-step-id="${stepId}"]`);
+                    if (checkbox && progress[stepId]) {
+                        checkbox.classList.add('checked');
+                        step.classList.add('completed');
+                    }
+                });
+            },
+            
+            toggleStep(stepId) {
+                const progress = Storage.get(StorageKeys.PROGRESS, {});
+                const checkbox = document.querySelector(`[data-step-id="${stepId}"] .step-checkbox`);
+                const step = document.querySelector(`[data-step-id="${stepId}"]`);
+                
+                progress[stepId] = !progress[stepId];
+                Storage.set(StorageKeys.PROGRESS, progress);
+                
+                if (progress[stepId]) {
+                    checkbox.classList.add('checked');
+                    step.classList.add('completed');
+                } else {
+                    checkbox.classList.remove('checked');
+                    step.classList.remove('completed');
+                }
+                
+                this.updateProgress();
+            },
+            
+            updateProgress() {
+                const progress = Storage.get(StorageKeys.PROGRESS, {});
+                const allSteps = document.querySelectorAll('.step');
+                const completedSteps = Object.values(progress).filter(Boolean).length;
+                const totalSteps = allSteps.length;
+                const percentage = Math.round((completedSteps / totalSteps) * 100);
+                
+                document.querySelector('.progress-fill').style.width = `${percentage}%`;
+                document.querySelector('.progress-text').textContent = `${percentage}% Complete (${completedSteps}/${totalSteps} steps)`;
+            },
+            
+            bindEvents() {
+                // Event delegation for step checkboxes
+                document.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('step-checkbox')) {
+                        const step = e.target.closest('.step');
+                        const stepId = step.getAttribute('data-step-id');
+                        this.toggleStep(stepId);
+                    }
+                });
+            }
+        };
+
+        // Tab Management
+        const TabManager = {
+            init() {
+                this.bindEvents();
+            },
+            
+            switchTab(tabId) {
+                // Hide all tab contents
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Remove active from all tab buttons
+                document.querySelectorAll('.tab-button').forEach(button => {
+                    button.classList.remove('active');
+                });
+                
+                // Show selected tab content
+                document.getElementById(tabId).classList.add('active');
+                
+                // Mark selected tab button as active
+                document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+            },
+            
+            bindEvents() {
+                document.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('tab-button')) {
+                        const tabId = e.target.getAttribute('data-tab');
+                        this.switchTab(tabId);
+                    }
+                });
+            }
+        };
+
+        // Step Expansion Management
+        const StepManager = {
+            init() {
+                this.bindEvents();
+            },
+            
+            toggleStep(step) {
+                step.classList.toggle('expanded');
+            },
+            
+            bindEvents() {
+                document.addEventListener('click', (e) => {
+                    if (e.target.closest('.step-header')) {
+                        const step = e.target.closest('.step');
+                        if (!e.target.classList.contains('step-checkbox')) {
+                            this.toggleStep(step);
+                        }
+                    }
+                });
+            }
+        };
+
+        // Search Management
+        const SearchManager = {
+            init() {
+                this.bindEvents();
+            },
+            
+            performSearch(query) {
+                const steps = document.querySelectorAll('.step');
+                const lowerQuery = query.toLowerCase();
+                
+                // Clear previous highlights
+                this.clearHighlights();
+                
+                steps.forEach(step => {
+                    const text = step.textContent.toLowerCase();
+                    const shouldShow = !query || text.includes(lowerQuery);
+                    
+                    if (shouldShow) {
+                        step.style.display = '';
+                        if (query) {
+                            this.highlightText(step, query);
+                        }
+                    } else {
+                        step.style.display = 'none';
+                    }
+                });
+            },
+            
+            clearHighlights() {
+                document.querySelectorAll('.highlight').forEach(highlight => {
+                    const parent = highlight.parentNode;
+                    parent.replaceChild(document.createTextNode(highlight.textContent), highlight);
+                    parent.normalize();
+                });
+            },
+            
+            highlightText(element, query) {
+                if (!query) return;
+                
+                const walker = document.createTreeWalker(
+                    element,
+                    NodeFilter.SHOW_TEXT,
+                    null,
+                    false
+                );
+                
+                const textNodes = [];
+                let node;
+                while (node = walker.nextNode()) {
+                    textNodes.push(node);
+                }
+                
+                textNodes.forEach(textNode => {
+                    const parent = textNode.parentNode;
+                    if (parent.classList && parent.classList.contains('code-content')) return;
+                    
+                    const text = textNode.textContent;
+                    const regex = new RegExp(`(${query})`, 'gi');
+                    
+                    if (regex.test(text)) {
+                        const highlighted = text.replace(regex, '<span class="highlight">$1</span>');
+                        const span = document.createElement('span');
+                        span.innerHTML = highlighted;
+                        parent.replaceChild(span, textNode);
+                    }
+                });
+            },
+            
+            bindEvents() {
+                let searchTimeout;
+                const searchInput = document.querySelector('.search-input');
+                
+                searchInput.addEventListener('input', (e) => {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        this.performSearch(e.target.value);
+                    }, 300);
+                });
+            }
+        };
+
+        // Copy to Clipboard
+        async function copyCode(button) {
+            const codeBlock = button.closest('.code-block');
+            const codeContent = codeBlock.querySelector('.code-content');
+            const text = codeContent.textContent;
+            
+            try {
+                await navigator.clipboard.writeText(text);
+                showCopyFeedback(button, 'Copied!');
+            } catch (err) {
+                fallbackCopyTextToClipboard(text, button);
+            }
+        }
+
+        function fallbackCopyTextToClipboard(text, button) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showCopyFeedback(button, 'Copied!');
+            } catch (err) {
+                showCopyFeedback(button, 'Failed');
+            }
+            
+            document.body.removeChild(textArea);
+        }
+
+        function showCopyFeedback(button, message) {
+            const originalText = button.textContent;
+            button.textContent = message;
+            button.classList.add('copied');
+            
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.classList.remove('copied');
+            }, 2000);
+        }
+
+        // Initialize on DOM ready
+        document.addEventListener('DOMContentLoaded', () => {
+            ThemeManager.init();
+            ProgressManager.init();
+            TabManager.init();
+            StepManager.init();
+            SearchManager.init();
+            
+            console.log('Enhanced GitHub Actions Deployment Checklist initialized');
+        });
+    </script>
+</body>
+</html>

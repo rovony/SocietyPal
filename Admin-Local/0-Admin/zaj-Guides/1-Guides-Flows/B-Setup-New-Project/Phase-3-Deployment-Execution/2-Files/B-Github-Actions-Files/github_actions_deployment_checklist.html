@@ -226,38 +226,80 @@ Total fixes: 11 critical issues resolved
             /* Tabs */
             .tabs {
                 display: flex;
+                flex-direction: column;
+                margin: 2rem 0;
+                gap: 0.5rem;
+            }
+
+            .tab-row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.25rem;
+            }
+
+            .overview-row {
+                justify-content: center;
+                margin-bottom: 0.5rem;
+            }
+
+            .steps-row {
+                justify-content: center;
+                flex-wrap: wrap;
                 background: var(--bg-card);
                 border: 1px solid var(--border-color);
                 border-radius: var(--border-radius);
-                margin: 2rem 0;
-                overflow: hidden;
+                padding: 0.5rem;
                 box-shadow: var(--shadow-light);
             }
 
             .tab-button {
-                flex: 1;
-                background: transparent;
-                border: none;
-                padding: 1rem;
+                background: var(--bg-secondary);
+                border: 1px solid var(--border-color);
+                color: var(--text-secondary);
+                padding: 0.75rem 1.5rem;
+                border-radius: var(--border-radius);
+                cursor: pointer;
                 font-size: var(--font-size-sm);
                 font-weight: 500;
-                color: var(--text-secondary);
-                cursor: pointer;
-                transition: all 0.2s ease;
-                border-right: 1px solid var(--border-color);
-            }
-
-            .tab-button:last-child {
-                border-right: none;
+                transition: all 0.3s ease;
+                white-space: nowrap;
+                min-width: max-content;
             }
 
             .tab-button.active {
                 background: var(--accent-primary);
                 color: white;
+                border-color: var(--accent-primary);
             }
 
             .tab-button:hover:not(.active) {
-                background: var(--bg-secondary);
+                background: var(--bg-card);
+                border-color: var(--accent-secondary);
+            }
+
+            /* Special styling for overview tab */
+            .overview-tab {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border: none;
+                padding: 1rem 2rem;
+                font-size: var(--font-size-base);
+                font-weight: 600;
+                min-width: 300px;
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+                border-radius: 8px;
+            }
+
+            .overview-tab:hover {
+                background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            }
+
+            .overview-tab.active {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                transform: translateY(-1px);
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
             }
 
             /* Tab Content */
@@ -795,21 +837,28 @@ Total fixes: 11 critical issues resolved
             </div>
 
             <div class="tabs">
-                <button class="tab-button active" data-tab="overview">
-                    All Steps Overview
-                </button>
-                <button class="tab-button" data-tab="setup">
-                    Step 22B: Workflow Setup
-                </button>
-                <button class="tab-button" data-tab="deploy">
-                    Step 23B: Deployment
-                </button>
-                <button class="tab-button" data-tab="monitor">
-                    Step 24B: Monitoring
-                </button>
-                <button class="tab-button" data-tab="verify">
-                    Step 24.1: Verification
-                </button>
+                <!-- Master Overview Tab - Full Width -->
+                <div class="tab-row overview-row">
+                    <button class="tab-button overview-tab active" data-tab="overview">
+                        📋 Complete Steps Checklist & Overview
+                    </button>
+                </div>
+                
+                <!-- Step-specific Tabs -->
+                <div class="tab-row steps-row">
+                    <button class="tab-button" data-tab="setup">
+                        Step 22B: Workflow Setup
+                    </button>
+                    <button class="tab-button" data-tab="deploy">
+                        Step 23B: Deployment
+                    </button>
+                    <button class="tab-button" data-tab="monitor">
+                        Step 24B: Monitoring
+                    </button>
+                    <button class="tab-button" data-tab="verify">
+                        Step 24.1: Verification
+                    </button>
+                </div>
             </div>
 
             <!-- All Steps Overview -->
@@ -2598,10 +2647,10 @@ echo "Monitor: https://github.com/{{GITHUB_USERNAME}}/{{REPOSITORY_NAME}}/action
 
             <!-- Step 24.1: Verification -->
             <div class="tab-content" id="verify">
-                <div class="step" data-step-id="step-23">
+                <div class="step" data-step-id="step-7">
                     <div class="step-header">
                         <div class="step-checkbox"></div>
-                        <div class="step-number">23</div>
+                        <div class="step-number">7</div>
                         <div class="step-info">
                             <div class="step-title">
                                 Environment Detection and Setup
@@ -2649,10 +2698,10 @@ echo "Monitor: https://github.com/{{GITHUB_USERNAME}}/{{REPOSITORY_NAME}}/action
                     </div>
                 </div>
 
-                <div class="step" data-step-id="step-24">
+                <div class="step" data-step-id="step-8">
                     <div class="step-header">
                         <div class="step-checkbox"></div>
-                        <div class="step-number">24</div>
+                        <div class="step-number">8</div>
                         <div class="step-info">
                             <div class="step-title">
                                 Basic Connectivity Verification
@@ -2702,10 +2751,10 @@ echo "Monitor: https://github.com/{{GITHUB_USERNAME}}/{{REPOSITORY_NAME}}/action
                     </div>
                 </div>
 
-                <div class="step" data-step-id="step-25">
+                <div class="step" data-step-id="step-9">
                     <div class="step-header">
                         <div class="step-checkbox"></div>
-                        <div class="step-number">25</div>
+                        <div class="step-number">9</div>
                         <div class="step-info">
                             <div class="step-title">
                                 SSL and Security Verification
@@ -2755,10 +2804,10 @@ echo "Monitor: https://github.com/{{GITHUB_USERNAME}}/{{REPOSITORY_NAME}}/action
                     </div>
                 </div>
 
-                <div class="step" data-step-id="step-26">
+                <div class="step" data-step-id="step-10">
                     <div class="step-header">
                         <div class="step-checkbox"></div>
-                        <div class="step-number">26</div>
+                        <div class="step-number">10</div>
                         <div class="step-info">
                             <div class="step-title">
                                 Application Feature Testing
@@ -2809,10 +2858,10 @@ echo "Monitor: https://github.com/{{GITHUB_USERNAME}}/{{REPOSITORY_NAME}}/action
                     </div>
                 </div>
 
-                <div class="step" data-step-id="step-27">
+                <div class="step" data-step-id="step-11">
                     <div class="step-header">
                         <div class="step-checkbox"></div>
-                        <div class="step-number">27</div>
+                        <div class="step-number">11</div>
                         <div class="step-info">
                             <div class="step-title">
                                 Performance Baseline Establishment
@@ -2872,10 +2921,10 @@ echo "Monitor: https://github.com/{{GITHUB_USERNAME}}/{{REPOSITORY_NAME}}/action
                     </div>
                 </div>
 
-                <div class="step" data-step-id="step-28">
+                <div class="step" data-step-id="step-12">
                     <div class="step-header">
                         <div class="step-checkbox"></div>
-                        <div class="step-number">28</div>
+                        <div class="step-number">12</div>
                         <div class="step-info">
                             <div class="step-title">
                                 Manual Application Testing
@@ -2971,10 +3020,10 @@ echo "Monitor: https://github.com/{{GITHUB_USERNAME}}/{{REPOSITORY_NAME}}/action
                     </div>
                 </div>
 
-                <div class="step" data-step-id="step-29">
+                <div class="step" data-step-id="step-13">
                     <div class="step-header">
                         <div class="step-checkbox"></div>
-                        <div class="step-number">29</div>
+                        <div class="step-number">13</div>
                         <div class="step-info">
                             <div class="step-title">
                                 Create Deployment Documentation
@@ -3041,10 +3090,10 @@ echo "Monitor: https://github.com/{{GITHUB_USERNAME}}/{{REPOSITORY_NAME}}/action
                     </div>
                 </div>
 
-                <div class="step" data-step-id="step-30">
+                <div class="step" data-step-id="step-15">
                     <div class="step-header">
                         <div class="step-checkbox"></div>
-                        <div class="step-number">30</div>
+                        <div class="step-number">15</div>
                         <div class="step-info">
                             <div class="step-title">
                                 Setup Weekly Monitoring Routine
@@ -3121,10 +3170,10 @@ echo "Monitor: https://github.com/{{GITHUB_USERNAME}}/{{REPOSITORY_NAME}}/action
                     </div>
                 </div>
 
-                <div class="step" data-step-id="step-31">
+                <div class="step" data-step-id="step-16">
                     <div class="step-header">
                         <div class="step-checkbox"></div>
-                        <div class="step-number">31</div>
+                        <div class="step-number">16</div>
                         <div class="step-info">
                             <div class="step-title">
                                 Configure Emergency Procedures
@@ -3218,10 +3267,10 @@ echo "Monitor: https://github.com/{{GITHUB_USERNAME}}/{{REPOSITORY_NAME}}/action
                     </div>
                 </div>
 
-                <div class="step" data-step-id="step-32">
+                <div class="step" data-step-id="step-17">
                     <div class="step-header">
                         <div class="step-checkbox"></div>
-                        <div class="step-number">32</div>
+                        <div class="step-number">17</div>
                         <div class="step-info">
                             <div class="step-title">
                                 Final Security Verification
@@ -3299,10 +3348,10 @@ echo "Monitor: https://github.com/{{GITHUB_USERNAME}}/{{REPOSITORY_NAME}}/action
                     </div>
                 </div>
 
-                <div class="step" data-step-id="step-33">
+                <div class="step" data-step-id="step-18">
                     <div class="step-header">
                         <div class="step-checkbox"></div>
-                        <div class="step-number">33</div>
+                        <div class="step-number">18</div>
                         <div class="step-info">
                             <div class="step-title">
                                 Team Handoff Preparation
@@ -3416,10 +3465,10 @@ echo "Monitor: https://github.com/{{GITHUB_USERNAME}}/{{REPOSITORY_NAME}}/action
                     </div>
                 </div>
 
-                <div class="step" data-step-id="step-34">
+                <div class="step" data-step-id="step-19">
                     <div class="step-header">
                         <div class="step-checkbox"></div>
-                        <div class="step-number">34</div>
+                        <div class="step-number">19</div>
                         <div class="step-info">
                             <div class="step-title">
                                 Final System Health Check
@@ -3516,10 +3565,10 @@ echo "Monitor: https://github.com/{{GITHUB_USERNAME}}/{{REPOSITORY_NAME}}/action
                     </div>
                 </div>
 
-                <div class="step" data-step-id="step-35">
+                <div class="step" data-step-id="step-20">
                     <div class="step-header">
                         <div class="step-checkbox"></div>
-                        <div class="step-number">35</div>
+                        <div class="step-number">20</div>
                         <div class="step-info">
                             <div class="step-title">
                                 Celebrate Deployment Success
