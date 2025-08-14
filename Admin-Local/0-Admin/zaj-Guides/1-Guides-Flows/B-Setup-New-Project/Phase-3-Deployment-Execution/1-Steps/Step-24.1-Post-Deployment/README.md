@@ -4,7 +4,7 @@ This folder contains post-deployment verification steps that apply to all deploy
 
 ## Contents
 
-- **Step_23_PostDeploy_Verification.md** - Comprehensive post-deployment verification procedures
+-   **Step_23_PostDeploy_Verification.md** - Comprehensive post-deployment verification procedures
 
 ## Purpose
 
@@ -13,18 +13,18 @@ Step 24.1 provides general post-deployment verification that should be completed
 ## Workflow Position
 
 1. Complete **Step 21**: Choose deployment strategy
-2. Complete **Steps 22-24**: Execute chosen strategy  
+2. Complete **Steps 22-24**: Execute chosen strategy
 3. Complete **Step 24.1**: Post-deployment verification (this step)
 
 ## What This Step Covers
 
-- Production site verification
-- Database connectivity testing
-- SSL certificate validation
-- Performance monitoring setup
-- Error monitoring configuration
-- Backup verification
-- Security validation
+-   Production site verification
+-   Database connectivity testing
+-   SSL certificate validation
+-   Performance monitoring setup
+-   Error monitoring configuration
+-   Backup verification
+-   Security validation
 
 ## Note
 

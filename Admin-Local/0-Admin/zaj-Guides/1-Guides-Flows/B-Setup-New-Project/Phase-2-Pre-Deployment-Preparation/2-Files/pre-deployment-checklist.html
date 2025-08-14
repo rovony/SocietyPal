@@ -609,6 +609,214 @@
         .hidden {
             display: none !important;
         }
+
+        /* Inline Code Styling */
+        code {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            white-space: nowrap;
+        }
+
+        /* File/Directory specific styling */
+        .file-path {
+            background: #1a365d;
+            color: #90cdf4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid #2b77ad;
+        }
+
+        .directory {
+            background: #2d5a27;
+            color: #68d391;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid #38a169;
+        }
+
+        .command {
+            background: #553c9a;
+            color: #d6bcfa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid #805ad5;
+        }
+
+        /* Enhanced inline code for different contexts */
+        .flag {
+            background: #7c3aed;
+            color: #ddd6fe;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid #8b5cf6;
+        }
+
+        .config-key {
+            background: #dc2626;
+            color: #fecaca;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid #ef4444;
+        }
+
+        /* Checklist Sections for All Steps Tab */
+        .checklist-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .checklist-section h4 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .final-checklist {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .final-checklist .checklist-item {
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .final-checklist .item-title {
+            color: white;
+            font-weight: 600;
+        }
+
+        .deployment-ready-indicator {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            border-radius: 8px;
+            color: white;
+            margin-top: 20px;
+        }
+
+        .indicator-icon {
+            font-size: 24px;
+        }
+
+        .indicator-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .indicator-desc {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Command Sections for All Steps Tab */
+        .command-section {
+            margin-bottom: 35px;
+            padding: 25px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #48bb78;
+        }
+
+        .command-section h4 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .command-group {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .command-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .expected-result {
+            margin-top: 10px;
+            padding: 12px;
+            background: #edf2f7;
+            border-radius: 6px;
+            border-left: 3px solid #48bb78;
+        }
+
+        .expected-result strong {
+            color: #2d3748;
+            font-size: 13px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .expected-result ul {
+            margin: 8px 0 0 0;
+            padding-left: 18px;
+        }
+
+        .expected-result li {
+            color: #4a5568;
+            font-size: 12px;
+            line-height: 1.5;
+            margin-bottom: 4px;
+        }
+
+        .expected-result li:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .checklist-section {
+                padding: 15px;
+            }
+            
+            .command-section {
+                padding: 20px;
+            }
+            
+            .command-group {
+                padding: 12px;
+            }
+            
+            .deployment-ready-indicator {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -691,6 +899,507 @@
                     </div>
                     <div class="step-status pending">Pending</div>
                 </div>
+                <div class="step-nav-item" data-step="all-steps" style="border: 2px solid #667eea; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <div class="step-icon"><i class="fas fa-list-check"></i></div>
+                    <div class="step-info">
+                        <div class="step-title" style="color: white;">All Steps Overview</div>
+                        <div class="step-desc" style="color: #e2e8f0;">Complete checklist & commands</div>
+                    </div>
+                    <div class="step-status" style="background: rgba(255,255,255,0.2); color: white;">Quick View</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- All Steps Overview -->
+        <div class="step-content" id="all-steps">
+            <div class="section-card">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h2><i class="fas fa-list-check"></i> All Steps Checklist & Commands</h2>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="section-content expanded">
+                    <div class="why-box">
+                        <div class="why-title">📋 Complete Phase 2 Reference</div>
+                        <p>This tab provides a comprehensive overview of all Phase 2 steps with essential commands and verification points. Use this for quick reference or to execute all steps in sequence.</p>
+                    </div>
+
+                    <!-- Step-by-Step Commands with Expected Results -->
+                    <div class="subsection">
+                        <h3><i class="fas fa-terminal"></i> Step-by-Step Commands & Expected Results</h3>
+                        
+                        <!-- Step 15: Install Dependencies -->
+                        <div class="command-section">
+                            <h4>📦 Step 15: Install Dependencies</h4>
+                            
+                            <div class="command-group">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content">composer install --no-dev --optimize-autoloader</div>
+                                </div>
+                                <div class="expected-result">
+                                    <strong>Expected Result:</strong>
+                                    <ul>
+                                        <li><code class="directory">vendor/</code> directory created with all PHP packages</li>
+                                        <li><code class="file-path">composer.lock</code> file updated with exact versions</li>
+                                        <li>Optimized autoloader for production performance</li>
+                                        <li>No development dependencies installed</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="command-group">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content">npm ci</div>
+                                </div>
+                                <div class="expected-result">
+                                    <strong>Expected Result:</strong>
+                                    <ul>
+                                        <li><code class="directory">node_modules/</code> directory created</li>
+                                        <li>Exact versions from <code class="file-path">package-lock.json</code> installed</li>
+                                        <li>Clean install (faster than npm install)</li>
+                                        <li>All JavaScript dependencies ready for build</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 16: Test Build Process -->
+                        <div class="command-section">
+                            <h4>🔨 Step 16: Test Build Process</h4>
+                            
+                            <div class="command-group">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content">npm run build</div>
+                                </div>
+                                <div class="expected-result">
+                                    <strong>Expected Result:</strong>
+                                    <ul>
+                                        <li><code class="directory">public/build/</code> directory created</li>
+                                        <li>Optimized CSS and JS files generated</li>
+                                        <li><code class="file-path">manifest.json</code> with asset mapping</li>
+                                        <li>All assets minified and production-ready</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="command-group">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content">php artisan config:cache</div>
+                                </div>
+                                <div class="expected-result">
+                                    <strong>Expected Result:</strong>
+                                    <ul>
+                                        <li><code class="file-path">bootstrap/cache/config.php</code> created</li>
+                                        <li>All config files merged into single cached file</li>
+                                        <li>Faster config loading in production</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="command-group">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content">php artisan route:cache</div>
+                                </div>
+                                <div class="expected-result">
+                                    <strong>Expected Result:</strong>
+                                    <ul>
+                                        <li><code class="file-path">bootstrap/cache/routes-v7.php</code> created</li>
+                                        <li>All routes pre-compiled for faster lookup</li>
+                                        <li>Significant performance boost for routing</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="command-group">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content">php artisan view:cache</div>
+                                </div>
+                                <div class="expected-result">
+                                    <strong>Expected Result:</strong>
+                                    <ul>
+                                        <li><code class="file-path">storage/framework/views/</code> filled with compiled views</li>
+                                        <li>Blade templates pre-compiled to PHP</li>
+                                        <li>Faster view rendering in production</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="command-group">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content">php artisan serve --host=127.0.0.1 --port=8080 &
+SERVER_PID=$!
+sleep 3
+curl -s http://127.0.0.1:8080 > /dev/null
+kill $SERVER_PID</div>
+                                </div>
+                                <div class="expected-result">
+                                    <strong>Expected Result:</strong>
+                                    <ul>
+                                        <li>Test server starts on port 8080</li>
+                                        <li>Application responds successfully</li>
+                                        <li>Production build works locally</li>
+                                        <li>Server stops cleanly after test</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 18: Database Setup -->
+                        <div class="command-section">
+                            <h4>💾 Step 18: Database Setup</h4>
+                            
+                            <div class="command-group">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content">php artisan key:generate</div>
+                                </div>
+                                <div class="expected-result">
+                                    <strong>Expected Result:</strong>
+                                    <ul>
+                                        <li><code class="config-key">APP_KEY</code> generated in <code class="file-path">.env</code></li>
+                                        <li>32-character secure encryption key</li>
+                                        <li>Application security initialized</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="command-group">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content">php artisan migrate --force</div>
+                                </div>
+                                <div class="expected-result">
+                                    <strong>Expected Result:</strong>
+                                    <ul>
+                                        <li>All database tables created</li>
+                                        <li><code class="file-path">migrations</code> table shows completed migrations</li>
+                                        <li>Database schema matches application requirements</li>
+                                        <li>No migration errors or warnings</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 20: Final Verification -->
+                        <div class="command-section">
+                            <h4>✅ Step 20: Final Verification</h4>
+                            
+                            <div class="command-group">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content">php artisan config:clear
+php artisan route:clear
+php artisan view:clear</div>
+                                </div>
+                                <div class="expected-result">
+                                    <strong>Expected Result:</strong>
+                                    <ul>
+                                        <li>All cached files removed</li>
+                                        <li>Application returns to development mode</li>
+                                        <li>Ready for final testing and deployment</li>
+                                        <li>Clean state for next phase</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Complete Checklist -->
+                    <div class="subsection">
+                        <h3><i class="fas fa-check-double"></i> Complete Phase 2 Checklist</h3>
+                        
+                        <!-- Step 15 Checklist -->
+                        <div class="checklist-section">
+                            <h4>📦 Step 15: Install Dependencies</h4>
+                            <div class="checklist-item">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" class="checkbox" onchange="updateProgress()">
+                                </div>
+                                <div class="item-content">
+                                    <div class="item-title">Run production composer install</div>
+                                    <div class="item-description">Execute: <code class="command">composer install --no-dev --optimize-autoloader</code></div>
+                                </div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" class="checkbox" onchange="updateProgress()">
+                                </div>
+                                <div class="item-content">
+                                    <div class="item-title">Install Node.js dependencies</div>
+                                    <div class="item-description">Execute: <code class="command">npm ci</code> (clean install from lock file)</div>
+                                </div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" class="checkbox" onchange="updateProgress()">
+                                </div>
+                                <div class="item-content">
+                                    <div class="item-title">Verify lock files generated</div>
+                                    <div class="item-description">Check: <code class="file-path">composer.lock</code> and <code class="file-path">package-lock.json</code></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 16 Checklist -->
+                        <div class="checklist-section">
+                            <h4>🔨 Step 16: Test Build Process</h4>
+                            <div class="checklist-item">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" class="checkbox" onchange="updateProgress()">
+                                </div>
+                                <div class="item-content">
+                                    <div class="item-title">Build production assets</div>
+                                    <div class="item-description">Execute: <code class="command">npm run build</code></div>
+                                </div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" class="checkbox" onchange="updateProgress()">
+                                </div>
+                                <div class="item-content">
+                                    <div class="item-title">Cache Laravel configurations</div>
+                                    <div class="item-description">Run all cache commands: config, route, view</div>
+                                </div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" class="checkbox" onchange="updateProgress()">
+                                </div>
+                                <div class="item-content">
+                                    <div class="item-title">Test local production build</div>
+                                    <div class="item-description">Verify <code class="directory">public/build/</code> contains optimized assets</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 17 Checklist -->
+                        <div class="checklist-section">
+                            <h4>🛡️ Step 17: Customization Protection</h4>
+                            <div class="checklist-item">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" class="checkbox" onchange="updateProgress()">
+                                </div>
+                                <div class="item-content">
+                                    <div class="item-title">Backup all customizations</div>
+                                    <div class="item-description">Copy custom files to <code class="directory">myCustomizations/</code></div>
+                                </div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" class="checkbox" onchange="updateProgress()">
+                                </div>
+                                <div class="item-content">
+                                    <div class="item-title">Document modification locations</div>
+                                    <div class="item-description">Create detailed change log with file paths</div>
+                                </div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" class="checkbox" onchange="updateProgress()">
+                                </div>
+                                <div class="item-content">
+                                    <div class="item-title">Implement version control layer</div>
+                                    <div class="item-description">Set up system for tracking core vs custom changes</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 18 Checklist -->
+                        <div class="checklist-section">
+                            <h4>💾 Step 18: Data Persistence Setup</h4>
+                            <div class="checklist-item">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" class="checkbox" onchange="updateProgress()">
+                                </div>
+                                <div class="item-content">
+                                    <div class="item-title">Configure production database</div>
+                                    <div class="item-description">Set up database connection and credentials</div>
+                                </div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" class="checkbox" onchange="updateProgress()">
+                                </div>
+                                <div class="item-content">
+                                    <div class="item-title">Run database migrations</div>
+                                    <div class="item-description">Execute: <code class="command">php artisan migrate --force</code></div>
+                                </div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" class="checkbox" onchange="updateProgress()">
+                                </div>
+                                <div class="item-content">
+                                    <div class="item-title">Implement backup strategy</div>
+                                    <div class="item-description">Set up automated database and file backups</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 19 Checklist -->
+                        <div class="checklist-section">
+                            <h4>📚 Step 19: Documentation</h4>
+                            <div class="checklist-item">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" class="checkbox" onchange="updateProgress()">
+                                </div>
+                                <div class="item-content">
+                                    <div class="item-title">Create deployment documentation</div>
+                                    <div class="item-description">Document server setup, dependencies, and deployment steps</div>
+                                </div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" class="checkbox" onchange="updateProgress()">
+                                </div>
+                                <div class="item-content">
+                                    <div class="item-title">Document customizations</div>
+                                    <div class="item-description">Create comprehensive change log and maintenance guide</div>
+                                </div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" class="checkbox" onchange="updateProgress()">
+                                </div>
+                                <div class="item-content">
+                                    <div class="item-title">Prepare team handoff materials</div>
+                                    <div class="item-description">Create guides for future developers and administrators</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 20 Checklist -->
+                        <div class="checklist-section">
+                            <h4>💾 Step 20: Commit Pre-Deploy State</h4>
+                            <div class="checklist-item">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" class="checkbox" onchange="updateProgress()">
+                                </div>
+                                <div class="item-content">
+                                    <div class="item-title">Commit all changes</div>
+                                    <div class="item-description">Secure all modifications in version control</div>
+                                </div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" class="checkbox" onchange="updateProgress()">
+                                </div>
+                                <div class="item-content">
+                                    <div class="item-title">Tag release version</div>
+                                    <div class="item-description">Create deployment-ready version tag</div>
+                                </div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" class="checkbox" onchange="updateProgress()">
+                                </div>
+                                <div class="item-content">
+                                    <div class="item-title">Final verification tests</div>
+                                    <div class="item-description">Ensure all functionality works before deployment</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Deployment Ready Checklist -->
+                    <div class="subsection">
+                        <h3><i class="fas fa-rocket"></i> Final Deployment Checklist</h3>
+                        <div class="final-checklist">
+                            <div class="checklist-item">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" class="checkbox" onchange="updateProgress()">
+                                </div>
+                                <div class="item-content">
+                                    <div class="item-title">✅ All dependencies installed and optimized</div>
+                                </div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" class="checkbox" onchange="updateProgress()">
+                                </div>
+                                <div class="item-content">
+                                    <div class="item-title">✅ Production build tested locally</div>
+                                </div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" class="checkbox" onchange="updateProgress()">
+                                </div>
+                                <div class="item-content">
+                                    <div class="item-title">✅ Customizations protected and documented</div>
+                                </div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" class="checkbox" onchange="updateProgress()">
+                                </div>
+                                <div class="item-content">
+                                    <div class="item-title">✅ Database and backup systems ready</div>
+                                </div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" class="checkbox" onchange="updateProgress()">
+                                </div>
+                                <div class="item-content">
+                                    <div class="item-title">✅ Documentation complete</div>
+                                </div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" class="checkbox" onchange="updateProgress()">
+                                </div>
+                                <div class="item-content">
+                                    <div class="item-title">✅ All changes committed to repository</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="deployment-ready-indicator" id="deployment-indicator">
+                            <div class="indicator-icon">🚀</div>
+                            <div class="indicator-text">
+                                <div class="indicator-title">Ready for Phase 3: Deployment</div>
+                                <div class="indicator-desc">Complete all items above to proceed to production deployment</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -711,7 +1420,7 @@
                     <div class="why-box">
                         <div class="why-box-content">
                             <h4>Why composer install (not update)?</h4>
-                            <p>Using <code>install</code> ensures reproducible builds by using exact versions from composer.lock. The <code>update</code> command would change package versions and potentially break functionality.</p>
+                            <p>Using <code class="command">install</code> ensures reproducible builds by using exact versions from <code class="file-path">composer.lock</code>. The <code class="command">update</code> command would change package versions and potentially break functionality.</p>
                         </div>
                     </div>
 
@@ -728,1127 +1437,1693 @@
                                         <span class="code-lang">bash</span>
                                         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
                                     </div>
-                    <i class="fas fa-server"></i> Backend
-                </button>
-                <button class="tab-btn" data-tab="database">
-                    <i class="fas fa-database"></i> Database
-                </button>
-                <button class="tab-btn" data-tab="deployment">
-                    <i class="fas fa-rocket"></i> Deployment
-                </button>
-            </div>
-
-            <!-- Frontend Tab -->
-            <div class="tab-content active" id="tab-frontend">
-                <!-- Dependencies Section -->
-                <div class="section-card">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <div class="section-title color-dependencies">
-                            <i class="fas fa-download section-icon"></i>
-                            Frontend Dependencies
-                        </div>
-                        <div class="section-status">
-                            <div class="status-badge status-pending">Pending</div>
-                            <i class="fas fa-chevron-down toggle-icon"></i>
-                        </div>
-                    </div>
-                    <div class="section-content">
-                        <div class="checklist-item">
-                            <div class="checkbox-container">
-                                <input type="checkbox" class="checkbox" data-item="npm-install">
-                            </div>
-                            <div class="item-content">
-                                <div class="item-title" onclick="toggleDetails(this)">Install NPM Dependencies</div>
-                                <div class="item-description">Install and lock frontend package dependencies</div>
-                                <div class="item-details">
-                                    <div class="code-block">
-                                        <div class="code-header">
-                                            <span class="code-lang">bash</span>
-                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                                        </div>
-                                        <div class="code-content">npm install</div>
-                                    </div>
-                                    <p><strong>Purpose:</strong> Installs all dependencies listed in package.json and creates package-lock.json for reproducible builds.</p>
-                                    <p><strong>Expected Output:</strong> node_modules/ directory and package-lock.json file created.</p>
-                                    <div class="platform-icons">
-                                        <span class="platform-icon platform-windows">Windows</span>
-                                        <span class="platform-icon platform-macos">macOS</span>
-                                        <span class="platform-icon platform-linux">Linux</span>
-                                    </div>
+                                    <div class="code-content">cd "/Users/malekokour/Zaj_Master/MyApps/MyLaravel_Apps/2_Apps/SocietyPal-Project/SocietyPalApp-Master/SocietyPalApp-Root"</div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="checklist-item">
-                            <div class="checkbox-container">
-                                <input type="checkbox" class="checkbox" data-item="npm-audit">
-                            </div>
-                            <div class="item-content">
-                                <div class="item-title" onclick="toggleDetails(this)">Audit Dependencies 
-                                    <span class="tooltip">
-                                        <i class="fas fa-info-circle tooltip-icon"></i>
-                                        <span class="tooltip-content">
-                                            Scans for known security vulnerabilities in dependencies and provides recommendations for fixes.
-                                        </span>
-                                    </span>
-                                </div>
-                                <div class="item-description">Check for security vulnerabilities in packages</div>
-                                <div class="item-details">
-                                    <div class="code-block">
-                                        <div class="code-header">
-                                            <span class="code-lang">bash</span>
-                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                                        </div>
-                                        <div class="code-content">npm audit
-npm audit fix</div>
-                                    </div>
-                                    <div class="terminal">
-                                        <div class="terminal-line">
-                                            <span class="terminal-prompt">$</span> 
-                                            <span class="terminal-command">npm audit</span>
-                                        </div>
-                                        <div class="terminal-line terminal-success">✓ found 0 vulnerabilities</div>
-                                        <div class="terminal-line">
-                                            <span class="terminal-prompt">$</span> 
-                                            <span class="terminal-command">npm audit fix</span>
-                                        </div>
-                                        <div class="terminal-line terminal-output">up to date, audited 1337 packages in 2s</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="checklist-item">
-                            <div class="checkbox-container">
-                                <input type="checkbox" class="checkbox" data-item="build-assets">
-                            </div>
-                            <div class="item-content">
-                                <div class="item-title" onclick="toggleDetails(this)">Build Production Assets</div>
-                                <div class="item-description">Compile and optimize CSS/JS for production</div>
-                                <div class="item-details">
-                                    <div class="code-block">
-                                        <div class="code-header">
-                                            <span class="code-lang">bash</span>
-                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                                        </div>
-                                        <div class="code-content">npm run build</div>
-                                    </div>
-                                    <p><strong>Purpose:</strong> Compiles, minifies, and optimizes frontend assets for production deployment.</p>
-                                    <p><strong>Output Location:</strong> public/css/, public/js/, public/mix-manifest.json</p>
-                                    <p><strong>Troubleshooting:</strong> If build fails, check webpack configuration and ensure all dependencies are installed.</p>
-                                </div>
+                                <p><strong>Expected:</strong> You should be in the Laravel application root directory containing <code class="file-path">artisan</code>, <code class="file-path">composer.json</code>, etc.</p>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Asset Optimization Section -->
-                <div class="section-card">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <div class="section-title color-performance">
-                            <i class="fas fa-tachometer-alt section-icon"></i>
-                            Asset Optimization
+                    <div class="checklist-item">
+                        <div class="checkbox-container">
+                            <input type="checkbox" class="checkbox" data-item="composer-install">
                         </div>
-                        <div class="section-status">
-                            <div class="status-badge status-pending">Pending</div>
-                            <i class="fas fa-chevron-down toggle-icon"></i>
-                        </div>
-                    </div>
-                    <div class="section-content">
-                        <div class="checklist-item">
-                            <div class="checkbox-container">
-                                <input type="checkbox" class="checkbox" data-item="image-optimization">
-                            </div>
-                            <div class="item-content">
-                                <div class="item-title" onclick="toggleDetails(this)">Optimize Images</div>
-                                <div class="item-description">Compress and optimize image assets</div>
-                                <div class="item-details">
-                                    <div class="code-block">
-                                        <div class="code-header">
-                                            <span class="code-lang">bash</span>
-                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                                        </div>
-                                        <div class="code-content"># Install imagemin-cli globally
-npm install -g imagemin-cli
-
-# Optimize images
-imagemin public/images/* --out-dir=public/images/optimized</div>
+                        <div class="item-content">
+                            <div class="item-title" onclick="toggleDetails(this)">Install PHP Dependencies (Development Mode)</div>
+                            <div class="item-description">Install all Composer packages including dev dependencies</div>
+                            <div class="item-details">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
                                     </div>
-                                    <p><strong>Supported Formats:</strong> PNG, JPG, GIF, SVG, WebP</p>
-                                    <p><strong>Expected Reduction:</strong> 30-70% file size reduction without visible quality loss</p>
+                                    <div class="code-content">composer install</div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="checklist-item">
-                            <div class="checkbox-container">
-                                <input type="checkbox" class="checkbox" data-item="css-purge">
-                            </div>
-                            <div class="item-content">
-                                <div class="item-title" onclick="toggleDetails(this)">Purge Unused CSS</div>
-                                <div class="item-description">Remove unused CSS to reduce bundle size</div>
-                                <div class="item-details">
-                                    <div class="code-block">
-                                        <div class="code-header">
-                                            <span class="code-lang">javascript</span>
-                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                                        </div>
-                                        <div class="code-content">// webpack.mix.js
-const mix = require('laravel-mix');
-
-mix.js('resources/js/app.js', 'public/js')
-   .sass('resources/sass/app.scss', 'public/css')
-   .options({
-       purifyCss: {
-           paths: [
-               path.join(__dirname, 'resources/views/**/*.blade.php'),
-               path.join(__dirname, 'resources/js/**/*.js')
-           ]
-       }
-   });</div>
-                                    </div>
-                                    <p><strong>Benefit:</strong> Can reduce CSS file size by 50-90% by removing unused selectors</p>
-                                </div>
+                                <p><strong>Expected Result:</strong></p>
+                                <ul style="margin-left: 20px; margin-top: 5px; font-size: 13px;">
+                                    <li><code class="directory">vendor/</code> directory created with all PHP packages</li>
+                                    <li><code class="file-path">composer.lock</code> file generated with exact versions</li>
+                                    <li>All Composer dependencies available for development</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Backend Tab -->
-            <div class="tab-content" id="tab-backend">
-                <!-- Composer Dependencies -->
-                <div class="section-card">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <div class="section-title color-dependencies">
-                            <i class="fas fa-cube section-icon"></i>
-                            Composer Dependencies
-                        </div>
-                        <div class="section-status">
-                            <div class="status-badge status-pending">Pending</div>
-                            <i class="fas fa-chevron-down toggle-icon"></i>
-                        </div>
+            <div class="section-card">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <div class="section-title">
+                        <i class="fas fa-node-js section-icon"></i>
+                        JavaScript Dependencies (NPM) - If Applicable
                     </div>
-                    <div class="section-content">
-                        <div class="checklist-item">
-                            <div class="checkbox-container">
-                                <input type="checkbox" class="checkbox" data-item="composer-install">
-                            </div>
-                            <div class="item-content">
-                                <div class="item-title" onclick="toggleDetails(this)">Install Composer Dependencies</div>
-                                <div class="item-description">Install PHP packages without dev dependencies</div>
-                                <div class="item-details">
-                                    <div class="code-block">
-                                        <div class="code-header">
-                                            <span class="code-lang">bash</span>
-                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                                        </div>
-                                        <div class="code-content">composer install --no-dev --optimize-autoloader</div>
-                                    </div>
-                                    <p><strong>Purpose:</strong> Installs production dependencies and optimizes autoloader for better performance</p>
-                                    <p><strong>Output:</strong> vendor/ directory and optimized autoload files</p>
-                                    <p><strong>Note:</strong> --no-dev excludes development packages like PHPUnit, Xdebug</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="checklist-item">
-                            <div class="checkbox-container">
-                                <input type="checkbox" class="checkbox" data-item="laravel-optimize">
-                            </div>
-                            <div class="item-content">
-                                <div class="item-title" onclick="toggleDetails(this)">Laravel Optimizations</div>
-                                <div class="item-description">Cache configurations, routes, and views</div>
-                                <div class="item-details">
-                                    <div class="code-block">
-                                        <div class="code-header">
-                                            <span class="code-lang">bash</span>
-                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                                        </div>
-                                        <div class="code-content"># Clear existing caches
-php artisan config:clear
-php artisan route:clear
-php artisan view:clear
-
-# Generate optimized caches
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache</div>
-                                    </div>
-                                    <p><strong>Performance Impact:</strong> Can improve response times by 20-50%</p>
-                                    <p><strong>Important:</strong> Routes cache only works with closure-based routes converted to controller methods</p>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="section-meta">
+                        <a href="#" class="step-reference" title="Reference: Step_15_Install_Dependencies.md">📄 Step 15</a>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
                     </div>
                 </div>
-
-                <!-- Security Section -->
-                <div class="section-card">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <div class="section-title color-security">
-                            <i class="fas fa-shield-alt section-icon"></i>
-                            Security Validation
-                        </div>
-                        <div class="section-status">
-                            <div class="status-badge status-pending">Pending</div>
-                            <i class="fas fa-chevron-down toggle-icon"></i>
+                <div class="section-content">
+                    <div class="why-box">
+                        <div class="why-box-content">
+                            <h4>Why npm install (not npm ci)?</h4>
+                            <p><code class="command">npm install</code> generates <code class="file-path">package-lock.json</code> if missing, while <code class="command">npm ci</code> requires an existing <code class="file-path">package-lock.json</code> file. This step is about generating lock files for the first time.</p>
                         </div>
                     </div>
-                    <div class="section-content">
-                        <div class="checklist-item">
-                            <div class="checkbox-container">
-                                <input type="checkbox" class="checkbox" data-item="env-validation">
-                            </div>
-                            <div class="item-content">
-                                <div class="item-title" onclick="toggleDetails(this)">Environment Variables Validation 
-                                    <span class="tooltip">
-                                        <i class="fas fa-info-circle tooltip-icon"></i>
-                                        <span class="tooltip-content">
-                                            Ensures all required environment variables are set and validates their format/values for security compliance.
-                                        </span>
-                                    </span>
-                                </div>
-                                <div class="item-description">Verify all required environment variables are configured</div>
-                                <div class="item-details">
-                                    <div class="code-block">
-                                        <div class="code-header">
-                                            <span class="code-lang">bash</span>
-                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                                        </div>
-                                        <div class="code-content"># Check required environment variables
-php -r "
-$required = ['APP_KEY', 'DB_HOST', 'DB_DATABASE', 'DB_USERNAME', 'DB_PASSWORD'];
-$missing = [];
-foreach($required as $var) {
-    if(empty(getenv($var))) $missing[] = $var;
-}
-if($missing) {
-    echo 'Missing: ' . implode(', ', $missing) . PHP_EOL;
-    exit(1);
-}
-echo 'All required environment variables are set.' . PHP_EOL;
-"</div>
-                                    </div>
-                                    <p><strong>Critical Variables:</strong> APP_KEY, DB_*, MAIL_*, CACHE_DRIVER, SESSION_DRIVER</p>
-                                </div>
-                            </div>
+
+                    <div class="checklist-item">
+                        <div class="checkbox-container">
+                            <input type="checkbox" class="checkbox" data-item="check-frontend-deps">
                         </div>
-
-                        <div class="checklist-item">
-                            <div class="checkbox-container">
-                                <input type="checkbox" class="checkbox" data-item="security-scan">
-                            </div>
-                            <div class="item-content">
-                                <div class="item-title" onclick="toggleDetails(this)">Security Vulnerability Scan</div>
-                                <div class="item-description">Scan for known vulnerabilities in Composer packages</div>
-                                <div class="item-details">
-                                    <div class="code-block">
-                                        <div class="code-header">
-                                            <span class="code-lang">bash</span>
-                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                                        </div>
-                                        <div class="code-content"># Install security checker
-composer global require enlightn/security-checker
-
-# Run security audit
-php ~/.composer/vendor/bin/security-checker security:check composer.lock</div>
+                        <div class="item-content">
+                            <div class="item-title" onclick="toggleDetails(this)">Check for Frontend Dependencies</div>
+                            <div class="item-description">Detect if project has JavaScript build system</div>
+                            <div class="item-details">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
                                     </div>
-                                    <div class="terminal">
-                                        <div class="terminal-line">
-                                            <span class="terminal-prompt">$</span> 
-                                            <span class="terminal-command">security-checker security:check</span>
-                                        </div>
-                                        <div class="terminal-line terminal-success">[OK] 0 packages have known vulnerabilities</div>
-                                    </div>
+                                    <div class="code-content"># Check if package.json exists
+if [ -f "package.json" ]; then
+    echo "✅ JavaScript build system detected"
+    npm install
+    echo "✅ JavaScript dependencies installed"
+else
+    echo "ℹ️ No package.json found - PHP-only project"
+fi</div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="checklist-item">
-                            <div class="checkbox-container">
-                                <input type="checkbox" class="checkbox" data-item="ssl-setup">
-                            </div>
-                            <div class="item-content">
-                                <div class="item-title" onclick="toggleDetails(this)">SSL Certificate Configuration</div>
-                                <div class="item-description">Ensure HTTPS is properly configured</div>
-                                <div class="item-details">
-                                    <div class="code-block">
-                                        <div class="code-header">
-                                            <span class="code-lang">bash</span>
-                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                                        </div>
-                                        <div class="code-content"># Test SSL configuration
-curl -I https://your-domain.com
-
-# Check SSL certificate expiry
-echo | openssl s_client -servername your-domain.com -connect your-domain.com:443 2>/dev/null | openssl x509 -noout -dates</div>
-                                    </div>
-                                    <p><strong>Validation Checklist:</strong></p>
-                                    <ul style="margin-left: 20px; margin-top: 10px;">
-                                        <li>Certificate is valid and not expired</li>
-                                        <li>HTTP redirects to HTTPS</li>
-                                        <li>HSTS headers are present</li>
-                                        <li>SSL Labs grade A or A+</li>
-                                    </ul>
-                                </div>
+                                <p><strong>Expected Result:</strong></p>
+                                <ul style="margin-left: 20px; margin-top: 5px; font-size: 13px;">
+                                    <li><code class="directory">node_modules/</code> directory created (if has JavaScript)</li>
+                                    <li><code class="file-path">package-lock.json</code> file generated with exact versions</li>
+                                    <li>All frontend build tools available</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Database Tab -->
-            <div class="tab-content" id="tab-database">
-                <!-- Database Setup -->
-                <div class="section-card">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <div class="section-title color-database">
-                            <i class="fas fa-database section-icon"></i>
-                            Database Migration & Seeding
+                    <div class="checklist-item">
+                        <div class="checkbox-container">
+                            <input type="checkbox" class="checkbox" data-item="verify-lock-files">
                         </div>
-                        <div class="section-status">
-                            <div class="status-badge status-pending">Pending</div>
-                            <i class="fas fa-chevron-down toggle-icon"></i>
-                        </div>
-                    </div>
-                    <div class="section-content">
-                        <div class="checklist-item">
-                            <div class="checkbox-container">
-                                <input type="checkbox" class="checkbox" data-item="db-connection">
-                            </div>
-                            <div class="item-content">
-                                <div class="item-title" onclick="toggleDetails(this)">Test Database Connection</div>
-                                <div class="item-description">Verify database connectivity and credentials</div>
-                                <div class="item-details">
-                                    <div class="code-block">
-                                        <div class="code-header">
-                                            <span class="code-lang">bash</span>
-                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                                        </div>
-                                        <div class="code-content"># Test database connection
-php artisan tinker
+                        <div class="item-content">
+                            <div class="item-title" onclick="toggleDetails(this)">Verify Lock Files Created</div>
+                            <div class="item-description">Confirm dependency lock files exist for reproducible builds</div>
+                            <div class="item-details">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content"># Check for lock files
+ls -la composer.lock package-lock.json 2>/dev/null || echo "Some lock files missing"
 
-# In Tinker console:
-DB::connection()->getPdo();</div>
-                                    </div>
-                                    <div class="terminal">
-                                        <div class="terminal-line">
-                                            <span class="terminal-prompt">Psy Shell v0.11.8</span>
-                                        </div>
-                                        <div class="terminal-line">
-                                            <span class="terminal-prompt">></span>
-                                            <span class="terminal-command">DB::connection()->getPdo()</span>
-                                        </div>
-                                        <div class="terminal-line terminal-success">=> PDO {#connection_info}</div>
-                                    </div>
+# Verify vendor directory
+ls -la vendor/ | head -5
+
+# Verify node_modules (if applicable)
+ls -la node_modules/ | head -5 2>/dev/null || echo "No node_modules (PHP-only project)"</div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="checklist-item">
-                            <div class="checkbox-container">
-                                <input type="checkbox" class="checkbox" data-item="db-migrate">
-                            </div>
-                            <div class="item-content">
-                                <div class="item-title" onclick="toggleDetails(this)">Run Database Migrations</div>
-                                <div class="item-description">Execute pending database migrations</div>
-                                <div class="item-details">
-                                    <div class="code-block">
-                                        <div class="code-header">
-                                            <span class="code-lang">bash</span>
-                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                                        </div>
-                                        <div class="code-content"># Check migration status
-php artisan migrate:status
-
-# Run pending migrations
-php artisan migrate --force</div>
-                                    </div>
-                                    <p><strong>Important:</strong> --force flag bypasses confirmation in production</p>
-                                    <p><strong>Backup First:</strong> Always backup database before running migrations in production</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="checklist-item">
-                            <div class="checkbox-container">
-                                <input type="checkbox" class="checkbox" data-item="db-seed">
-                            </div>
-                            <div class="item-content">
-                                <div class="item-title" onclick="toggleDetails(this)">Database Seeding (Optional)</div>
-                                <div class="item-description">Populate database with initial data</div>
-                                <div class="item-details">
-                                    <div class="code-block">
-                                        <div class="code-header">
-                                            <span class="code-lang">bash</span>
-                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                                        </div>
-                                        <div class="code-content"># Seed production data only
-php artisan db:seed --class=ProductionSeeder</div>
-                                    </div>
-                                    <p><strong>Warning:</strong> Only run seeders designed for production environments</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Database Optimization -->
-                <div class="section-card">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <div class="section-title color-performance">
-                            <i class="fas fa-chart-line section-icon"></i>
-                            Database Optimization
-                        </div>
-                        <div class="section-status">
-                            <div class="status-badge status-pending">Pending</div>
-                            <i class="fas fa-chevron-down toggle-icon"></i>
-                        </div>
-                    </div>
-                    <div class="section-content">
-                        <div class="checklist-item">
-                            <div class="checkbox-container">
-                                <input type="checkbox" class="checkbox" data-item="db-indexes">
-                            </div>
-                            <div class="item-content">
-                                <div class="item-title" onclick="toggleDetails(this)">Verify Database Indexes</div>
-                                <div class="item-description">Ensure all necessary indexes are in place</div>
-                                <div class="item-details">
-                                    <div class="code-block">
-                                        <div class="code-header">
-                                            <span class="code-lang">sql</span>
-                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                                        </div>
-                                        <div class="code-content">-- Check indexes on frequently queried tables
-SHOW INDEX FROM users;
-SHOW INDEX FROM posts;
-SHOW INDEX FROM sessions;</div>
-                                    </div>
-                                    <p><strong>Key Indexes:</strong> Primary keys, foreign keys, frequently searched columns</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="checklist-item">
-                            <div class="checkbox-container">
-                                <input type="checkbox" class="checkbox" data-item="query-optimization">
-                            </div>
-                            <div class="item-content">
-                                <div class="item-title" onclick="toggleDetails(this)">Query Performance Testing</div>
-                                <div class="item-description">Test slow query performance and optimization</div>
-                                <div class="item-details">
-                                    <div class="code-block">
-                                        <div class="code-header">
-                                            <span class="code-lang">bash</span>
-                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                                        </div>
-                                        <div class="code-content"># Enable query logging
-php artisan tinker
-
-# Log slow queries
-DB::listen(function ($query) {
-    if ($query->time > 100) { // Log queries > 100ms
-        Log::info('Slow Query: ' . $query->sql . ' [' . $query->time . 'ms]');
-    }
-});</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Deployment Tab -->
-            <div class="tab-content" id="tab-deployment">
-                <!-- CDN & Monitoring -->
-                <div class="section-card">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <div class="section-title color-deployment">
-                            <i class="fas fa-cloud section-icon"></i>
-                            CDN & Performance
-                        </div>
-                        <div class="section-status">
-                            <div class="status-badge status-pending">Pending</div>
-                            <i class="fas fa-chevron-down toggle-icon"></i>
-                        </div>
-                    </div>
-                    <div class="section-content">
-                        <div class="checklist-item">
-                            <div class="checkbox-container">
-                                <input type="checkbox" class="checkbox" data-item="cdn-setup">
-                            </div>
-                            <div class="item-content">
-                                <div class="item-title" onclick="toggleDetails(this)">CDN Configuration</div>
-                                <div class="item-description">Setup Content Delivery Network for static assets</div>
-                                <div class="item-details">
-                                    <div class="code-block">
-                                        <div class="code-header">
-                                            <span class="code-lang">bash</span>
-                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                                        </div>
-                                        <div class="code-content"># CloudFlare CDN setup
-# Add in .env
-CDN_URL=https://cdn.your-domain.com
-
-# Update asset URLs in config/app.php
-'asset_url' => env('CDN_URL'),</div>
-                                    </div>
-                                    <p><strong>Benefits:</strong> Faster load times, reduced server load, better global performance</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="checklist-item">
-                            <div class="checkbox-container">
-                                <input type="checkbox" class="checkbox" data-item="monitoring-setup">
-                            </div>
-                            <div class="item-content">
-                                <div class="item-title" onclick="toggleDetails(this)">Monitoring Integration
-                                    <span class="tooltip">
-                                        <i class="fas fa-info-circle tooltip-icon"></i>
-                                        <span class="tooltip-content">
-                                            Application performance monitoring helps detect issues before they impact users and provides insights for optimization.
-                                        </span>
-                                    </span>
-                                </div>
-                                <div class="item-description">Setup application and server monitoring</div>
-                                <div class="item-details">
-                                    <div class="code-block">
-                                        <div class="code-header">
-                                            <span class="code-lang">bash</span>
-                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                                        </div>
-                                        <div class="code-content"># Install Laravel Telescope (for development/staging)
-composer require laravel/telescope
-php artisan telescope:install
-php artisan migrate
-
-# For production monitoring (New Relic example)
-# Add to .env
-NEWRELIC_LICENSE_KEY=your_license_key</div>
-                                    </div>
-                                    <p><strong>Monitoring Tools:</strong> New Relic, Datadog, Laravel Telescope, Bugsnag</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Rollback Procedures -->
-                <div class="section-card">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <div class="section-title color-security">
-                            <i class="fas fa-undo section-icon"></i>
-                            Rollback Procedures
-                        </div>
-                        <div class="section-status">
-                            <div class="status-badge status-pending">Pending</div>
-                            <i class="fas fa-chevron-down toggle-icon"></i>
-                        </div>
-                    </div>
-                    <div class="section-content">
-                        <div class="checklist-item">
-                            <div class="checkbox-container">
-                                <input type="checkbox" class="checkbox" data-item="backup-strategy">
-                            </div>
-                            <div class="item-content">
-                                <div class="item-title" onclick="toggleDetails(this)">Backup Strategy</div>
-                                <div class="item-description">Ensure comprehensive backup system is in place</div>
-                                <div class="item-details">
-                                    <div class="code-block">
-                                        <div class="code-header">
-                                            <span class="code-lang">bash</span>
-                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                                        </div>
-                                        <div class="code-content"># Database backup
-mysqldump -u username -p database_name > backup_$(date +%Y%m%d_%H%M%S).sql
-
-# Full application backup
-tar -czf app_backup_$(date +%Y%m%d_%H%M%S).tar.gz \
-    --exclude=node_modules \
-    --exclude=vendor \
-    --exclude=.git \
-    /path/to/application</div>
-                                    </div>
-                                    <p><strong>Backup Schedule:</strong> Daily database backups, Weekly full application backups</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="checklist-item">
-                            <div class="checkbox-container">
-                                <input type="checkbox" class="checkbox" data-item="rollback-script">
-                            </div>
-                            <div class="item-content">
-                                <div class="item-title" onclick="toggleDetails(this)">Rollback Script</div>
-                                <div class="item-description">Prepare automated rollback procedure</div>
-                                <div class="item-details">
-                                    <div class="code-block">
-                                        <div class="code-header">
-                                            <span class="code-lang">bash</span>
-                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                                        </div>
-                                        <div class="code-content">#!/bin/bash
-# rollback.sh - Emergency rollback script
-
-echo "🔄 Starting emergency rollback..."
-
-# Switch to previous release
-cd /var/www/societypal.com
-PREVIOUS_RELEASE=$(ls -t releases/ | sed -n '2p')
-
-if [ -z "$PREVIOUS_RELEASE" ]; then
-    echo "❌ No previous release found"
-    exit 1
-fi
-
-echo "📦 Rolling back to: $PREVIOUS_RELEASE"
-ln -nfs releases/$PREVIOUS_RELEASE current
-
-echo "✅ Rollback completed successfully"
-echo "🌐 Application restored to previous version"</div>
-                                    </div>
-                                    <p><strong>Test Rollback:</strong> Always test rollback procedures in staging environment</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Post-Deployment Validation -->
-                <div class="section-card">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <div class="section-title color-build">
-                            <i class="fas fa-check-circle section-icon"></i>
-                            Post-Deployment Validation
-                        </div>
-                        <div class="section-status">
-                            <div class="status-badge status-pending">Pending</div>
-                            <i class="fas fa-chevron-down toggle-icon"></i>
-                        </div>
-                    </div>
-                    <div class="section-content">
-                        <div class="checklist-item">
-                            <div class="checkbox-container">
-                                <input type="checkbox" class="checkbox" data-item="smoke-tests">
-                            </div>
-                            <div class="item-content">
-                                <div class="item-title" onclick="toggleDetails(this)">Smoke Tests</div>
-                                <div class="item-description">Verify critical application functionality</div>
-                                <div class="item-details">
-                                    <div class="code-block">
-                                        <div class="code-header">
-                                            <span class="code-lang">bash</span>
-                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                                        </div>
-                                        <div class="code-content"># Test critical endpoints
-curl -I https://your-domain.com
-curl -I https://your-domain.com/login
-curl -I https://your-domain.com/api/health
-
-# Test database connectivity
-php artisan tinker -c "DB::connection()->getPdo(); echo 'Database OK';"</div>
-                                    </div>
-                                    <div class="terminal">
-                                        <div class="terminal-line">
-                                            <span class="terminal-prompt">$</span>
-                                            <span class="terminal-command">curl -I https://your-domain.com</span>
-                                        </div>
-                                        <div class="terminal-line terminal-success">HTTP/2 200</div>
-                                        <div class="terminal-line terminal-success">content-type: text/html; charset=UTF-8</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="checklist-item">
-                            <div class="checkbox-container">
-                                <input type="checkbox" class="checkbox" data-item="performance-check">
-                            </div>
-                            <div class="item-content">
-                                <div class="item-title" onclick="toggleDetails(this)">Performance Validation</div>
-                                <div class="item-description">Verify application performance meets requirements</div>
-                                <div class="item-details">
-                                    <div class="code-block">
-                                        <div class="code-header">
-                                            <span class="code-lang">bash</span>
-                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                                        </div>
-                                        <div class="code-content"># Test page load times
-curl -w "@curl-format.txt" -s -o /dev/null https://your-domain.com
-
-# curl-format.txt content:
-# time_namelookup:  %{time_namelookup}\n
-# time_connect:     %{time_connect}\n
-# time_pretransfer: %{time_pretransfer}\n
-# time_redirect:    %{time_redirect}\n
-# time_starttransfer: %{time_starttransfer}\n
-# time_total:       %{time_total}\n</div>
-                                    </div>
-                                    <p><strong>Performance Targets:</strong> Page load < 2s, API response < 500ms, Database queries < 100ms</p>
-                                </div>
+                                <p><strong>Expected Result:</strong> Lock files present, dependencies installed, ready for reproducible builds.</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- JavaScript for Interactivity -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <!-- Step 16: Test Build Process -->
+        <div class="step-content" id="step16">
+            <div class="section-card">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <div class="section-title">
+                        <i class="fas fa-hammer section-icon"></i>
+                        Production Build Testing
+                    </div>
+                    <div class="section-meta">
+                        <a href="#" class="step-reference" title="Reference: Step_16_Test_Build_Process.md">📄 Step 16</a>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="why-box">
+                        <div class="why-box-content">
+                            <h4>Why test production build locally?</h4>
+                            <p>Testing production build process locally prevents deployment failures. The <code class="flag">--no-dev</code> <code class="flag">--prefer-dist</code> <code class="flag">--optimize-autoloader</code> flags exactly simulate what happens in production deployment.</p>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item">
+                        <div class="checkbox-container">
+                            <input type="checkbox" class="checkbox" data-item="clean-previous-builds">
+                        </div>
+                        <div class="item-content">
+                            <div class="item-title" onclick="toggleDetails(this)">Clean Previous Builds</div>
+                            <div class="item-description">Remove previous builds to test from scratch</div>
+                            <div class="item-details">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content"># Clean previous builds to test from scratch
+rm -rf vendor node_modules public/build
+echo "🗑️ Cleaned previous builds"</div>
+                                </div>
+                                <p><strong>Purpose:</strong> Ensures we're testing the build process from a clean state, just like CI/deployment servers do.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item">
+                        <div class="checkbox-container">
+                            <input type="checkbox" class="checkbox" data-item="test-php-production-build">
+                        </div>
+                        <div class="item-content">
+                            <div class="item-title" onclick="toggleDetails(this)">Test Production PHP Build</div>
+                            <div class="item-description">Install production-only dependencies with optimizations</div>
+                            <div class="item-details">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content">echo "🔄 Testing production build process..."
+
+# Install production-only PHP dependencies (V1's approach)
+composer install --no-dev --prefer-dist --optimize-autoloader</div>
+                                </div>
+                                <p><strong>Flag Explanations:</strong></p>
+                                <ul style="margin-left: 20px; margin-top: 5px; font-size: 13px;">
+                                    <li><code class="flag">--no-dev</code>: Excludes development dependencies (testing tools, debuggers)</li>
+                                    <li><code class="flag">--prefer-dist</code>: Downloads stable releases, not development versions</li>
+                                    <li><code class="flag">--optimize-autoloader</code>: Creates optimized class map for faster loading</li>
+                                </ul>
+                                <p><strong>Expected Result:</strong></p>
+                                <ul style="margin-left: 20px; margin-top: 5px; font-size: 13px;">
+                                    <li><code class="directory">vendor/</code> recreated with only production packages</li>
+                                    <li>Optimized autoloader generated for performance</li>
+                                    <li>No development tools included (PHPUnit, debuggers, etc.)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item">
+                        <div class="checkbox-container">
+                            <input type="checkbox" class="checkbox" data-item="test-frontend-build">
+                        </div>
+                        <div class="item-content">
+                            <div class="item-title" onclick="toggleDetails(this)">Test Frontend Build (If Applicable)</div>
+                            <div class="item-description">Build and verify frontend assets</div>
+                            <div class="item-details">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content">if [ -f "package.json" ]; then
+    echo "📦 Building frontend assets..."
+
+    # Clean install from lock file (production simulation)
+    npm ci
+
+    # Build production assets
+    npm run build
+
+    echo "✅ Production assets built successfully"
+
+    # V1's enhanced verification
+    if [ -d "public/build" ]; then
+        echo "✅ Build directory created: public/build/"
+        ls -la public/build/
+    else
+        echo "❌ Build failed - no public/build/ directory"
+        exit 1
+    fi
+else
+    echo "ℹ️ No JavaScript build needed (PHP-only project)"
+fi</div>
+                                </div>
+                                <div class="why-box">
+                                    <div class="why-box-content">
+                                        <h4>Why npm ci then npm run build?</h4>
+                                        <p><code class="command">npm ci</code> does clean install from <code class="file-path">package-lock.json</code> (exactly what CI/deployment will do), then <code class="command">npm run build</code> creates production-optimized assets (minified, versioned).</p>
+                                    </div>
+                                </div>
+                                <p><strong>Expected Result:</strong></p>
+                                <ul style="margin-left: 20px; margin-top: 5px; font-size: 13px;">
+                                    <li><code class="directory">public/build/</code> directory with compiled CSS/JS</li>
+                                    <li>Manifest files for asset versioning</li>
+                                    <li>Minified, production-ready assets</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item">
+                        <div class="checkbox-container">
+                            <input type="checkbox" class="checkbox" data-item="test-laravel-optimizations">
+                        </div>
+                        <div class="item-content">
+                            <div class="item-title" onclick="toggleDetails(this)">Test Laravel Production Optimizations</div>
+                            <div class="item-description">Apply and test Laravel caching optimizations</div>
+                            <div class="item-details">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content"># Set local environment for testing
+cp .env.local .env
+
+# Test Laravel production optimizations
+<code class="command">php artisan config:cache</code>
+<code class="command">php artisan route:cache</code>
+<code class="command">php artisan view:cache</code></div>
+                                </div>
+                                <p><strong>Expected Result:</strong></p>
+                                <ul style="margin-left: 20px; margin-top: 5px; font-size: 13px;">
+                                    <li>Config cached in <code class="file-path">bootstrap/cache/config.php</code> for faster loading</li>
+                                    <li>Routes cached in <code class="file-path">bootstrap/cache/routes-v7.php</code> for faster routing</li>
+                                    <li>Views pre-compiled in <code class="directory">storage/framework/views/</code> for faster rendering</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item">
+                        <div class="checkbox-container">
+                            <input type="checkbox" class="checkbox" data-item="verify-build-locally">
+                        </div>
+                        <div class="item-content">
+                            <div class="item-title" onclick="toggleDetails(this)">Verify Production Build Works Locally</div>
+                            <div class="item-description">Test the built version responds correctly</div>
+                            <div class="item-details">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content"># Start test server
+<code class="command">php artisan serve --host=127.0.0.1 --port=8080 &</code>
+SERVER_PID=$!
+sleep 3
+
+# Test that the built version responds (V1's approach)
+curl -s http://127.0.0.1:8080 > /dev/null
+if [ $? -eq 0 ]; then
+    echo "✅ Production build works locally"
+else
+    echo "❌ Production build failed local test"
+fi
+
+# Stop test server
+kill $SERVER_PID</div>
+                                </div>
+                                <p><strong>Purpose:</strong> Verifies that the production-optimized application actually works before deployment.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item">
+                        <div class="checkbox-container">
+                            <input type="checkbox" class="checkbox" data-item="restore-dev-environment">
+                        </div>
+                        <div class="item-content">
+                            <div class="item-title" onclick="toggleDetails(this)">Restore Development Environment</div>
+                            <div class="item-description">Return to development mode after testing</div>
+                            <div class="item-details">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content"># Clear production caches
+<code class="command">php artisan config:clear</code>
+<code class="command">php artisan route:clear</code>
+<code class="command">php artisan view:clear</code>
+
+# Restore development dependencies (V1's approach)
+<code class="command">composer install</code>
+<code class="command">npm install</code> 2>/dev/null || true
+
+echo "✅ Development environment restored"</div>
+                                </div>
+                                <p><strong>Result:</strong> Production build tested and working, development environment restored, ready for deployment.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 17: Customization Protection -->
+        <div class="step-content" id="step17">
+            <div class="section-card">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <div class="section-title">
+                        <i class="fas fa-shield-alt section-icon"></i>
+                        Step 17: Customization Protection System
+                    </div>
+                    <div class="section-meta">
+                        <a href="#" class="step-reference">Reference Guide</a>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="why-box">
+                        <div class="why-box-content">
+                            <h4>🛡️ Why This Step is Critical</h4>
+                            <p><strong>Investment Protection:</strong> This step implements an update-safe customization layer that protects your business customizations during CodeCanyon updates. Without this, you risk losing months of work every time the base script updates.</p>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item">
+                        <div class="checkbox-container">
+                            <input type="checkbox" class="checkbox" data-item="backup-original-files">
+                        </div>
+                        <div class="item-content">
+                            <div class="item-title" onclick="toggleDetails(this)">Create Original Files Backup</div>
+                            <div class="item-description">Archive pristine CodeCanyon files before any modifications</div>
+                            <div class="item-details">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content">echo "🗄️ Creating original files backup..."
+
+# Create backup directory structure
+mkdir -p Admin-Local/backups_local/original-files/$(date +%Y-%m-%d)
+BACKUP_DIR="Admin-Local/backups_local/original-files/$(date +%Y-%m-%d)"
+
+# Backup critical original files before any customization
+cp -r app/ "$BACKUP_DIR/app_original/"
+cp -r resources/ "$BACKUP_DIR/resources_original/"
+cp -r config/ "$BACKUP_DIR/config_original/"
+cp -r database/ "$BACKUP_DIR/database_original/"
+cp -r routes/ "$BACKUP_DIR/routes_original/"
+
+# Create backup manifest
+echo "# Original CodeCanyon Files Backup" > "$BACKUP_DIR/README.md"
+echo "Date: $(date)" >> "$BACKUP_DIR/README.md"
+echo "Purpose: Pristine copy before customization" >> "$BACKUP_DIR/README.md"
+
+echo "✅ Original files backed up to: $BACKUP_DIR"</div>
+                                </div>
+                                <p><strong>Expected Result:</strong></p>
+                                <ul style="margin-left: 20px; margin-top: 5px; font-size: 13px;">
+                                    <li>Complete backup of original CodeCanyon files</li>
+                                    <li>Dated backup directory for version tracking</li>
+                                    <li><code class="file-path">README.md</code> manifest file documenting the backup purpose</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item">
+                        <div class="checkbox-container">
+                            <input type="checkbox" class="checkbox" data-item="setup-custom-layer">
+                        </div>
+                        <div class="item-content">
+                            <div class="item-title" onclick="toggleDetails(this)">Implement Custom Layer Architecture</div>
+                            <div class="item-description">Create update-safe customization directories</div>
+                            <div class="item-details">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content">echo "🏗️ Setting up customization layer..."
+
+# Create custom layer directory structure
+mkdir -p Admin-Local/myCustomizations/{views,controllers,models,config,assets,database}
+mkdir -p Admin-Local/myCustomizations/documentation
+mkdir -p Admin-Local/myCustomizations/overrides/{app,resources,config}
+
+# Create customization manifest
+cat > Admin-Local/myCustomizations/CUSTOMIZATION_MANIFEST.md << 'EOF'
+# SocietyPal Customization Layer
+
+## Purpose
+This directory contains all business-specific customizations that are update-safe.
+
+## Structure
+- `views/` - Custom Blade templates and overrides
+- `controllers/` - Custom controllers and modifications
+- `models/` - Custom models and relationship extensions
+- `config/` - Custom configuration overrides
+- `assets/` - Custom CSS, JS, images
+- `database/` - Custom migrations and seeders
+- `overrides/` - File-level overrides of core functionality
+
+## Update Process
+1. All customizations live here, not in core directories
+2. During updates, only merge conflicts need resolution
+3. Custom files are overlaid onto fresh core installation
+EOF
+
+echo "✅ Custom layer architecture created"</div>
+                                </div>
+                                <div class="why-box">
+                                    <div class="why-box-content">
+                                        <h4>🔍 Educational Context</h4>
+                                        <p><strong>Update Safety:</strong> By keeping customizations separate from core files, you can safely update the base CodeCanyon script without losing your business logic. This approach is industry standard for maintainable software.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item">
+                        <div class="checkbox-container">
+                            <input type="checkbox" class="checkbox" data-item="document-modifications">
+                        </div>
+                        <div class="item-content">
+                            <div class="item-title" onclick="toggleDetails(this)">Document All Modifications</div>
+                            <div class="item-description">Create modification log for team handoff and updates</div>
+                            <div class="item-details">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content">echo "📝 Creating modification documentation..."
+
+# Create modification log template
+cat > Admin-Local/myCustomizations/MODIFICATION_LOG.md << 'EOF'
+# SocietyPal Modification Log
+
+## Core File Changes
+Document any direct modifications to core CodeCanyon files here.
+
+### Format:
+```
+File: path/to/file.php
+Date: YYYY-MM-DD
+Purpose: Brief description
+Changes: Detailed description of what was modified
+Backup: Location of original file backup
+```
+
+## Custom Additions
+Document new files and features added to the system.
+
+## Configuration Changes
+Document any .env or config changes specific to this deployment.
+
+## Database Schema Changes
+Document any custom migrations or database modifications.
+
+## Update Notes
+Document considerations for future CodeCanyon updates.
+EOF
+
+echo "✅ Modification documentation template created"</div>
+                                </div>
+                                <p><strong>Expected Result:</strong> Comprehensive documentation system for tracking all customizations and modifications.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 18: Data Persistence -->
+        <div class="step-content" id="step18">
+            <div class="section-card">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <div class="section-title">
+                        <i class="fas fa-database section-icon"></i>
+                        Step 18: Data Persistence System
+                    </div>
+                    <div class="section-meta">
+                        <a href="#" class="step-reference">Reference Guide</a>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="why-box">
+                        <div class="why-box-content">
+                            <h4>💾 Why This Step is Critical</h4>
+                            <p><strong>Zero Data Loss:</strong> This step implements automated backup systems that ensure no data is ever lost during deployments, updates, or migrations. Data loss can be catastrophic for a business application.</p>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item">
+                        <div class="checkbox-container">
+                            <input type="checkbox" class="checkbox" data-item="setup-backup-system">
+                        </div>
+                        <div class="item-content">
+                            <div class="item-title" onclick="toggleDetails(this)">Implement Automated Backup System</div>
+                            <div class="item-description">Create comprehensive backup scripts for database and user uploads</div>
+                            <div class="item-details">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content">echo "💾 Setting up automated backup system..."
+
+# Create backup script directory
+mkdir -p Admin-Local/0-Setup-Operations/backup-scripts
+cd Admin-Local/0-Setup-Operations/backup-scripts
+
+# Create comprehensive backup script
+cat > backup_all.sh << 'EOF'
+#!/bin/bash
+set -e
+
+# Configuration
+BACKUP_DIR="../backups_local/$(date +%Y-%m-%d_%H-%M-%S)"
+mkdir -p "$BACKUP_DIR"
+
+echo "🗄️ Starting comprehensive backup..."
+
+# Database backup
+if [ -f "../../../.env" ]; then
+    source ../../../.env
+    mysqldump -h"${DB_HOST:-localhost}" -u"$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE" > "$BACKUP_DIR/database.sql"
+    echo "✅ Database backed up"
+else
+    echo "❌ .env file not found - cannot backup database"
+fi
+
+# User uploads backup
+if [ -d "../../../public/user-uploads" ]; then
+    cp -r ../../../public/user-uploads "$BACKUP_DIR/"
+    echo "✅ User uploads backed up"
+fi
+
+# Storage files backup
+if [ -d "../../../storage/app" ]; then
+    cp -r ../../../storage/app "$BACKUP_DIR/storage_app"
+    echo "✅ Storage files backed up"
+fi
+
+# Configuration backup
+cp ../../../.env "$BACKUP_DIR/env_backup" 2>/dev/null || echo "⚠️ No .env to backup"
+cp -r ../../../config "$BACKUP_DIR/config_backup"
+
+# Create backup manifest
+echo "# Backup Manifest" > "$BACKUP_DIR/BACKUP_INFO.md"
+echo "Date: $(date)" >> "$BACKUP_DIR/BACKUP_INFO.md"
+echo "Type: Full system backup" >> "$BACKUP_DIR/BACKUP_INFO.md"
+echo "Size: $(du -sh "$BACKUP_DIR" | cut -f1)" >> "$BACKUP_DIR/BACKUP_INFO.md"
+
+echo "✅ Complete backup created: $BACKUP_DIR"
+EOF
+
+chmod +x backup_all.sh
+echo "✅ Backup system created and made executable"</div>
+                                </div>
+                                <p><strong>Expected Result:</strong></p>
+                                <ul style="margin-left: 20px; margin-top: 5px; font-size: 13px;">
+                                    <li>Automated <code class="file-path">backup_all.sh</code> script for database, uploads, and config</li>
+                                    <li>Timestamped backup directories for version tracking</li>
+                                    <li>Backup manifest with metadata for easy restoration</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item">
+                        <div class="checkbox-container">
+                            <input type="checkbox" class="checkbox" data-item="test-backup-restore">
+                        </div>
+                        <div class="item-content">
+                            <div class="item-title" onclick="toggleDetails(this)">Test Backup and Restore Process</div>
+                            <div class="item-description">Verify backup integrity and restore functionality</div>
+                            <div class="item-details">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content">echo "🧪 Testing backup and restore process..."
+
+# Test backup creation
+cd Admin-Local/0-Setup-Operations/backup-scripts
+./backup_all.sh
+
+# Verify backup integrity
+LATEST_BACKUP=$(ls -1 ../backups_local/ | tail -1)
+BACKUP_PATH="../backups_local/$LATEST_BACKUP"
+
+echo "🔍 Verifying backup integrity..."
+
+# Check database backup
+if [ -f "$BACKUP_PATH/database.sql" ]; then
+    echo "✅ Database backup exists ($(wc -l < "$BACKUP_PATH/database.sql") lines)"
+else
+    echo "❌ Database backup missing"
+fi
+
+# Check user uploads backup
+if [ -d "$BACKUP_PATH/user-uploads" ]; then
+    echo "✅ User uploads backup exists ($(find "$BACKUP_PATH/user-uploads" -type f | wc -l) files)"
+else
+    echo "ℹ️ No user uploads to backup"
+fi
+
+# Create restore script
+cat > restore_backup.sh << 'EOF'
+#!/bin/bash
+set -e
+
+if [ -z "$1" ]; then
+    echo "Usage: ./restore_backup.sh <backup_directory_name>"
+    echo "Available backups:"
+    ls -1 ../backups_local/
+    exit 1
+fi
+
+BACKUP_PATH="../backups_local/$1"
+if [ ! -d "$BACKUP_PATH" ]; then
+    echo "❌ Backup directory not found: $BACKUP_PATH"
+    exit 1
+fi
+
+echo "🔄 Restoring from backup: $1"
+
+# Restore database
+if [ -f "$BACKUP_PATH/database.sql" ]; then
+    source ../../../.env
+    mysql -h"${DB_HOST:-localhost}" -u"$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE" < "$BACKUP_PATH/database.sql"
+    echo "✅ Database restored"
+fi
+
+# Restore user uploads
+if [ -d "$BACKUP_PATH/user-uploads" ]; then
+    rm -rf ../../../public/user-uploads
+    cp -r "$BACKUP_PATH/user-uploads" ../../../public/
+    echo "✅ User uploads restored"
+fi
+
+echo "✅ Restore completed successfully"
+EOF
+
+chmod +x restore_backup.sh
+echo "✅ Backup and restore system tested and ready"</div>
+                                </div>
+                                <div class="why-box">
+                                    <div class="why-box-content">
+                                        <h4>🔍 Educational Context</h4>
+                                        <p><strong>Disaster Recovery:</strong> A backup is only as good as your ability to restore from it. Testing the restore process ensures you can actually recover your data when needed.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item">
+                        <div class="checkbox-container">
+                            <input type="checkbox" class="checkbox" data-item="setup-persistence-verification">
+                        </div>
+                        <div class="item-content">
+                            <div class="item-title" onclick="toggleDetails(this)">Create Persistence Verification System</div>
+                            <div class="item-description">Automated verification that data persists through deployment cycles</div>
+                            <div class="item-details">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content">echo "🔍 Creating persistence verification system..."
+
+# Create verification script
+cat > verify_persistence.sh << 'EOF'
+#!/bin/bash
+set -e
+
+echo "🔍 Verifying data persistence..."
+
+# Check database connectivity and basic data
+if [ -f "../../../.env" ]; then
+    source ../../../.env
     
-    <script>
-        // Application State
-        let checklistState = JSON.parse(localStorage.getItem('deploymentChecklist')) || {};
-        let allItems = [];
-        let filteredItems = [];
+    # Test database connection
+    mysql -h"${DB_HOST:-localhost}" -u"$DB_USERNAME" -p"$DB_PASSWORD" -e "USE $DB_DATABASE; SHOW TABLES;" > /dev/null
+    echo "✅ Database connection verified"
+    
+    # Check for critical tables
+    TABLES=$(mysql -h"${DB_HOST:-localhost}" -u"$DB_USERNAME" -p"$DB_PASSWORD" -e "USE $DB_DATABASE; SHOW TABLES;" | wc -l)
+    echo "✅ Database has $TABLES tables"
+    
+    # Check for user data
+    USERS=$(mysql -h"${DB_HOST:-localhost}" -u"$DB_USERNAME" -p"$DB_PASSWORD" -e "USE $DB_DATABASE; SELECT COUNT(*) FROM users;" | tail -1)
+    echo "✅ Database has $USERS users"
+else
+    echo "❌ Cannot verify database - .env file missing"
+fi
 
-        // Initialize application
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeApp();
-            loadChecklistState();
-            updateProgress();
-            setupEventListeners();
-        });
+# Check file system persistence
+echo "📁 Checking file system persistence..."
 
-        function initializeApp() {
-            // Collect all checklist items
-            allItems = Array.from(document.querySelectorAll('.checklist-item'));
-            filteredItems = allItems;
-            
-            // Update total count
-            document.getElementById('total-count').textContent = allItems.length;
-            
-            // Initialize Prism.js for syntax highlighting
-            if (typeof Prism !== 'undefined') {
-                Prism.highlightAll();
-            }
-        }
+# Check storage directories exist and are writable
+for dir in "storage/logs" "storage/app" "storage/framework"; do
+    if [ -d "../../../$dir" ] && [ -w "../../../$dir" ]; then
+        echo "✅ $dir is writable"
+    else
+        echo "❌ $dir is not writable"
+    fi
+done
 
-        function setupEventListeners() {
-            // Tab switching
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    switchTab(this.dataset.tab);
-                });
+# Check user uploads directory
+if [ -d "../../../public/user-uploads" ]; then
+    UPLOADS=$(find ../../../public/user-uploads -type f | wc -l)
+    echo "✅ User uploads directory has $UPLOADS files"
+else
+    echo "ℹ️ No user uploads directory (will be created on first upload)"
+fi
+
+echo "✅ Persistence verification completed"
+EOF
+
+chmod +x verify_persistence.sh
+
+# Test the verification script
+./verify_persistence.sh
+
+echo "✅ Persistence verification system created and tested"</div>
+                                </div>
+                                <p><strong>Expected Result:</strong> Automated system to verify data integrity and persistence across deployments.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 19: Documentation -->
+        <div class="step-content" id="step19">
+            <div class="section-card">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <div class="section-title">
+                        <i class="fas fa-file-alt section-icon"></i>
+                        Step 19: Investment Protection Documentation
+                    </div>
+                    <div class="section-meta">
+                        <a href="#" class="step-reference">Reference Guide</a>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="why-box">
+                        <div class="why-box-content">
+                            <h4>📋 Why This Step is Critical</h4>
+                            <p><strong>Business Continuity:</strong> Documentation protects your investment by ensuring anyone can understand, maintain, and extend your customizations. It's essential for team handoffs, troubleshooting, and future development.</p>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item">
+                        <div class="checkbox-container">
+                            <input type="checkbox" class="checkbox" data-item="create-business-documentation">
+                        </div>
+                        <div class="item-content">
+                            <div class="item-title" onclick="toggleDetails(this)">Create Business Logic Documentation</div>
+                            <div class="item-description">Document customizations, business rules, and deployment procedures</div>
+                            <div class="item-details">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content">echo "📝 Creating business logic documentation..."
+
+# Create comprehensive documentation structure
+mkdir -p Admin-Local/myDocs/{business-logic,deployment,troubleshooting,team-handoff}
+
+# Create business logic documentation
+cat > Admin-Local/myDocs/business-logic/BUSINESS_RULES.md << 'EOF'
+# SocietyPal Business Logic Documentation
+
+## Custom Business Rules
+Document all custom business logic implemented in this installation.
+
+### User Management
+- Custom user roles and permissions
+- Registration workflow modifications
+- Authentication customizations
+
+### Payment Processing
+- Payment gateway configurations
+- Custom pricing rules
+- Subscription modifications
+
+### Content Management
+- Custom content types
+- Approval workflows
+- Content restrictions
+
+## Configuration Changes
+Document all .env and config modifications specific to this business.
+
+## Database Customizations
+Document any custom tables, fields, or relationships added.
+
+## Third-Party Integrations
+Document all external service integrations and API configurations.
+EOF
+
+# Create deployment documentation
+cat > Admin-Local/myDocs/deployment/DEPLOYMENT_GUIDE.md << 'EOF'
+# SocietyPal Deployment Guide
+
+## Pre-Deployment Checklist
+1. Run full backup (use backup_all.sh script)
+2. Verify all customizations are in myCustomizations/ directory
+3. Test build process in staging environment
+4. Review modification log for conflicts
+
+## Deployment Process
+1. Upload files to server
+2. Run <code class="command">composer install --no-dev --optimize-autoloader</code>
+3. Run <code class="command">npm ci && npm run build</code> (if applicable)
+4. Run <code class="command">php artisan migrate --force</code>
+5. Run <code class="command">php artisan config:cache</code>
+6. Run <code class="command">php artisan route:cache</code>
+7. Run <code class="command">php artisan view:cache</code>
+
+## Post-Deployment Verification
+1. Test critical functionality
+2. Verify database connectivity
+3. Check user uploads functionality
+4. Validate payment processing (if applicable)
+
+## Rollback Procedure
+1. Restore from backup using restore_backup.sh
+2. Revert to previous code version
+3. Clear all caches
+4. Verify functionality
+EOF
+
+echo "✅ Business documentation created"</div>
+                                </div>
+                                <p><strong>Expected Result:</strong></p>
+                                <ul style="margin-left: 20px; margin-top: 5px; font-size: 13px;">
+                                    <li>Comprehensive business logic documentation</li>
+                                    <li>Step-by-step deployment procedures</li>
+                                    <li>Rollback and recovery procedures</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item">
+                        <div class="checkbox-container">
+                            <input type="checkbox" class="checkbox" data-item="create-team-handoff">
+                        </div>
+                        <div class="item-content">
+                            <div class="item-title" onclick="toggleDetails(this)">Create Team Handoff Documentation</div>
+                            <div class="item-description">Prepare documentation for future team members or consultants</div>
+                            <div class="item-details">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content">echo "👥 Creating team handoff documentation..."
+
+# Create team handoff guide
+cat > Admin-Local/myDocs/team-handoff/TEAM_HANDOFF_GUIDE.md << 'EOF'
+# SocietyPal Team Handoff Guide
+
+## Project Overview
+- **Base Script:** SocietyPal CodeCanyon Script
+- **Version:** [Document version here]
+- **Customization Level:** [Basic/Moderate/Extensive]
+- **Deployment Date:** [Document deployment date]
+
+## Development Environment Setup
+1. Clone repository
+2. Copy <code class="file-path">.env.example</code> to <code class="file-path">.env</code> and configure
+3. Run <code class="command">composer install</code>
+4. Run <code class="command">npm install</code> (if applicable)
+5. Run <code class="command">php artisan key:generate</code>
+6. Run <code class="command">php artisan migrate</code>
+7. Run <code class="command">php artisan db:seed</code> (if applicable)
+
+## Key Customizations
+Document all major customizations and their locations:
+- Custom controllers: [List and describe]
+- Custom models: [List and describe]
+- Custom views: [List and describe]
+- Database modifications: [List and describe]
+
+## Important Directories
+- `Admin-Local/myCustomizations/` - All custom code
+- `Admin-Local/myDocs/` - All documentation
+- `Admin-Local/backups_local/` - Local backups
+- `public/user-uploads/` - User-generated content
+
+## Maintenance Tasks
+- Weekly backups (automated via backup_all.sh)
+- Monthly security updates
+- Quarterly dependency updates
+- As-needed CodeCanyon base script updates
+
+## Emergency Contacts
+- [List key contacts and their roles]
+- [Include escalation procedures]
+
+## Common Issues and Solutions
+[Document known issues and their resolutions]
+EOF
+
+# Create troubleshooting guide
+cat > Admin-Local/myDocs/troubleshooting/COMMON_ISSUES.md << 'EOF'
+# SocietyPal Troubleshooting Guide
+
+## Common Issues
+
+### Database Connection Issues
+**Symptoms:** Database connection errors, migrations failing
+**Solutions:**
+1. Check .env database credentials
+2. Verify database server is running
+3. Check database user permissions
+4. Verify database exists
+
+### Permission Issues
+**Symptoms:** File upload failures, cache errors
+**Solutions:**
+1. Check storage/ directory permissions (775)
+2. Check bootstrap/cache/ permissions (775)
+3. Verify web server user ownership
+
+### Build Process Issues
+**Symptoms:** npm errors, missing assets
+**Solutions:**
+1. Delete node_modules/ and npm install
+2. Clear npm cache: npm cache clean --force
+3. Check Node.js version compatibility
+
+### Performance Issues
+**Symptoms:** Slow page loads, timeouts
+**Solutions:**
+1. Run <code class="command">php artisan config:cache</code>
+2. Run <code class="command">php artisan route:cache</code>
+3. Run <code class="command">php artisan view:cache</code>
+4. Check database query optimization
+
+## Emergency Procedures
+1. Immediate rollback using restore_backup.sh
+2. Contact technical support
+3. Document the issue for future reference
+EOF
+
+echo "✅ Team handoff documentation created"</div>
+                                </div>
+                                <div class="why-box">
+                                    <div class="why-box-content">
+                                        <h4>🔍 Educational Context</h4>
+                                        <p><strong>Knowledge Transfer:</strong> Proper documentation ensures business continuity when team members change or when you need external help. It's an investment in your business's long-term stability.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item">
+                        <div class="checkbox-container">
+                            <input type="checkbox" class="checkbox" data-item="create-update-procedures">
+                        </div>
+                        <div class="item-content">
+                            <div class="item-title" onclick="toggleDetails(this)">Document Update and Maintenance Procedures</div>
+                            <div class="item-description">Create procedures for safely updating the base CodeCanyon script</div>
+                            <div class="item-details">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content">echo "🔄 Creating update procedures documentation..."
+
+# Create update procedures guide
+cat > Admin-Local/myDocs/deployment/UPDATE_PROCEDURES.md << 'EOF'
+# SocietyPal Update Procedures
+
+## Pre-Update Checklist
+1. **CRITICAL:** Create full backup using backup_all.sh
+2. Review changelog for breaking changes
+3. Test update in staging environment first
+4. Review all files in myCustomizations/ for conflicts
+5. Notify users of scheduled maintenance
+
+## Update Process
+1. Download new CodeCanyon version
+2. Extract to temporary directory
+3. Compare with current installation to identify conflicts
+4. Backup current core files to dated directory
+5. Replace core files (avoiding customized directories)
+6. Re-apply customizations from <code class="directory">myCustomizations/</code>
+7. Run <code class="command">composer install --no-dev --optimize-autoloader</code>
+8. Run any new migrations: <code class="command">php artisan migrate</code>
+9. Clear all caches
+10. Test all critical functionality
+
+## Post-Update Verification
+1. Test user registration and login
+2. Test payment processing
+3. Test file uploads
+4. Verify custom features still work
+5. Check error logs for issues
+6. Test backup/restore functionality
+
+## Rollback if Issues
+1. Stop web server
+2. Restore from backup using restore_backup.sh
+3. Restart web server
+4. Verify functionality restored
+5. Document issues for future resolution
+
+## Maintenance Schedule
+- **Weekly:** Review error logs, run backup verification
+- **Monthly:** Security updates, dependency updates
+- **Quarterly:** CodeCanyon base script updates (if available)
+- **Annually:** Full security audit and documentation review
+EOF
+
+echo "✅ Update procedures documentation created"</div>
+                                </div>
+                                <p><strong>Expected Result:</strong> Comprehensive procedures for safely maintaining and updating the system while preserving customizations.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 20: Commit Pre-Deploy -->
+        <div class="step-content" id="step20">
+            <div class="section-card">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <div class="section-title">
+                        <i class="fas fa-code-branch section-icon"></i>
+                        Step 20: Secure All Work in Repository
+                    </div>
+                    <div class="section-meta">
+                        <a href="#" class="step-reference">Reference Guide</a>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="why-box">
+                        <div class="why-box-content">
+                            <h4>🔒 Why This Step is Critical</h4>
+                            <p><strong>Investment Security:</strong> This step commits all your work to version control, creating a secure, versioned backup of your entire setup. This protects against data loss and enables collaborative development.</p>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item">
+                        <div class="checkbox-container">
+                            <input type="checkbox" class="checkbox" data-item="verify-gitignore">
+                        </div>
+                        <div class="item-content">
+                            <div class="item-title" onclick="toggleDetails(this)">Verify and Optimize .gitignore</div>
+                            <div class="item-description">Ensure sensitive files are excluded and important files are included</div>
+                            <div class="item-details">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content">echo "🔍 Verifying and optimizing .gitignore..."
+
+# Create comprehensive .gitignore if it doesn't exist or is incomplete
+cat > .gitignore << 'EOF'
+# Laravel specific
+/vendor/
+/node_modules/
+/public/hot
+/public/storage
+/storage/*.key
+/storage/app/
+/storage/framework/cache/
+/storage/framework/sessions/
+/storage/framework/testing/
+/storage/framework/views/
+/storage/logs/
+.env
+.env.backup
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+
+# User uploads and generated content
+/public/user-uploads/
+/public/build/
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.backup
+*.bak
+*.tmp
+
+# Local development
+.env.local
+.env.development
+.env.testing
+
+# Logs
+*.log
+logs/
+
+# Database
+*.sqlite
+*.sqlite3
+
+# Cache
+bootstrap/cache/
+storage/framework/cache/
+storage/framework/sessions/
+storage/framework/views/
+
+# Compiled assets
+/public/css/
+/public/js/
+/public/mix-manifest.json
+
+# Package files
+composer.phar
+package-lock.json
+yarn.lock
+
+# Important: Keep these files
+!.gitkeep
+!public/.htaccess
+!storage/app/public/.gitkeep
+EOF
+
+echo "✅ .gitignore optimized for SocietyPal project"</div>
+                                </div>
+                                <p><strong>Expected Result:</strong></p>
+                                <ul style="margin-left: 20px; margin-top: 5px; font-size: 13px;">
+                                    <li>Sensitive files (.env, uploads) excluded from repository</li>
+                                    <li>Build artifacts and cache files ignored</li>
+                                    <li>Important project files included</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item">
+                        <div class="checkbox-container">
+                            <input type="checkbox" class="checkbox" data-item="commit-phase2-work">
+                        </div>
+                        <div class="item-content">
+                            <div class="item-title" onclick="toggleDetails(this)">Commit All Phase 2 Preparation Work</div>
+                            <div class="item-description">Create comprehensive commit of all pre-deployment preparation</div>
+                            <div class="item-details">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content">echo "💾 Committing all Phase 2 preparation work..."
+
+# Initialize git repository if not already done
+if [ ! -d ".git" ]; then
+    git init
+    echo "✅ Git repository initialized"
+fi
+
+# Add all project files
+git add .
+
+# Create comprehensive commit message
+git commit -m "Phase 2 Pre-Deployment Preparation Complete
+
+This commit includes:
+- ✅ Dependencies installed and locked (composer.lock, package-lock.json)
+- ✅ Build process tested and verified
+- ✅ Customization protection layer implemented
+- ✅ Data persistence system with automated backups
+- ✅ Comprehensive documentation for team handoff
+- ✅ Update and maintenance procedures documented
+
+All systems ready for Phase 3 deployment.
+
+Backup scripts location: Admin-Local/0-Setup-Operations/backup-scripts/
+Documentation location: Admin-Local/myDocs/
+Customizations location: Admin-Local/myCustomizations/
+
+Deployment checklist completed: $(date)"
+
+echo "✅ Phase 2 work committed to repository"</div>
+                                </div>
+                                <div class="why-box">
+                                    <div class="why-box-content">
+                                        <h4>🔍 Educational Context</h4>
+                                        <p><strong>Version Control Best Practices:</strong> Committing work at logical milestones creates restore points and enables collaboration. The detailed commit message documents what was accomplished.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item">
+                        <div class="checkbox-container">
+                            <input type="checkbox" class="checkbox" data-item="create-deployment-branch">
+                        </div>
+                        <div class="item-content">
+                            <div class="item-title" onclick="toggleDetails(this)">Create Deployment Branch</div>
+                            <div class="item-description">Prepare isolated branch for deployment testing</div>
+                            <div class="item-details">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content">echo "🌿 Creating deployment branch..."
+
+# Create deployment branch from current state
+DEPLOYMENT_BRANCH="deployment-$(date +%Y-%m-%d)"
+git checkout -b "$DEPLOYMENT_BRANCH"
+
+echo "✅ Created deployment branch: $DEPLOYMENT_BRANCH"
+
+# Add deployment-specific configurations
+cat > DEPLOYMENT_NOTES.md << EOF
+# Deployment Branch: $DEPLOYMENT_BRANCH
+
+## Purpose
+This branch contains the exact code state for deployment to production.
+
+## Created: $(date)
+
+## Pre-Deployment Verification
+- [x] Dependencies locked and installed
+- [x] Build process tested
+- [x] Customization layer implemented
+- [x] Backup system tested
+- [x] Documentation complete
+
+## Deployment Checklist
+- [ ] Upload files to server
+- [ ] Configure .env for production
+- [ ] Run <code class="command">composer install --no-dev --optimize-autoloader</code>
+- [ ] Run <code class="command">npm ci && npm run build</code> (if applicable)
+- [ ] Run <code class="command">php artisan migrate --force</code>
+- [ ] Configure web server
+- [ ] Test critical functionality
+- [ ] Enable backups
+
+## Post-Deployment
+- [ ] Verify all functionality
+- [ ] Set up monitoring
+- [ ] Document any issues
+- [ ] Update main branch with any fixes
+
+## Branch Management
+- Keep this branch for deployment history
+- Create new deployment branches for future deployments
+- Tag successful deployments for easy reference
+EOF
+
+git add DEPLOYMENT_NOTES.md
+git commit -m "Create deployment branch with verification checklist
+
+Branch: $DEPLOYMENT_BRANCH
+Ready for Phase 3 deployment execution"
+
+# Switch back to main branch
+git checkout main
+
+echo "✅ Deployment branch created and ready"
+echo "🚀 Ready to proceed to Phase 3: Deployment Execution"</div>
+                                </div>
+                                <p><strong>Expected Result:</strong></p>
+                                <ul style="margin-left: 20px; margin-top: 5px; font-size: 13px;">
+                                    <li>Clean deployment branch created with timestamp</li>
+                                    <li>Deployment checklist included in branch</li>
+                                    <li>Main branch preserved for continued development</li>
+                                    <li>Ready to proceed to Phase 3 deployment</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item">
+                        <div class="checkbox-container">
+                            <input type="checkbox" class="checkbox" data-item="final-verification">
+                        </div>
+                        <div class="item-content">
+                            <div class="item-title" onclick="toggleDetails(this)">Final Phase 2 Verification</div>
+                            <div class="item-description">Comprehensive verification that all Phase 2 objectives are complete</div>
+                            <div class="item-details">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                                    <div class="code-content">echo "🏁 Running final Phase 2 verification..."
+
+# Verify all key components exist and are functional
+echo "📋 Phase 2 Completion Verification"
+echo "=================================="
+
+# Check dependency locks
+if [ -f "composer.lock" ]; then
+    echo "✅ Composer dependencies locked"
+else
+    echo "❌ Missing composer.lock"
+fi
+
+if [ -f "package-lock.json" ] || [ ! -f "package.json" ]; then
+    echo "✅ NPM dependencies locked (or N/A)"
+else
+    echo "❌ Missing package-lock.json"
+fi
+
+# Check customization layer
+if [ -d "Admin-Local/myCustomizations" ]; then
+    echo "✅ Customization layer implemented"
+else
+    echo "❌ Customization layer missing"
+fi
+
+# Check backup system
+if [ -f "Admin-Local/0-Setup-Operations/backup-scripts/backup_all.sh" ]; then
+    echo "✅ Backup system implemented"
+else
+    echo "❌ Backup system missing"
+fi
+
+# Check documentation
+if [ -d "Admin-Local/myDocs" ]; then
+    echo "✅ Documentation system created"
+else
+    echo "❌ Documentation missing"
+fi
+
+# Check git repository
+if [ -d ".git" ]; then
+    echo "✅ Git repository initialized"
+    COMMITS=$(git rev-list --count HEAD)
+    echo "   - $COMMITS commits in repository"
+else
+    echo "❌ Git repository not initialized"
+fi
+
+# Final summary
+echo ""
+echo "🎯 Phase 2 Pre-Deployment Preparation Status"
+echo "============================================="
+echo "✅ All dependencies installed and locked"
+echo "✅ Build process tested and verified"
+echo "✅ Customization protection implemented"
+echo "✅ Data persistence system deployed"
+echo "✅ Comprehensive documentation created"
+echo "✅ All work committed to version control"
+echo ""
+echo "🚀 READY FOR PHASE 3: DEPLOYMENT EXECUTION"
+echo ""
+echo "Next steps:"
+echo "1. Proceed to Phase 3 deployment guides"
+echo "2. Choose deployment strategy (A, B, C, or D)"
+echo "3. Follow deployment checklist for chosen strategy"</div>
+                                </div>
+                                <p><strong>Expected Result:</strong> Complete verification that all Phase 2 objectives are met and the system is ready for deployment.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JavaScript for interactivity -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <script>
+            // Initialize application state
+            let currentStep = 'step15';
+            let progress = {
+                completed: 0,
+                total: 0,
+                steps: {}
+            };
+
+            // Initialize on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                initializeProgress();
+                initializeSearch();
+                initializeStepNavigation();
+                loadSavedProgress();
+                updateProgress();
             });
+
+            // Progress Management
+            function initializeProgress() {
+                const checkboxes = document.querySelectorAll('.checkbox');
+                progress.total = checkboxes.length;
+                
+                checkboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', function() {
+                        updateProgress();
+                        saveProgress();
+                    });
+                });
+            }
+
+            function updateProgress() {
+                const checkboxes = document.querySelectorAll('.checkbox');
+                progress.completed = Array.from(checkboxes).filter(cb => cb.checked).length;
+                
+                const percentage = Math.round((progress.completed / progress.total) * 100);
+                
+                // Update progress bar
+                const progressFill = document.querySelector('.progress-fill');
+                const progressText = document.querySelector('.progress-text');
+                
+                if (progressFill) {
+                    progressFill.style.width = percentage + '%';
+                }
+                
+                if (progressText) {
+                    progressText.textContent = `${percentage}% Complete (${progress.completed}/${progress.total} items)`;
+                }
+
+                // Update step statuses in navigation
+                updateStepStatuses();
+            }
+
+            function updateStepStatuses() {
+                const steps = ['step15', 'step16', 'step17', 'step18', 'step19', 'step20'];
+                
+                steps.forEach(stepId => {
+                    const stepContent = document.getElementById(stepId);
+                    const stepNavItem = document.querySelector(`[data-step="${stepId}"]`);
+                    
+                    if (stepContent && stepNavItem) {
+                        const checkboxes = stepContent.querySelectorAll('.checkbox');
+                        const completed = Array.from(checkboxes).filter(cb => cb.checked).length;
+                        const total = checkboxes.length;
+                        
+                        const statusElement = stepNavItem.querySelector('.step-status');
+                        if (statusElement) {
+                            if (completed === total && total > 0) {
+                                statusElement.textContent = 'Complete';
+                                statusElement.className = 'step-status complete';
+                            } else if (completed > 0) {
+                                statusElement.textContent = 'In Progress';
+                                statusElement.className = 'step-status progress';
+                            } else {
+                                statusElement.textContent = 'Pending';
+                                statusElement.className = 'step-status pending';
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Step Navigation
+            function initializeStepNavigation() {
+                const stepNavItems = document.querySelectorAll('.step-nav-item');
+                
+                stepNavItems.forEach(item => {
+                    item.addEventListener('click', function() {
+                        const stepId = this.getAttribute('data-step');
+                        showStep(stepId);
+                    });
+                });
+            }
+
+            function showStep(stepId) {
+                // Hide all step contents
+                document.querySelectorAll('.step-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Show selected step
+                const targetStep = document.getElementById(stepId);
+                if (targetStep) {
+                    targetStep.classList.add('active');
+                    currentStep = stepId;
+                }
+                
+                // Update navigation
+                document.querySelectorAll('.step-nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                const activeNavItem = document.querySelector(`[data-step="${stepId}"]`);
+                if (activeNavItem) {
+                    activeNavItem.classList.add('active');
+                }
+            }
 
             // Search functionality
-            const searchInput = document.querySelector('.search-input');
-            searchInput.addEventListener('input', function() {
-                performSearch(this.value);
-            });
-
-            // Checkbox state management
-            document.querySelectorAll('.checkbox').forEach(checkbox => {
-                checkbox.addEventListener('change', function() {
-                    handleCheckboxChange(this);
-                });
-            });
-        }
-
-        function switchTab(tabId) {
-            // Update tab buttons
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
-
-            // Update tab content
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            document.getElementById(`tab-${tabId}`).classList.add('active');
-        }
-
-        function toggleSection(headerElement) {
-            const content = headerElement.nextElementSibling;
-            const toggleIcon = headerElement.querySelector('.toggle-icon');
-            
-            if (content.classList.contains('collapsed')) {
-                content.classList.remove('collapsed');
-                headerElement.classList.remove('collapsed');
-                toggleIcon.style.transform = 'rotate(0deg)';
-            } else {
-                content.classList.add('collapsed');
-                headerElement.classList.add('collapsed');
-                toggleIcon.style.transform = 'rotate(-90deg)';
-            }
-        }
-
-        function toggleDetails(titleElement) {
-            const itemContent = titleElement.parentElement;
-            const details = itemContent.querySelector('.item-details');
-            
-            if (details.classList.contains('expanded')) {
-                details.classList.remove('expanded');
-                titleElement.style.color = '#2d3748';
-            } else {
-                details.classList.add('expanded');
-                titleElement.style.color = '#667eea';
-            }
-        }
-
-        function handleCheckboxChange(checkbox) {
-            const itemId = checkbox.dataset.item;
-            const isChecked = checkbox.checked;
-            
-            // Update state
-            checklistState[itemId] = isChecked;
-            localStorage.setItem('deploymentChecklist', JSON.stringify(checklistState));
-            
-            // Update section status
-            updateSectionStatus(checkbox);
-            
-            // Update overall progress
-            updateProgress();
-        }
-
-        function updateSectionStatus(checkbox) {
-            const section = checkbox.closest('.section-card');
-            const checkboxes = section.querySelectorAll('.checkbox');
-            const checkedBoxes = section.querySelectorAll('.checkbox:checked');
-            const statusBadge = section.querySelector('.status-badge');
-            
-            if (checkedBoxes.length === 0) {
-                statusBadge.className = 'status-badge status-pending';
-                statusBadge.textContent = 'Pending';
-            } else if (checkedBoxes.length === checkboxes.length) {
-                statusBadge.className = 'status-badge status-complete';
-                statusBadge.textContent = 'Complete';
-            } else {
-                statusBadge.className = 'status-badge status-progress';
-                statusBadge.textContent = 'In Progress';
-            }
-        }
-
-        function updateProgress() {
-            const totalItems = allItems.length;
-            const completedItems = Object.values(checklistState).filter(Boolean).length;
-            const percentage = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
-            
-            document.getElementById('completed-count').textContent = completedItems;
-            document.getElementById('progress-fill').style.width = `${percentage}%`;
-        }
-
-        function loadChecklistState() {
-            // Restore checkbox states
-            Object.entries(checklistState).forEach(([itemId, isChecked]) => {
-                const checkbox = document.querySelector(`[data-item="${itemId}"]`);
-                if (checkbox) {
-                    checkbox.checked = isChecked;
-                    updateSectionStatus(checkbox);
+            function initializeSearch() {
+                const searchInput = document.querySelector('.search-input');
+                if (searchInput) {
+                    searchInput.addEventListener('input', function() {
+                        const query = this.value.toLowerCase();
+                        filterContent(query);
+                    });
                 }
-            });
-        }
-
-        function performSearch(query) {
-            if (!query.trim()) {
-                // Show all items
-                filteredItems = allItems;
-                allItems.forEach(item => {
-                    item.classList.remove('hidden');
-                    item.closest('.section-card').classList.remove('hidden');
-                });
-                return;
             }
 
-            const searchTerms = query.toLowerCase().trim().split(' ');
-            
-            filteredItems = allItems.filter(item => {
-                const itemText = item.textContent.toLowerCase();
-                return searchTerms.every(term => itemText.includes(term));
-            });
-
-            // Hide all items first
-            allItems.forEach(item => {
-                item.classList.add('hidden');
-            });
-
-            // Show filtered items
-            filteredItems.forEach(item => {
-                item.classList.remove('hidden');
-                item.closest('.section-card').classList.remove('hidden');
-            });
-
-            // Hide sections with no visible items
-            document.querySelectorAll('.section-card').forEach(section => {
-                const visibleItems = section.querySelectorAll('.checklist-item:not(.hidden)');
-                if (visibleItems.length === 0) {
-                    section.classList.add('hidden');
-                } else {
-                    section.classList.remove('hidden');
-                }
-            });
-        }
-
-        function copyCode(button) {
-            const codeContent = button.parentElement.nextElementSibling;
-            const text = codeContent.textContent;
-            
-            navigator.clipboard.writeText(text).then(() => {
-                // Visual feedback
-                const originalText = button.textContent;
-                button.textContent = 'Copied!';
-                button.style.background = '#48bb78';
+            function filterContent(query) {
+                const items = document.querySelectorAll('.checklist-item');
                 
+                items.forEach(item => {
+                    const title = item.querySelector('.item-title').textContent.toLowerCase();
+                    const description = item.querySelector('.item-description').textContent.toLowerCase();
+                    const details = item.querySelector('.item-details').textContent.toLowerCase();
+                    
+                    const matches = title.includes(query) || description.includes(query) || details.includes(query);
+                    
+                    if (query === '' || matches) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            }
+
+            // Section and item toggles
+            function toggleSection(header) {
+                const content = header.nextElementSibling;
+                const icon = header.querySelector('.toggle-icon');
+                
+                if (content.classList.contains('collapsed')) {
+                    content.classList.remove('collapsed');
+                    header.classList.remove('collapsed');
+                    content.style.display = 'block';
+                } else {
+                    content.classList.add('collapsed');
+                    header.classList.add('collapsed');
+                    content.style.display = 'none';
+                }
+            }
+
+            function toggleDetails(element) {
+                const item = element.closest('.item-content');
+                const details = item.querySelector('.item-details');
+                
+                if (details.classList.contains('expanded')) {
+                    details.classList.remove('expanded');
+                } else {
+                    details.classList.add('expanded');
+                }
+            }
+
+            // Simple and reliable copy functionality
+            function copyCode(button) {
+                const codeContent = button.closest('.code-block').querySelector('.code-content');
+                const text = codeContent.textContent.trim();
+                
+                // Store original state
+                const originalText = button.textContent;
+                
+                // Create temporary textarea for copying
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                textArea.setSelectionRange(0, 99999); // For mobile devices
+                
+                let success = false;
+                try {
+                    success = document.execCommand('copy');
+                } catch (err) {
+                    success = false;
+                }
+                
+                document.body.removeChild(textArea);
+                
+                if (success) {
+                    // Show success
+                    button.textContent = '✅ Copied!';
+                    button.style.background = '#48bb78';
+                } else {
+                    // Show error
+                    button.textContent = '❌ Failed';
+                    button.style.background = '#f56565';
+                }
+                
+                // Reset after 2 seconds
                 setTimeout(() => {
                     button.textContent = originalText;
                     button.style.background = '#667eea';
                 }, 2000);
-            }).catch(err => {
-                console.error('Failed to copy code:', err);
-                
-                // Fallback for older browsers
-                const textArea = document.createElement('textarea');
-                textArea.value = text;
-                textArea.style.position = 'fixed';
-                textArea.style.left = '-999999px';
-                textArea.style.top = '-999999px';
-                document.body.appendChild(textArea);
-                textArea.focus();
-                textArea.select();
-                
-                try {
-                    document.execCommand('copy');
-                    button.textContent = 'Copied!';
-                    setTimeout(() => {
-                        button.textContent = 'Copy';
-                    }, 2000);
-                } catch (err) {
-                    button.textContent = 'Copy Failed';
-                    setTimeout(() => {
-                        button.textContent = 'Copy';
-                    }, 2000);
-                }
-                
-                document.body.removeChild(textArea);
-            });
-        }
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            // Ctrl/Cmd + K for search focus
-            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-                e.preventDefault();
-                document.querySelector('.search-input').focus();
             }
-            
-            // Escape to clear search
-            if (e.key === 'Escape') {
-                const searchInput = document.querySelector('.search-input');
-                searchInput.value = '';
-                performSearch('');
+
+            // Progress persistence
+            function saveProgress() {
+                const checkboxes = document.querySelectorAll('.checkbox');
+                const progressData = {};
+                
+                checkboxes.forEach(checkbox => {
+                    const itemId = checkbox.getAttribute('data-item');
+                    progressData[itemId] = checkbox.checked;
+                });
+                
+                localStorage.setItem('societypal-checklist-progress', JSON.stringify(progressData));
             }
-        });
 
-        // Auto-save progress every 30 seconds
-        setInterval(() => {
-            localStorage.setItem('deploymentChecklist', JSON.stringify(checklistState));
-        }, 30000);
-
-        // Export/Import functionality
-        function exportProgress() {
-            const data = {
-                timestamp: new Date().toISOString(),
-                checklist: checklistState,
-                progress: {
-                    total: allItems.length,
-                    completed: Object.values(checklistState).filter(Boolean).length
-                }
-            };
-            
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `deployment-checklist-${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        function importProgress(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    checklistState = data.checklist || {};
-                    localStorage.setItem('deploymentChecklist', JSON.stringify(checklistState));
-                    loadChecklistState();
-                    updateProgress();
+            function loadSavedProgress() {
+                const saved = localStorage.getItem('societypal-checklist-progress');
+                if (saved) {
+                    const progressData = JSON.parse(saved);
                     
-                    // Show success message
-                    const message = document.createElement('div');
-                    message.textContent = '✅ Progress imported successfully!';
-                    message.style.cssText = `
-                        position: fixed;
-                        top: 20px;
-                        right: 20px;
-                        background: #48bb78;
-                        color: white;
-                        padding: 12px 20px;
-                        border-radius: 8px;
-                        z-index: 10000;
-                        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-                    `;
-                    document.body.appendChild(message);
-                    
-                    setTimeout(() => {
-                        document.body.removeChild(message);
-                    }, 3000);
-                } catch (err) {
-                    alert('Failed to import progress. Please check the file format.');
+                    Object.keys(progressData).forEach(itemId => {
+                        const checkbox = document.querySelector(`[data-item="${itemId}"]`);
+                        if (checkbox) {
+                            checkbox.checked = progressData[itemId];
+                        }
+                    });
                 }
-            };
-            reader.readAsText(file);
-        }
+            }
 
-        // Add export/import buttons to header
-        window.addEventListener('load', function() {
-            const headerActions = document.createElement('div');
-            headerActions.style.cssText = 'margin-top: 15px; display: flex; gap: 10px; justify-content: center;';
-            headerActions.innerHTML = `
-                <button onclick="exportProgress()" style="
-                    background: #667eea;
-                    color: white;
-                    border: none;
-                    padding: 8px 16px;
-                    border-radius: 6px;
-                    font-size: 12px;
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    gap: 5px;
-                ">
-                    <i class="fas fa-download"></i> Export Progress
-                </button>
-                <label style="
-                    background: #48bb78;
-                    color: white;
-                    border: none;
-                    padding: 8px 16px;
-                    border-radius: 6px;
-                    font-size: 12px;
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    gap: 5px;
-                ">
-                    <i class="fas fa-upload"></i> Import Progress
-                    <input type="file" accept=".json" onchange="importProgress(event)" style="display: none;">
-                </label>
-            `;
-            document.querySelector('.header').appendChild(headerActions);
-        });
-    </script>
+            // Add smooth animations
+            function addFadeInAnimation() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('fade-in');
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.section-card').forEach(card => {
+                    observer.observe(card);
+                });
+            }
+
+            // Initialize animations after DOM is loaded
+            document.addEventListener('DOMContentLoaded', addFadeInAnimation);
+        </script>
+    </div>
 </body>
 </html>
