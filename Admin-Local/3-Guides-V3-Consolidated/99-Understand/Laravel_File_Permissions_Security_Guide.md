@@ -8,6 +8,30 @@
 
 ---
 
+## 🚀 **Quick Start: Ready-to-Use Scripts**
+
+**For immediate use, three production-ready scripts are available in this project:**
+
+```bash
+# 📍 Script Location: Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/
+
+# Before CodeCanyon installation/update
+./Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/1-permissions-pre-install.sh
+
+# After CodeCanyon installation/update completes
+./Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/2-permissions-post-install.sh
+
+# Emergency security recovery
+./Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/permissions-emergency-security.sh --auto
+```
+
+**Features:** Environment auto-detection, interactive/non-interactive modes, security auditing, logging
+**Documentation:** [Script README](../0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/README.md)
+
+⬇️ **Continue reading for complete permission theory and manual implementation details...**
+
+---
+
 ## 📋 **Complete Quick Reference Table**
 
 | Directory/File Type           | Local Dev | Production | During Install | After Install | Purpose                        |
@@ -578,7 +602,61 @@ chmod -R 755 storage/ bootstrap/cache/ public/user-uploads/
 
 ## 📁 **Ready-to-Use Permission Scripts**
 
-**Create these scripts in your project for easy permission management:**
+**Pre-built scripts are available in your project for easy permission management:**
+
+### **📍 Script Locations**
+
+The following production-ready scripts are located at:
+```
+Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/
+├── 1-permissions-pre-install.sh      # Before CodeCanyon install/update
+├── 2-permissions-post-install.sh     # After CodeCanyon install/update
+├── permissions-emergency-security.sh # Emergency security recovery
+└── README.md                         # Script documentation
+```
+
+### **🚀 Quick Usage Examples**
+
+#### **Before CodeCanyon Installation/Update:**
+```bash
+cd /path/to/your/laravel/project
+./Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/1-permissions-pre-install.sh
+```
+
+#### **After CodeCanyon Installation/Update Completes:**
+```bash
+./Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/2-permissions-post-install.sh
+```
+
+#### **Emergency Security Recovery:**
+```bash
+./Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/permissions-emergency-security.sh --auto
+```
+
+### **🎛️ Script Features**
+
+All scripts include:
+- **Environment Detection**: Automatically detects local/staging/production from `.env`
+- **Smart Permissions**: Different permission levels for different environments
+- **Security Audits**: Built-in checks for dangerous 777 permissions
+- **Logging**: Detailed logs in `install-permissions.log` and `emergency-security.log`
+- **Interactive/Non-Interactive Modes**: `--interactive` or `--auto` flags
+- **Help Documentation**: `--help` flag for usage information
+
+### **📖 Complete Documentation**
+
+For detailed script documentation, options, and examples, see:
+```bash
+cat Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/README.md
+```
+
+---
+
+## 🛠️ **Alternative: Manual Script Creation**
+
+**If you need to create custom scripts for other projects, here are the templates:**
+
+> **ℹ️ Note:** The scripts above already exist in this project. These templates are provided for reference when setting up other Laravel projects that don't have the pre-built scripts.
 
 ### **1. Create Scripts Directory**
 
@@ -616,7 +694,7 @@ chmod 600 .env*
 
 echo "✅ Temporary installation permissions applied"
 echo "🎯 Ready for frontend installation/update"
-echo "⚠️ REMEMBER: Run ./scripts/permissions/post-install.sh immediately after completion!"
+echo "⚠️ REMEMBER: Run ./Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/2-permissions-post-install.sh immediately after completion!"
 EOF
 
 chmod +x scripts/permissions/pre-install.sh
@@ -804,15 +882,15 @@ chmod +x scripts/permissions/complete-reset.sh
 
 ```bash
 # Before frontend installation/update (any environment)
-./scripts/permissions/pre-install.sh
+./Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/1-permissions-pre-install.sh
 
 # Immediately after frontend installation/update completes
-./scripts/permissions/post-install.sh
+./Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/2-permissions-post-install.sh
 
 # If you forgot to run post-install and need emergency security
-./scripts/permissions/emergency-security.sh
+./Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/permissions-emergency-security.sh --auto
 
-# Complete permissions reset (useful for new deployments)
+# For other projects with custom scripts:
 ./scripts/permissions/complete-reset.sh
 ```
 

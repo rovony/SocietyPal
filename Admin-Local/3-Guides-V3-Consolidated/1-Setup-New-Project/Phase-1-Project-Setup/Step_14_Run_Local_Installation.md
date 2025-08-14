@@ -231,6 +231,8 @@ echo "🔍 Expected: CodeCanyon installer or application homepage"
 ---
 
 ## 6. (Optional) CLI Installation
+**🔒 Important Note:** This step is optional and can be used if user had issues doing the install manually using site frontend (step 7 below) & ONLY after confirming with user.
+
 
 6.1 Check if CLI install command exists:
 
@@ -268,7 +270,7 @@ php artisan db:seed --class=AdminSeeder
 
 **🚨 CRITICAL: Herd Database Configuration**
 
-**⚠️ Common Error Fix:** If you get `SQLSTATE[HY000] [2002] No such file or directory`, use the correct database configuration below:
+**⚠️ Common Error Fix:** If you get `SQLSTATE[HY000] [2002] No such file or directory`, use the correct database configuration below: Use `127.0.0.1` instead of `localhost`
 
 **🎯 Why This Happens:**
 
@@ -480,65 +482,37 @@ After successful installation, the CodeCanyon installer typically displays super
 
 1. **Screenshot the completion page** showing superadmin credentials
 2. **Record the following information:**
-   - Superadmin Email
-   - Superadmin Password
-   - Any license keys or tokens
-   - Installation completion timestamp
 
-10.2 Create secure credentials file:
+    - Superadmin Email
+    - Superadmin Password
+    - Any license keys or tokens
+    - Installation completion timestamp
+
+    10.2 **Execute Universal Credential Capture Script:**
 
 ```bash
-# Create secure credentials storage
-cat > Admin-Local/1-CurrentProject/installation-credentials.json << 'EOF'
-{
-  "installation_date": "$(date -Iseconds)",
-  "superadmin": {
-    "email": "superadmin@example.com",
-    "password": "123456",
-    "note": "CHANGE IMMEDIATELY AFTER FIRST LOGIN"
-  },
-  "application": {
-    "name": "SocietyPal Local",
-    "url": "https://societypal.test",
-    "environment": "local"
-  },
-  "database": {
-    "name": "societypal_local",
-    "host": "127.0.0.1",
-    "port": 3306
-  }
-}
-EOF
+# Run the universal credential capture script
+./Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/Post-Installation-Analysis/2-capture-credentials.sh
 
-# Secure the credentials file
-chmod 600 Admin-Local/1-CurrentProject/installation-credentials.json
-
-echo "✅ Installation credentials saved securely"
-echo "📁 Location: Admin-Local/1-CurrentProject/installation-credentials.json"
-echo "🔒 Permissions: 600 (owner read/write only)"
+echo "✅ Credential capture completed using universal script"
 ```
 
-10.3 Add credentials to environment file (optional backup):
+**🎯 Script Features:**
+- **Auto-Detection**: Automatically detects project name, URL, database name from `.env`
+- **Interactive Collection**: Prompts for superadmin credentials securely
+- **Secure Storage**: Creates encrypted JSON with 600 permissions
+- **Environment Backup**: Backs up current `.env` file
+- **Git Security**: Automatically adds sensitive files to `.gitignore`
+- **Universal Design**: Works with any Laravel project, not just SocietyPal
 
+**📁 Files Created:**
+- `Admin-Local/1-CurrentProject/installation-credentials.json` (secure credentials)
+- `Admin-Local/1-CurrentProject/.env.local.backup` (environment backup)
+- Updated `.gitignore` with security exclusions
+
+**📖 Script Documentation:**
 ```bash
-# Add to .env.local as backup (will be excluded from git)
-echo "" >> .env.local
-echo "# Installation Credentials ($(date))" >> .env.local
-echo "SUPERADMIN_EMAIL=superadmin@example.com" >> .env.local
-echo "SUPERADMIN_TEMP_PASSWORD=123456" >> .env.local
-echo "# ⚠️ CHANGE PASSWORD IMMEDIATELY AFTER FIRST LOGIN" >> .env.local
-
-echo "✅ Credentials backed up to .env.local"
-```
-
-10.4 Ensure credentials are excluded from version control:
-
-```bash
-# Verify gitignore covers our credentials
-grep -q "Admin-Local/1-CurrentProject/.*\.json" .gitignore || echo "Admin-Local/1-CurrentProject/*.json" >> .gitignore
-grep -q "\.env\.local" .gitignore || echo ".env.local" >> .gitignore
-
-echo "✅ Credentials excluded from git"
+cat Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/Post-Installation-Analysis/README.md
 ```
 
 ---
@@ -547,83 +521,65 @@ echo "✅ Credentials excluded from git"
 
 **🔒 CRITICAL SECURITY STEP**
 
-The installation process required temporary elevated permissions (775). Now we must implement appropriate security lockdown based on environment and the [Laravel File Permissions Security Guide](../../99-Understand/Laravel_File_Permissions_Security_Guide.md).
+The installation process required temporary elevated permissions (775). Now we must implement appropriate security lockdown using the production-ready permission scripts available in this project.
 
-11.1 **Environment Detection & Permission Adjustment:**
+**📋 Available Permission Scripts:**
 
-```bash
-# Detect environment and apply appropriate security
-if [[ -f ".env" && $(grep "APP_ENV=local" .env) ]]; then
-    ENV_TYPE="local"
-    PERM_STORAGE="775"
-    echo "🏠 LOCAL environment detected - maintaining 775 for development convenience"
-elif [[ -f ".env" && $(grep "APP_ENV=staging" .env) ]]; then
-    ENV_TYPE="staging"
-    PERM_STORAGE="755"
-    echo "🌐 STAGING environment detected - applying 755 for security"
-elif [[ -f ".env" && $(grep "APP_ENV=production" .env) ]]; then
-    ENV_TYPE="production"
-    PERM_STORAGE="755"
-    echo "🚀 PRODUCTION environment detected - applying 755 for maximum security"
-else
-    ENV_TYPE="local"
-    PERM_STORAGE="775"
-    echo "⚠️ Environment unknown - defaulting to LOCAL (775) permissions"
-fi
+This project includes pre-built, production-ready permission management scripts located at:
+
+```
+Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/
+├── 1-permissions-pre-install.sh      # Before CodeCanyon install/update
+├── 2-permissions-post-install.sh     # After CodeCanyon install/update
+├── permissions-emergency-security.sh # Emergency security recovery
+└── README.md                         # Complete script documentation
 ```
 
-11.2 **Apply Environment-Appropriate Permissions:**
+**🎯 Script Features:**
+
+-   **Environment Auto-Detection**: Automatically detects local/staging/production from `.env`
+-   **Smart Permissions**: Different permission levels for different environments
+-   **Security Audits**: Built-in checks for dangerous 777 permissions
+-   **Logging**: Detailed logs in `install-permissions.log` and `emergency-security.log`
+-   **Interactive/Non-Interactive Modes**: `--interactive` or `--auto` flags
+
+    11.1 **Execute Post-Installation Security Lockdown:**
 
 ```bash
-echo "🔧 Setting $ENV_TYPE permissions..."
+# Run the production-ready post-installation security script
+./Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/2-permissions-post-install.sh
 
-# Apply storage permissions based on environment
-chmod -R $PERM_STORAGE storage/
-chmod -R $PERM_STORAGE bootstrap/cache/
-[ -d "public/user-uploads" ] && chmod -R $PERM_STORAGE public/user-uploads/
-[ -d "public/uploads" ] && chmod -R $PERM_STORAGE public/uploads/
-
-# Secure configuration directories (always 755/644 regardless of environment)
-chmod -R 755 config/
-find config/ -type f -exec chmod 644 {} \;
-
-# Secure public directory
-chmod -R 755 public/
-find public/ -type f -name "*.php" -exec chmod 644 {} \;
-
-# Ensure sensitive files remain secure (always 600)
-chmod 600 .env*
-[ -f "config/database.php" ] && chmod 600 config/database.php
+echo "✅ Post-installation security lockdown completed using production script"
 ```
 
-11.3 **Security Audit & Verification:**
+**📚 Manual Commands Reference:**
+
+For reference, the script performs environment-appropriate security lockdown:
+
+-   **Local Development:** Maintains 775 permissions for convenience
+-   **Staging/Production:** Applies 755 permissions for security
+-   **All Environments:** Secures `.env` files (600), config files (755/644)
+-   **Security Audit:** Checks and fixes dangerous 777 permissions
+
+**📖 Complete Documentation:**
+
+For detailed script options, modes, and troubleshooting, see:
 
 ```bash
-echo ""
-echo "🔍 POST-INSTALLATION SECURITY AUDIT:"
-
-# Check for dangerous permissions
-DANGEROUS_FILES=$(find . -type f -perm 777 2>/dev/null | wc -l)
-if [[ $DANGEROUS_FILES -gt 0 ]]; then
-    echo "❌ WARNING: Found $DANGEROUS_FILES files with 777 permissions"
-    find . -type f -perm 777 -ls
-    echo "🔧 Auto-fixing dangerous file permissions..."
-    find . -type f -perm 777 -exec chmod 644 {} \;
-    echo "✅ Dangerous file permissions fixed"
-else
-    echo "✅ No files with dangerous 777 permissions found"
-fi
-
-# Verify critical file permissions
-echo ""
-echo "✅ SECURITY VERIFICATION COMPLETE:"
-echo "Environment: $ENV_TYPE"
-echo "Storage permissions: $(ls -ld storage/ | awk '{print $1}')"
-echo "Cache permissions: $(ls -ld bootstrap/cache/ | awk '{print $1}')"
-echo "Config permissions: $(ls -ld config/ | awk '{print $1}')"
-echo "Env file permissions: $(ls -l .env | awk '{print $1}')"
-echo "🔒 Application secured with $ENV_TYPE-appropriate permissions"
+cat Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/README.md
 ```
+
+**🚨 Emergency Recovery:**
+
+If you need immediate security recovery, use:
+
+```bash
+./Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/permissions-emergency-security.sh --auto
+```
+
+**🔗 Reference Guide:**
+
+For complete permission theory and manual implementation details, see: [Laravel File Permissions Security Guide](../../99-Understand/Laravel_File_Permissions_Security_Guide.md)
 
 ---
 
@@ -633,130 +589,34 @@ echo "🔒 Application secured with $ENV_TYPE-appropriate permissions"
 
 Understanding what the CodeCanyon installation process modified helps with future updates, troubleshooting, and deployment.
 
-12.1 **Database Changes Analysis:**
+12.1 **Execute Universal Post-Installation Analysis Script:**
 
 ```bash
-echo "=== DATABASE CHANGES ANALYSIS ===" > Admin-Local/1-CurrentProject/post-install-analysis.md
-echo "Date: $(date)" >> Admin-Local/1-CurrentProject/post-install-analysis.md
-echo "" >> Admin-Local/1-CurrentProject/post-install-analysis.md
+# Run the universal post-installation analysis script
+./Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/Post-Installation-Analysis/1-analyze-file-changes.sh
 
-echo "## Database Tables Created:" >> Admin-Local/1-CurrentProject/post-install-analysis.md
-php artisan migrate:status >> Admin-Local/1-CurrentProject/post-install-analysis.md
-
-echo "" >> Admin-Local/1-CurrentProject/post-install-analysis.md
-echo "## Database Schema Summary:" >> Admin-Local/1-CurrentProject/post-install-analysis.md
-mysql -u root -h 127.0.0.1 -P 3306 societypal_local -e "SHOW TABLES;" >> Admin-Local/1-CurrentProject/post-install-analysis.md
-
-echo "" >> Admin-Local/1-CurrentProject/post-install-analysis.md
-echo "## Total Records Created:" >> Admin-Local/1-CurrentProject/post-install-analysis.md
-mysql -u root -h 127.0.0.1 -P 3306 societypal_local -e "
-SELECT
-    table_name,
-    table_rows
-FROM information_schema.tables
-WHERE table_schema = 'societypal_local'
-    AND table_rows > 0
-ORDER BY table_rows DESC;" >> Admin-Local/1-CurrentProject/post-install-analysis.md
+echo "✅ Post-installation analysis completed using universal script"
 ```
 
-12.2 **File System Changes Analysis:**
+**🎯 Analysis Script Features:**
+- **Auto-Detection**: Dynamically reads project configuration from `.env` file
+- **Database Analysis**: Tables, records, schema structure with universal MySQL connections
+- **File System Analysis**: New directories, modified configurations, permission audits
+- **Application Snapshot**: Laravel version, environment, routes, packages
+- **Universal Design**: Works with any Laravel project by auto-detecting configuration
+- **Comprehensive Logging**: Detailed analysis with timestamps and project context
 
+**📁 Files Generated:**
+- `Admin-Local/1-CurrentProject/post-install-analysis.md` (detailed technical analysis)
+- `Admin-Local/1-CurrentProject/installation-changelog.md` (executive summary for stakeholders)
+
+**📖 Script Documentation:**
 ```bash
-echo "" >> Admin-Local/1-CurrentProject/post-install-analysis.md
-echo "## File System Changes:" >> Admin-Local/1-CurrentProject/post-install-analysis.md
-
-# Check for new directories created during installation
-echo "### New Directories Created:" >> Admin-Local/1-CurrentProject/post-install-analysis.md
-find . -type d -newer .env -not -path "./.git/*" -not -path "./node_modules/*" -not -path "./vendor/*" >> Admin-Local/1-CurrentProject/post-install-analysis.md 2>/dev/null || echo "None detected" >> Admin-Local/1-CurrentProject/post-install-analysis.md
-
-# Check for modified configuration files
-echo "" >> Admin-Local/1-CurrentProject/post-install-analysis.md
-echo "### Configuration Files Modified:" >> Admin-Local/1-CurrentProject/post-install-analysis.md
-find config/ -type f -newer .env.local 2>/dev/null >> Admin-Local/1-CurrentProject/post-install-analysis.md || echo "None detected" >> Admin-Local/1-CurrentProject/post-install-analysis.md
-
-# Check storage directory structure
-echo "" >> Admin-Local/1-CurrentProject/post-install-analysis.md
-echo "### Storage Directory Structure:" >> Admin-Local/1-CurrentProject/post-install-analysis.md
-tree storage/ -I 'logs' -L 3 >> Admin-Local/1-CurrentProject/post-install-analysis.md 2>/dev/null || ls -la storage/ >> Admin-Local/1-CurrentProject/post-install-analysis.md
+cat Admin-Local/0-Setup-Operations/1-First-Setup/1-StepsScripts/install-scripts/Post-Installation-Analysis/README.md
 ```
 
-12.3 **Application Configuration Snapshot:**
-
-```bash
-echo "" >> Admin-Local/1-CurrentProject/post-install-analysis.md
-echo "## Application Configuration Snapshot:" >> Admin-Local/1-CurrentProject/post-install-analysis.md
-
-# Laravel configuration summary
-echo "### Laravel Version:" >> Admin-Local/1-CurrentProject/post-install-analysis.md
-php artisan --version >> Admin-Local/1-CurrentProject/post-install-analysis.md
-
-echo "" >> Admin-Local/1-CurrentProject/post-install-analysis.md
-echo "### Environment Configuration:" >> Admin-Local/1-CurrentProject/post-install-analysis.md
-grep -E '(APP_NAME|APP_ENV|APP_URL|DB_DATABASE)' .env >> Admin-Local/1-CurrentProject/post-install-analysis.md
-
-# Check for installed packages/features
-echo "" >> Admin-Local/1-CurrentProject/post-install-analysis.md
-echo "### Composer Packages (Key):" >> Admin-Local/1-CurrentProject/post-install-analysis.md
-grep -E '"(laravel|php).*":' composer.json | head -10 >> Admin-Local/1-CurrentProject/post-install-analysis.md
-
-echo "" >> Admin-Local/1-CurrentProject/post-install-analysis.md
-echo "### Routes Available:" >> Admin-Local/1-CurrentProject/post-install-analysis.md
-php artisan route:list --compact | head -20 >> Admin-Local/1-CurrentProject/post-install-analysis.md
-
-echo "✅ Post-installation analysis complete"
-echo "📁 Analysis saved to: Admin-Local/1-CurrentProject/post-install-analysis.md"
-```
-
-12.4 **Create Installation Change Log:**
-
-```bash
-# Create a summary for future reference
-cat > Admin-Local/1-CurrentProject/installation-changelog.md << 'EOF'
-# Installation Change Log
-
-**Installation Date:** $(date -Iseconds)
-**Environment:** Local Development
-**Application:** SocietyPal (CodeCanyon)
-
-## What Was Installed
-
-### ✅ Completed Successfully:
-- [x] Database schema created (`societypal_local`)
-- [x] Application tables populated with seed data
-- [x] Superadmin user created
-- [x] Application configuration finalized
-- [x] File permissions secured post-installation
-
-### 📊 Key Metrics:
-- **Database Tables:** $(mysql -u root -h 127.0.0.1 -P 3306 societypal_local -e "SHOW TABLES;" | wc -l | xargs) created
-- **Total Records:** $(mysql -u root -h 127.0.0.1 -P 3306 societypal_local -e "SELECT SUM(table_rows) FROM information_schema.tables WHERE table_schema = 'societypal_local';" | tail -1) inserted
-- **Laravel Version:** $(php artisan --version)
-
-### 🔒 Security Status:
-- [x] File permissions secured (775 for local development)
-- [x] Sensitive files protected (600 permissions)
-- [x] Credentials stored securely
-- [x] Environment variables configured
-
-### 🌐 Access Information:
-- **Application URL:** https://societypal.test
-- **Admin Panel:** https://societypal.test/admin (verify actual path)
-- **Installation Logs:** storage/logs/laravel.log
-
-## Next Steps:
-1. **Change default superadmin password** on first login
-2. **Verify all application features** work correctly
-3. **Configure email/SMTP settings** if needed
-4. **Set up backup strategy** for local database
-5. **Proceed to Phase 2** for deployment preparation
-
----
-*This log was generated automatically by Step 14 post-installation analysis*
-EOF
-
-echo "✅ Installation changelog created"
-echo "📁 Location: Admin-Local/1-CurrentProject/installation-changelog.md"
-```
+**⚙️ Manual Override (if needed):**
+Both generated files are fully editable if you need to add project-specific details or corrections after the automated analysis.
 
 ---
 
