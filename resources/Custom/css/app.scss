@@ -1,0 +1,42 @@
+// Custom Application Styles
+// This file is safe from vendor updates
+
+// Import utilities and variables
+@import 'utilities/variables';
+@import 'utilities/mixins';
+
+// Custom base styles
+.custom-layer {
+    // Easily identify custom elements
+    position: relative;
+    
+    &::before {
+        content: '🛡️ Custom Layer';
+        position: absolute;
+        top: -20px;
+        left: 0;
+        font-size: 10px;
+        color: #28a745;
+        display: none; // Only show in development
+    }
+}
+
+// Development mode: show custom indicators
+@if env('APP_DEBUG', false) {
+    .custom-layer::before {
+        display: block !important;
+    }
+}
+
+// Your custom styles go here
+.custom-dashboard {
+    // Custom dashboard styles
+}
+
+.custom-theme {
+    --custom-primary: #3490dc;
+    --custom-accent: #f39c12;
+    
+    // These will be dynamically set by the CustomizationServiceProvider
+    // CSS custom properties can be updated via JavaScript when config loads
+}

@@ -8,5 +8,6 @@ return [
 
     Froiden\LaravelInstaller\Providers\LaravelInstallerServiceProvider::class,
     App\Providers\CustomConfigProvider::class,
-    App\Providers\FileStorageCustomConfigProvider::class
+    App\Providers\FileStorageCustomConfigProvider::class,
+    App\Providers\CustomizationServiceProvider::class,
 ];

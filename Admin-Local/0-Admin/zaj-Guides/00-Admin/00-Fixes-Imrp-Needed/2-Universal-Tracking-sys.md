@@ -192,3 +192,42 @@ if u think of anything i missed do it.
 
 -- Then we come back and do agian phase 2 following and ensureing the tracking system is used from first setup.
 
+--
+
+once all done current list of tasks do the below:
+1- review all files in Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-2-Pre-Deployment-Preparation/1-Steps ensure the are correct and work well with the universtal tracking
+2- review and or update or create any missing steps for the update steps (Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/C-Deploy-Updates/1-Steps)
+rename folder as Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/C-Deploy-Vendor-Updates
+and should work regardless if we did or didnt have previous customization, and should work as we will reuse it with every new vendor update)
+
+
+and create steps for Csutomzation like in case we wanted to do some customization on an already deployed app with production and live users etc.. (Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/E-Customize-App/1-Steps)
+
+-- lastly- did i miss anything?
+if u think of anything i missed do it.
+
+-- Then we come back and do agian phase 2 following and ensureing the tracking system is used from first setup.
+
+--
+
+i was saying i see you are creating customzaiton files already for the app but i was thinking maybe once u create all these files 
+- ensure they can work for any project not just this one, maybe we can move all to a template folder inside Admin-Local/0-Admin/zaj-Guides/0-General/1-Templates/5-Universal-Tracking-System maybe with a setup sh file to copy or apply to currnet project, and maybe in step 17 we ask user if they want to have costomzaiton done on first install, if not then no need unless u think we should as i am no expert, otherwise i was thinking mayve we have first customziation setup step in customize app flow that checks if this first customiation if not maybe using sh file to setup and copy template files to thier repsoective places. this way we dont intoruce customaztion files until first customzation, i dont know this is what i think...proceed with your creating all custom files, ensure thier code works for not just this project but all future projects as we want touse them as temlate, if any code canhe requred maybe other sh files can edit codes in the setup orciess when first cusotmaztion needed..then move them to teplatefolder then proceed with ur plans ajdisged by this.
+
+
+
+---
+before we decalre finalization
+1- Can u QC and gie me report of all files created, edited- unstaged changes. -summary one. and if any files should be deleted. and in relation to all requests i gave u and ur todolist. group them into groups + things maybe we should delete group
+and then per phse 2 step tell me what we done (Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-2-Pre-Deployment-Preparation
+)
+then later we need to see do we need to add anything to phase 1 steps of New Project steps (Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-1-Project-Setup
+Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-3-Deployment-Execution
+Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-4-Post-Deployment-Maintenance) 
+
+or other parts like
+Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/C-Deploy-Updates
+Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/E-Customize-App
+Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/D-Maintenance-Operations
+
+so in steps the request i am aski s 
+1- Conduct a comprehensive quality control audit and generate a detailed report covering: (1) Complete inventory of all files created, edited, and unstaged changes with summary status, (2) Identification of files requiring deletion, (3) Cross-reference analysis against all previous requests and existing todo items, (4) Categorization of changes into logical groups including a dedicated deletion candidate group, (5) Phase-by-phase breakdown of completed actions within Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-2-Pre-Deployment-Preparation with step-by-step documentation, (6) Gap analysis and recommendations for potential additions to Phase-1-Project-Setup, Phase-3-Deployment-Execution, and Phase-4-Post-Deployment-Maintenance workflows, (7) Impact assessment and integration recommendations for related guide flows including C-Deploy-Updates, E-Customize-App, and D-Maintenance-Operations, (8) Finalization readiness assessment with actionable next steps for project completion and workflow optimization.

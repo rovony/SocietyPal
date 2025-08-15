@@ -1,0 +1,223 @@
+// Custom SCSS Mixins
+// This file is safe from vendor updates
+
+// Media Queries
+@mixin mobile {
+    @media (max-width: #{$custom-mobile - 1px}) {
+        @content;
+    }
+}
+
+@mixin tablet {
+    @media (min-width: #{$custom-mobile}) and (max-width: #{$custom-tablet - 1px}) {
+        @content;
+    }
+}
+
+@mixin desktop {
+    @media (min-width: #{$custom-tablet}) {
+        @content;
+    }
+}
+
+@mixin mobile-up {
+    @media (min-width: #{$custom-mobile}) {
+        @content;
+    }
+}
+
+@mixin tablet-up {
+    @media (min-width: #{$custom-tablet}) {
+        @content;
+    }
+}
+
+// Flexbox utilities
+@mixin flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@mixin flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+@mixin flex-column-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+// Visual effects
+@mixin custom-card {
+    background: $custom-light;
+    border: $custom-border-width solid $custom-border-color;
+    border-radius: $custom-border-radius;
+    box-shadow: $custom-box-shadow-sm;
+    padding: $custom-spacer;
+}
+
+@mixin custom-button($bg-color: $custom-primary, $text-color: white) {
+    background-color: $bg-color;
+    color: $text-color;
+    border: none;
+    border-radius: $custom-border-radius;
+    padding: ($custom-spacer * 0.5) $custom-spacer;
+    font-family: $custom-font-family-sans-serif;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    
+    &:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+        box-shadow: $custom-box-shadow;
+    }
+    
+    &:active {
+        transform: translateY(0);
+        box-shadow: $custom-box-shadow-sm;
+    }
+}
+
+@mixin custom-input {
+    border: $custom-border-width solid $custom-border-color;
+    border-radius: $custom-border-radius;
+    padding: ($custom-spacer * 0.5);
+    font-family: $custom-font-family-sans-serif;
+    font-size: $custom-font-size-base;
+    line-height: $custom-line-height-base;
+    
+    &:focus {
+        outline: none;
+        border-color: $custom-primary;
+        box-shadow: 0 0 0 0.2rem rgba($custom-primary, 0.25);
+    }
+}
+
+// Text utilities
+@mixin custom-heading($size: 1.5rem, $weight: 600) {
+    font-family: $custom-font-family-sans-serif;
+    font-size: $size;
+    font-weight: $weight;
+    line-height: 1.2;
+    margin-bottom: $custom-spacer;
+}
+
+@mixin text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@mixin text-truncate-multiline($lines: 2) {
+    display: -webkit-box;
+    -webkit-line-clamp: $lines;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+// Loading states
+@mixin loading-shimmer {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+// Debug utilities (only show in development)
+@mixin debug-outline($color: #ff0000) {
+    @if $custom-debug-mode {
+        outline: 2px dashed $color;
+        position: relative;
+        
+        &::after {
+            content: '🔍 DEBUG';
+            position: absolute;
+            top: -20px;
+            left: 0;
+            font-size: 10px;
+            color: $color;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
+    }
+}
+
+// Custom layer identifier (only in debug mode)
+@mixin custom-layer-indicator($label: 'Custom Layer') {
+    @if $custom-debug-mode {
+        position: relative;
+        
+        &::before {
+            content: '🛡️ #{$label}';
+            position: absolute;
+            top: -18px;
+            right: 0;
+            font-size: 9px;
+            color: $custom-success;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1px 4px;
+            border-radius: 2px;
+            border: 1px solid $custom-success;
+            z-index: 1000;
+        }
+    }
+}
+
+// Animations
+@mixin fade-in($duration: 0.3s) {
+    animation: fadeIn $duration ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@mixin slide-in-up($duration: 0.3s) {
+    animation: slideInUp $duration ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@mixin pulse($color: $custom-primary) {
+    animation: pulse 2s infinite;
+    
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba($color, 0.7);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba($color, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba($color, 0);
+        }
+    }
+}
