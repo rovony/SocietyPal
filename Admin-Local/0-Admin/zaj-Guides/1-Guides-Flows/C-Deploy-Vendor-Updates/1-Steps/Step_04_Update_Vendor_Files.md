@@ -2,8 +2,90 @@
 
 **Goal:** Execute the vendor file update using the appropriate strategy based on customization mode and deployment method.
 
-**Time Required:** 45 minutes  
+**Time Required:** 45 minutes
 **Prerequisites:** Step 03 completed with execution plan ready
+
+---
+
+## **Tracking Integration**
+
+```bash
+# Initialize Step 04 tracking using Linear Universal Tracking System
+# Detect project root and admin directories dynamically
+PROJECT_ROOT=$(pwd)
+while [[ ! -d "$PROJECT_ROOT/Admin-Local" && "$PROJECT_ROOT" != "/" ]]; do
+    PROJECT_ROOT=$(dirname "$PROJECT_ROOT")
+done
+
+if [[ "$PROJECT_ROOT" == "/" ]]; then
+    echo "❌ Could not find project root with Admin-Local directory"
+    exit 1
+fi
+
+ADMIN_LOCAL="$PROJECT_ROOT/Admin-Local"
+PROJECT_NAME=$(basename "$PROJECT_ROOT")
+
+# Detect current session directory from tracking system
+if [[ -d "$ADMIN_LOCAL/1-CurrentProject/Tracking" ]]; then
+    # Find the most recent update session
+    SESSION_DIR=$(find "$ADMIN_LOCAL/1-CurrentProject/Tracking" -name "*Update-or-Customization" -type d | sort | tail -1)
+    if [[ -z "$SESSION_DIR" ]]; then
+        echo "❌ No update session found. Run Step 01 first."
+        exit 1
+    fi
+else
+    echo "❌ Tracking system not initialized. Run setup-tracking.sh first."
+    exit 1
+fi
+
+echo "🔍 Step 04: Update Vendor Files - Tracking Integration"
+echo "   Project: $PROJECT_NAME"
+echo "   Root: $PROJECT_ROOT"
+echo "   Session: $(basename "$SESSION_DIR")"
+
+# Create step-specific tracking files
+cat > "$SESSION_DIR/1-Planning/step-04-vendor-update-plan.md" << 'PLAN_EOF'
+# Step 04: Update Vendor Files - Execution Plan
+
+## Objectives
+- [ ] Determine update type (complete app vs batch)
+- [ ] Execute vendor file update with appropriate strategy
+- [ ] Preserve customizations (if protected mode)
+- [ ] Handle configuration file merging
+- [ ] Validate update success
+- [ ] Document changes and create recovery options
+
+## Strategy Selected
+- **Update Type:** [To be determined]
+- **Customization Mode:** [To be determined]
+- **Deploy Method:** [To be determined]
+- **Safety Backup:** [To be created]
+
+## Execution Log
+- **Started:** $(date)
+- **Step 04 Tracking Initialized:** ✅
+
+PLAN_EOF
+
+# Record baseline before update
+cat > "$SESSION_DIR/2-Baselines/step-04-pre-update-baseline.txt" << 'BASELINE_EOF'
+# Step 04 Pre-Update Baseline - $(date)
+
+## Project State Before Vendor Update
+$(find . -maxdepth 2 -type f -name "*.php" -o -name "*.js" -o -name "*.json" | head -20)
+
+## Configuration Files
+$(ls -la composer.json package.json .env 2>/dev/null || echo "Standard config files")
+
+## Custom Areas (if exists)
+$(ls -la app/Custom/ config/custom* resources/Custom/ 2>/dev/null || echo "No custom areas detected")
+
+BASELINE_EOF
+
+echo "✅ Step 04 tracking initialized: $SESSION_DIR"
+echo "📋 Planning: $SESSION_DIR/1-Planning/step-04-vendor-update-plan.md"
+echo "📊 Baseline: $SESSION_DIR/2-Baselines/step-04-pre-update-baseline.txt"
+```
 
 ---
 
@@ -23,29 +105,42 @@ Based on **Laravel - Final Guides/V1_vs_V2_Comparison_Report.md** and **V2 Missi
 
 1. **Load previous analysis:**
 
-   ````bash
-   2. **Navigate to project root:**
-
    ```bash
-   # Set path variables for consistency
-   export PROJECT_ROOT="/Users/malekokour/Zaj_Master/MyApps/MyLaravel_Apps/2_Apps/SocietyPal-Project/SocietyPalApp-Master/SocietyPalApp-Root"
-   export ADMIN_LOCAL="$PROJECT_ROOT/Admin-Local"
+   # Navigate to project root (using project-agnostic detection)
    cd "$PROJECT_ROOT"
 
    # Find latest comparison analysis
-   LATEST_STAGING=$(find Admin-Local/vendor_updates -name "202*" -type d | sort | tail -1)
+   LATEST_STAGING=$(find "$ADMIN_LOCAL/vendor_updates" -name "202*" -type d | sort | tail -1)
    COMPARE_DIR="$LATEST_STAGING/comparison"
    NEW_APP_DIR=$(grep "Application Path:" "$LATEST_STAGING/UPDATE_STRATEGY.md" | cut -d' ' -f3)
 
-   # Load settings from previous steps
-   CUSTOMIZATION_MODE=$(grep "CUSTOMIZATION_MODE=" Admin-Local/update_logs/update_*.md | tail -1 | cut -d'"' -f2)
-   DEPLOY_METHOD=$(grep "DEPLOY_METHOD=" Admin-Local/update_logs/update_*.md | tail -1 | cut -d'"' -f2)
+   # Load settings from previous steps with fallback detection
+   CUSTOMIZATION_MODE=$(grep "CUSTOMIZATION_MODE=" "$ADMIN_LOCAL/update_logs/update_"*.md | tail -1 | cut -d'"' -f2 2>/dev/null)
+   DEPLOY_METHOD=$(grep "DEPLOY_METHOD=" "$ADMIN_LOCAL/update_logs/update_"*.md | tail -1 | cut -d'"' -f2 2>/dev/null)
+
+   # Fallback detection if not found in logs
+   if [[ -z "$CUSTOMIZATION_MODE" ]]; then
+       if [[ -d "app/Custom" ]]; then
+           CUSTOMIZATION_MODE="protected"
+       else
+           CUSTOMIZATION_MODE="simple"
+       fi
+   fi
+
+   if [[ -z "$DEPLOY_METHOD" ]]; then
+       DEPLOY_METHOD="manual_ssh"  # Default fallback
+   fi
 
    echo "🔄 Starting vendor file update..."
    echo "   Customization: $CUSTOMIZATION_MODE"
    echo "   Deploy Method: $DEPLOY_METHOD"
    echo "   Source: $NEW_APP_DIR"
-   ````
+
+   # Update tracking with detected configuration
+   sed -i.bak "s/\*\*Update Type:\*\* \[To be determined\]/\*\*Update Type:\*\* [Analyzing...]/g" "$SESSION_DIR/1-Planning/step-04-vendor-update-plan.md"
+   sed -i.bak "s/\*\*Customization Mode:\*\* \[To be determined\]/\*\*Customization Mode:\*\* $CUSTOMIZATION_MODE/g" "$SESSION_DIR/1-Planning/step-04-vendor-update-plan.md"
+   sed -i.bak "s/\*\*Deploy Method:\*\* \[To be determined\]/\*\*Deploy Method:\*\* $DEPLOY_METHOD/g" "$SESSION_DIR/1-Planning/step-04-vendor-update-plan.md"
+   ```
 
 2. **Determine update type (whole app vs batch):**
 

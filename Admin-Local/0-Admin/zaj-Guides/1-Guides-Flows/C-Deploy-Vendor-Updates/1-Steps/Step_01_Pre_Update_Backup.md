@@ -1,18 +1,65 @@
 # Step 01: Pre-Update Backup & Assessment
 
-\*2. **Navigate to project root:**
-
-````bash
-# Set path variables for consistency - CUSTOMIZE FOR YOUR PROJECT
-# ⚠️ NOTE: These paths were configured in Step_01_Project_Information.md
-# If you're working on a different project, update these variables:
-export PROJECT_ROOT="/Users/malekokour/Zaj_Master/MyApps/MyLaravel_Apps/2_Apps/SocietyPal-Project/SocietyPalApp-Master/SocietyPalApp-Root"  # ⚠️ CHANGE FOR YOUR PROJECT
-export ADMIN_LOCAL="$PROJECT_ROOT/Admin-Local"
-export PROJECT_NAME="SocietyPal"  # ⚠️ CHANGE FOR YOUR PROJECT
-cd "$PROJECT_ROOT"* Create comprehensive backups and assess current system state before applying CodeCanyon vendor updates.
+**Goal:** Create comprehensive backups and assess current system state before applying CodeCanyon vendor updates.
 
 **Time Required:** 30 minutes
 **Prerequisites:** Deployed application from 1-Setup-New-Project
+
+---
+
+## **🔍 Tracking Integration**
+
+This step integrates with the **Linear Universal Tracking System (5-Tracking-System)** for organized progress management.
+
+### **Initialize Tracking Session:**
+
+```bash
+# Set up tracking environment
+export PROJECT_ROOT="$(pwd)"
+export TRACKING_ROOT="$PROJECT_ROOT/Admin-Local/0-Admin/zaj-Guides/0-General/1-Templates/5-Tracking-System"
+export SESSION_DIR="$PROJECT_ROOT/Admin-Local/1-CurrentProject/Tracking"
+
+# Create update session directory
+UPDATE_SESSION="2-Update-or-Customization"
+mkdir -p "$SESSION_DIR/$UPDATE_SESSION"/{0-Backups/{1-Critical-Files,2-Build-Assets,3-Custom-Files,4-Config-Files},1-Planning,2-Baselines,3-Execution,4-Verification,5-Documentation}
+
+# Initialize session tracking
+cat > "$SESSION_DIR/$UPDATE_SESSION/1-Planning/step-01-backup-plan.md" << BACKUP_PLAN
+# Step 01: Pre-Update Backup Plan
+
+**Date:** $(date)
+**Step:** 01 - Pre-Update Backup
+**Session:** $UPDATE_SESSION
+
+## Backup Checklist
+
+- [ ] Database backup completed
+- [ ] Application files backup completed
+- [ ] Git repository backup completed
+- [ ] Configuration files backup completed
+- [ ] Custom files backup completed
+- [ ] Verification completed
+
+## Tracking Progress
+BACKUP_PLAN
+
+echo "🔍 Tracking session initialized for Step 01: Pre-Update Backup"
+echo "📁 Session directory: $SESSION_DIR/$UPDATE_SESSION"
+```
+
+### **Set Project Variables (Project-Agnostic):**
+
+```bash
+# Detect project root automatically
+export PROJECT_ROOT="$(pwd)"
+export ADMIN_LOCAL="$PROJECT_ROOT/Admin-Local"
+export PROJECT_NAME="$(basename "$PROJECT_ROOT" | sed 's/-Root$//' | sed 's/App-Master$//' | sed 's/.*\///g')"
+cd "$PROJECT_ROOT"
+
+echo "🏠 Project Root: $PROJECT_ROOT"
+echo "📁 Admin Local: $ADMIN_LOCAL"
+echo "🏷️ Project Name: $PROJECT_NAME"
+```
 
 ---
 

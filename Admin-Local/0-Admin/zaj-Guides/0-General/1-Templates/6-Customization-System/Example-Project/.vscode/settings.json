@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "**/Admin-Local/0-Admin/zaj-Guides/0-General/1-Templates/6-Customization-System/Example-Project/**/*.php": "plaintext"
+    },
+    "php.validate.executablePath": null,
+    "php.suggest.basic": false,
+    "files.exclude": {
+        "**/Admin-Local/0-Admin/zaj-Guides/0-General/1-Templates/6-Customization-System/Example-Project/**/*.php": false
+    },
+    "search.exclude": {
+        "**/Admin-Local/0-Admin/zaj-Guides/0-General/1-Templates/6-Customization-System/Example-Project/**/*.php": false
+    }
+}

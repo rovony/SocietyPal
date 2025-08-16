@@ -12,8 +12,61 @@ set -euo pipefail  # Exit on error, undefined variables, pipe failures
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(pwd)"
-TEMPLATE_DIR="${SCRIPT_DIR}/templates"
-SCRIPTS_DIR="${SCRIPT_DIR}/scripts"
+
+# Auto-detect template directory - try multiple possible locations
+detect_template_dir() {
+    local possible_dirs=(
+        "${SCRIPT_DIR}/templates"
+        "${SCRIPT_DIR}/../templates"
+        "${SCRIPT_DIR}/../../templates"
+        "${PROJECT_ROOT}/Admin-Local/0-Admin/zaj-Guides/0-General/1-Templates/6-Customization-System/templates"
+        "${PROJECT_ROOT}/templates"
+    )
+    
+    for dir in "${possible_dirs[@]}"; do
+        if [[ -d "$dir" ]]; then
+            echo "$dir"
+            return 0
+        fi
+    done
+    
+    return 1
+}
+
+# Auto-detect scripts directory - try multiple possible locations
+detect_scripts_dir() {
+    local possible_dirs=(
+        "${SCRIPT_DIR}/scripts"
+        "${SCRIPT_DIR}/../scripts"
+        "${SCRIPT_DIR}/../../scripts"
+        "${PROJECT_ROOT}/Admin-Local/0-Admin/zaj-Guides/0-General/1-Templates/6-Customization-System/scripts"
+        "${PROJECT_ROOT}/scripts"
+    )
+    
+    for dir in "${possible_dirs[@]}"; do
+        if [[ -d "$dir" ]]; then
+            echo "$dir"
+            return 0
+        fi
+    done
+    
+    return 1
+}
+
+TEMPLATE_DIR="$(detect_template_dir)"
+SCRIPTS_DIR="$(detect_scripts_dir)"
+
+# Validate that template and scripts directories were found
+if [[ -z "$TEMPLATE_DIR" ]]; then
+    error "Could not locate template directory. Please ensure this script is run from the correct location."
+    error "Tried searching in multiple locations but none were found."
+    exit 1
+fi
+
+if [[ -z "$SCRIPTS_DIR" ]]; then
+    warn "Scripts directory not found. Some advanced features may not be available."
+    warn "This is not a critical error and installation can continue."
+fi
 
 # Colors for output
 readonly RED='\033[0;31m'
@@ -58,7 +111,7 @@ is_laravel_project() {
 
 # Check if customization system is already installed
 is_already_installed() {
-    [[ -d "app/Custom" && -f "app/Providers/CustomizationServiceProvider.php" && -f "webpack.custom.js" ]]
+    [[ -d "app/Custom" && -f "app/Providers/CustomizationServiceProvider.php" && -f "webpack.custom.cjs" ]]
 }
 
 # =============================================================================
@@ -253,8 +306,8 @@ update_package_json() {
             cat << 'EOF'
 
 "scripts": {
-    "custom:build": "webpack --config webpack.custom.js --mode=production",
-    "custom:dev": "webpack --config webpack.custom.js --mode=development --watch",
+    "custom:build": "webpack --config webpack.custom.cjs --mode=production",
+    "custom:dev": "webpack --config webpack.custom.cjs --mode=development --watch",
     "custom:clean": "rm -rf public/Custom/js/* public/Custom/css/*"
 }
 EOF
@@ -277,7 +330,7 @@ run_verification() {
             "app/Custom/config/custom-app.php"
             "app/Custom/config/custom-database.php"
             "app/Providers/CustomizationServiceProvider.php"
-            "webpack.custom.js"
+            "webpack.custom.cjs"
             "resources/Custom/css/app.scss"
             "resources/Custom/js/app.js"
         )

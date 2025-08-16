@@ -2,8 +2,54 @@
 
 **Goal:** Safely download and prepare the new CodeCanyon version while preserving existing customizations.
 
-**Time Required:** 20 minutes  
+**Time Required:** 20 minutes
 **Prerequisites:** Step 01 completed with backup created
+
+---
+
+## **🔍 Tracking Integration**
+
+This step integrates with the **Linear Universal Tracking System (5-Tracking-System)** for organized progress management.
+
+### **Initialize Step 02 Tracking:**
+
+```bash
+# Continue from Step 01 tracking session
+export PROJECT_ROOT="$(pwd)"
+export SESSION_DIR="$PROJECT_ROOT/Admin-Local/1-CurrentProject/Tracking"
+export UPDATE_SESSION="2-Update-or-Customization"
+
+# Update step tracking
+cat > "$SESSION_DIR/$UPDATE_SESSION/1-Planning/step-02-download-plan.md" << DOWNLOAD_PLAN
+# Step 02: Download New CodeCanyon Version Plan
+
+**Date:** $(date)
+**Step:** 02 - Download New CodeCanyon Version
+**Session:** $UPDATE_SESSION
+
+## Download Checklist
+
+- [ ] Create staging directory
+- [ ] Download new version from CodeCanyon
+- [ ] Extract and verify new version
+- [ ] Analyze version information
+- [ ] Compare with current version
+- [ ] Check for breaking changes
+- [ ] Identify new migrations
+- [ ] Assess frontend changes
+- [ ] Determine update complexity
+- [ ] Create update strategy document
+- [ ] Update tracking logs
+
+## Current Status
+DOWNLOAD_PLAN
+
+# Create baseline record
+echo "📁 New version download - $(date)" > "$SESSION_DIR/$UPDATE_SESSION/2-Baselines/step-02-version-baseline.txt"
+
+echo "🔍 Step 02 tracking initialized"
+echo "📁 Planning: $SESSION_DIR/$UPDATE_SESSION/1-Planning/step-02-download-plan.md"
+```
 
 ---
 
@@ -19,26 +65,38 @@ Based on **Laravel - Final Guides/V1_vs_V2_Comparison_Report.md** and **V2 Missi
 
 ## **2.1: Download New CodeCanyon Version**
 
+### **Set Project Variables (Project-Agnostic):**
+
+```bash
+# Detect project root and set variables
+export PROJECT_ROOT="$(pwd)"
+export ADMIN_LOCAL="$PROJECT_ROOT/Admin-Local"
+export PROJECT_NAME="$(basename "$PROJECT_ROOT" | sed 's/-Root$//' | sed 's/App-Master$//' | sed 's/.*\///g')"
+cd "$PROJECT_ROOT"
+
+echo "🏠 Project Root: $PROJECT_ROOT"
+echo "📁 Admin Local: $ADMIN_LOCAL"
+echo "🏷️ Project Name: $PROJECT_NAME"
+```
+
 ### **Obtain New Version from CodeCanyon:**
 
-1. **Access your CodeCanyon downloads:**
-
-   ````bash
-   echo "📥 Preparing to download new CodeCanyon version..."
-
-   # Navigate to project root
-   2. **Navigate to project root:**
+1. **Create staging directory:**
 
    ```bash
-   # Set path variables for consistency
-   export PROJECT_ROOT="/Users/malekokour/Zaj_Master/MyApps/MyLaravel_Apps/2_Apps/SocietyPal-Project/SocietyPalApp-Master/SocietyPalApp-Root"
-   export ADMIN_LOCAL="$PROJECT_ROOT/Admin-Local"
-   cd "$PROJECT_ROOT"
+   echo "📥 Preparing to download new CodeCanyon version..."
 
-   # Create update staging area
-   mkdir -p Admin-Local/vendor_updates/$(date +%Y%m%d_%H%M%S)
-   STAGING_DIR="Admin-Local/vendor_updates/$(date +%Y%m%d_%H%M%S)"
-   ````
+   # Create unique staging area with timestamp
+   STAGING_TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+   STAGING_DIR="$ADMIN_LOCAL/vendor_updates/$STAGING_TIMESTAMP"
+   mkdir -p "$STAGING_DIR"
+
+   echo "📁 Staging Directory: $STAGING_DIR"
+
+   # Update tracking with staging info
+   echo "Staging Directory: $STAGING_DIR" >> "$SESSION_DIR/$UPDATE_SESSION/2-Baselines/step-02-version-baseline.txt"
+   echo "Timestamp: $STAGING_TIMESTAMP" >> "$SESSION_DIR/$UPDATE_SESSION/2-Baselines/step-02-version-baseline.txt"
+   ```
 
 2. **Download from CodeCanyon:**
 

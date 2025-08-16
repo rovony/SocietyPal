@@ -2,8 +2,101 @@
 
 **Goal:** Thoroughly test the integration between updated vendor code and existing customizations to ensure compatibility and functionality.
 
-**Time Required:** 45-90 minutes (varies by customization complexity)  
+**Time Required:** 45-90 minutes (varies by customization complexity)
 **Prerequisites:** Step 04 completed with vendor files updated
+
+---
+
+## **Tracking Integration**
+
+```bash
+# Initialize Step 05 tracking using Linear Universal Tracking System
+# Detect project root and admin directories dynamically
+PROJECT_ROOT=$(pwd)
+while [[ ! -d "$PROJECT_ROOT/Admin-Local" && "$PROJECT_ROOT" != "/" ]]; do
+    PROJECT_ROOT=$(dirname "$PROJECT_ROOT")
+done
+
+if [[ "$PROJECT_ROOT" == "/" ]]; then
+    echo "❌ Could not find project root with Admin-Local directory"
+    exit 1
+fi
+
+ADMIN_LOCAL="$PROJECT_ROOT/Admin-Local"
+PROJECT_NAME=$(basename "$PROJECT_ROOT")
+
+# Detect current session directory from tracking system
+if [[ -d "$ADMIN_LOCAL/1-CurrentProject/Tracking" ]]; then
+    # Find the most recent update session
+    SESSION_DIR=$(find "$ADMIN_LOCAL/1-CurrentProject/Tracking" -name "*Update-or-Customization" -type d | sort | tail -1)
+    if [[ -z "$SESSION_DIR" ]]; then
+        echo "❌ No update session found. Run Step 01 first."
+        exit 1
+    fi
+else
+    echo "❌ Tracking system not initialized. Run setup-tracking.sh first."
+    exit 1
+fi
+
+echo "🧪 Step 05: Test Custom Functions & Integration - Tracking Integration"
+echo "   Project: $PROJECT_NAME"
+echo "   Root: $PROJECT_ROOT"
+echo "   Session: $(basename "$SESSION_DIR")"
+
+# Create step-specific tracking files
+cat > "$SESSION_DIR/1-Planning/step-05-integration-test-plan.md" << 'PLAN_EOF'
+# Step 05: Test Custom Functions & Integration - Test Plan
+
+## Objectives
+- [ ] Initialize testing environment and workspace
+- [ ] Validate application bootstrap and basic functionality
+- [ ] Test database connectivity and migrations
+- [ ] Test customization-specific integration (if protected mode)
+- [ ] Test web interface functionality and performance
+- [ ] Test API endpoints (if applicable)
+- [ ] Generate comprehensive test summary with recommendations
+
+## Testing Strategy
+- **Customization Mode:** [To be determined]
+- **Deploy Method:** [To be determined]
+- **Testing Level:** [To be determined]
+- **Testing Workspace:** [To be created]
+
+## Test Categories
+- [ ] Application Bootstrap
+- [ ] Database Connectivity
+- [ ] Custom Components (Controllers, Models, Views)
+- [ ] Web Interface Testing
+- [ ] API Endpoint Testing
+- [ ] Performance & Error Analysis
+
+## Execution Log
+- **Started:** $(date)
+- **Step 05 Tracking Initialized:** ✅
+
+PLAN_EOF
+
+# Record baseline before testing
+cat > "$SESSION_DIR/2-Baselines/step-05-pre-test-baseline.txt" << 'BASELINE_EOF'
+# Step 05 Pre-Test Baseline - $(date)
+
+## Application State Before Integration Testing
+$(php artisan --version 2>/dev/null || echo "Laravel not accessible")
+
+## Custom Areas (if exists)
+$(ls -la app/Custom/ 2>/dev/null || echo "No app/Custom/ directory")
+$(ls -la config/custom* 2>/dev/null || echo "No custom config files")
+$(ls -la resources/views/custom/ 2>/dev/null || echo "No custom views")
+
+## Database Status
+$(php artisan migrate:status 2>/dev/null | head -5 || echo "Cannot check migration status")
+
+BASELINE_EOF
+
+echo "✅ Step 05 tracking initialized: $SESSION_DIR"
+echo "📋 Planning: $SESSION_DIR/1-Planning/step-05-integration-test-plan.md"
+echo "📊 Baseline: $SESSION_DIR/2-Baselines/step-05-pre-test-baseline.txt"
+```
 
 ---
 
@@ -23,25 +116,38 @@ Based on **Laravel - Final Guides/V1_vs_V2_Comparison_Report.md** and **V2 Missi
 
 1. **Determine testing approach based on customization mode:**
 
-   ````bash
-   2. **Navigate to project root:**
-
    ```bash
-   # Set path variables for consistency
-   export PROJECT_ROOT="/Users/malekokour/Zaj_Master/MyApps/MyLaravel_Apps/2_Apps/SocietyPal-Project/SocietyPalApp-Master/SocietyPalApp-Root"
-   export ADMIN_LOCAL="$PROJECT_ROOT/Admin-Local"
+   # Navigate to project root (using project-agnostic detection)
    cd "$PROJECT_ROOT"
 
-   # Get context from previous steps
-   LATEST_STAGING=$(find Admin-Local/vendor_updates -name "202*" -type d | sort | tail -1)
-   CUSTOMIZATION_MODE=$(grep "CUSTOMIZATION_MODE=" Admin-Local/update_logs/update_*.md | tail -1 | cut -d'"' -f2)
-   DEPLOY_METHOD=$(grep "DEPLOY_METHOD=" Admin-Local/update_logs/update_*.md | tail -1 | cut -d'"' -f2)
+   # Get context from previous steps with fallback detection
+   LATEST_STAGING=$(find "$ADMIN_LOCAL/vendor_updates" -name "202*" -type d | sort | tail -1)
+   CUSTOMIZATION_MODE=$(grep "CUSTOMIZATION_MODE=" "$ADMIN_LOCAL/update_logs/update_"*.md | tail -1 | cut -d'"' -f2 2>/dev/null)
+   DEPLOY_METHOD=$(grep "DEPLOY_METHOD=" "$ADMIN_LOCAL/update_logs/update_"*.md | tail -1 | cut -d'"' -f2 2>/dev/null)
+
+   # Fallback detection if not found in logs
+   if [[ -z "$CUSTOMIZATION_MODE" ]]; then
+       if [[ -d "app/Custom" ]]; then
+           CUSTOMIZATION_MODE="protected"
+       else
+           CUSTOMIZATION_MODE="simple"
+       fi
+   fi
+
+   if [[ -z "$DEPLOY_METHOD" ]]; then
+       DEPLOY_METHOD="manual_ssh"  # Default fallback
+   fi
 
    echo "🧪 Starting integration testing..."
    echo "   Customization Mode: $CUSTOMIZATION_MODE"
    echo "   Deployment Method: $DEPLOY_METHOD"
    echo "   Testing Level: $([ "$CUSTOMIZATION_MODE" = "protected" ] && echo "FULL INTEGRATION" || echo "STANDARD FUNCTIONAL")"
-   ````
+
+   # Update tracking with detected configuration
+   sed -i.bak "s/\*\*Customization Mode:\*\* \[To be determined\]/\*\*Customization Mode:\*\* $CUSTOMIZATION_MODE/g" "$SESSION_DIR/1-Planning/step-05-integration-test-plan.md"
+   sed -i.bak "s/\*\*Deploy Method:\*\* \[To be determined\]/\*\*Deploy Method:\*\* $DEPLOY_METHOD/g" "$SESSION_DIR/1-Planning/step-05-integration-test-plan.md"
+   sed -i.bak "s/\*\*Testing Level:\*\* \[To be determined\]/\*\*Testing Level:\*\* $([ "$CUSTOMIZATION_MODE" = "protected" ] && echo "FULL INTEGRATION" || echo "STANDARD FUNCTIONAL")/g" "$SESSION_DIR/1-Planning/step-05-integration-test-plan.md"
+   ```
 
 2. **Create testing workspace:**
 
@@ -548,8 +654,8 @@ Based on **Laravel - Final Guides/V1_vs_V2_Comparison_Report.md** and **V2 Missi
 3. **Update the update log:**
 
    ```bash
-   # Update the current update log
-   LATEST_LOG=$(find Admin-Local/update_logs -name "update_*.md" | sort | tail -1)
+   # Update the current update log using project-agnostic paths
+   LATEST_LOG=$(find "$ADMIN_LOCAL/update_logs" -name "update_*.md" | sort | tail -1)
 
    if [ -n "$LATEST_LOG" ]; then
        # Mark Step 05 as complete
@@ -569,6 +675,97 @@ Based on **Laravel - Final Guides/V1_vs_V2_Comparison_Report.md** and **V2 Missi
 
        echo "✅ Update log updated: $LATEST_LOG"
    fi
+
+   # Complete Step 05 tracking in the Linear Universal Tracking System
+   echo "📋 Completing Step 05 tracking..."
+
+   # Mark step as completed in the planning document
+   sed -i.bak 's/- \[ \] Test customization-specific integration (if protected mode)/- [x] Test customization-specific integration (if protected mode)/' "$SESSION_DIR/1-Planning/step-05-integration-test-plan.md"
+   sed -i.bak 's/- \[ \] Test web interface functionality and performance/- [x] Test web interface functionality and performance/' "$SESSION_DIR/1-Planning/step-05-integration-test-plan.md"
+   sed -i.bak 's/- \[ \] Test API endpoints (if applicable)/- [x] Test API endpoints (if applicable)/' "$SESSION_DIR/1-Planning/step-05-integration-test-plan.md"
+   sed -i.bak 's/- \[ \] Generate comprehensive test summary with recommendations/- [x] Generate comprehensive test summary with recommendations/' "$SESSION_DIR/1-Planning/step-05-integration-test-plan.md"
+
+   # Record final execution log
+   cat >> "$SESSION_DIR/3-Execution/step-05-execution.log" << 'EXEC_FINAL_EOF'
+
+## Step 05 Final Execution Summary - $(date)
+
+### Testing Results
+- **Test Result:** $TEST_RESULT
+- **Successes:** $SUCCESS_COUNT
+- **Warnings:** $WARNING_COUNT
+- **Errors:** $ERROR_COUNT
+- **Performance Rating:** $([ "$SERVER_RUNNING" = true ] && echo "Measured" || echo "Not measured")
+
+### Key Files Generated
+- **Test Report:** $REPORT_FILE
+- **Test Logs:** $TEST_DIR/logs/
+- **Application Logs:** storage/logs/laravel.log
+
+### Recommendations
+$(if [ "$ERROR_COUNT" -gt 0 ]; then
+   echo "❌ DO NOT PROCEED - Fix critical issues before continuing"
+elif [ "$WARNING_COUNT" -gt 3 ]; then
+   echo "⚠️ PROCEED WITH CAUTION - Monitor warnings closely"
+else
+   echo "✅ SAFE TO PROCEED - Testing completed successfully"
+fi)
+
+### Next Action
+- Continue to Step 06: Update Dependencies (if test results allow)
+
+EXEC_FINAL_EOF
+
+   # Create verification summary
+   cat > "$SESSION_DIR/4-Verification/step-05-verification.md" << 'VERIFY_EOF'
+# Step 05: Test Custom Functions & Integration - Verification
+
+## Verification Summary
+- **Completed:** $(date)
+- **Test Result:** $TEST_RESULT
+- **Overall Status:** $([ "$ERROR_COUNT" -gt 0 ] && echo "FAILED" || [ "$WARNING_COUNT" -gt 3 ] && echo "WARNING" || echo "PASSED")
+
+## Test Categories Completed
+- [x] Application Bootstrap Validation
+- [x] Database Connectivity Testing
+- [x] Custom Integration Testing (if applicable)
+- [x] Web Interface Functionality Testing
+- [x] API Endpoint Testing (if applicable)
+- [x] Database Migration Testing
+- [x] Performance & Error Analysis
+- [x] Test Summary Generation
+
+## Critical Metrics
+- **Successes:** $SUCCESS_COUNT
+- **Warnings:** $WARNING_COUNT
+- **Errors:** $ERROR_COUNT
+- **Test Report:** $REPORT_FILE
+
+## Ready for Next Step
+$([ "$ERROR_COUNT" -eq 0 ] && echo "✅ Ready to proceed to Step 06" || echo "❌ Must resolve errors before proceeding")
+
+VERIFY_EOF
+
+   # Record completion in session tracking (create file if it doesn't exist)
+   if [[ ! -f "$SESSION_DIR/5-Documentation/session-summary.md" ]]; then
+       cat > "$SESSION_DIR/5-Documentation/session-summary.md" << 'SUMMARY_HEADER_EOF'
+# Vendor Update Session Summary
+
+## Update Session Overview
+- **Project:** $PROJECT_NAME
+- **Session:** $(basename "$SESSION_DIR")
+- **Started:** $(date)
+
+## Step Completion Status
+
+SUMMARY_HEADER_EOF
+   fi
+   
+   echo "- **Step 05:** ✅ COMPLETED - Custom Functions & Integration Testing ($TEST_RESULT)" >> "$SESSION_DIR/5-Documentation/session-summary.md"
+
+   echo "✅ Step 05 tracking completed successfully"
+   echo "📁 Tracking files updated in: $SESSION_DIR"
+   echo "🚀 $([ "$ERROR_COUNT" -eq 0 ] && echo "Ready for Step 06: Update Dependencies" || echo "Review errors before proceeding")"
    ```
 
 ---

@@ -1,0 +1,70 @@
+{
+  "projectInfo": {
+    "name": "SocietyPal",
+    "codecanyonApp": "SocietyPro - Society Management Software",
+    "version": "v1.0.42",
+    "description": "Society Management Software for residential complexes",
+    "lastUpdated": "2025-08-13T14:29:47.778Z",
+    "status": "setup-in-progress"
+  },
+  "domains": {
+    "production": "societypal.com",
+    "staging": "staging.societypal.com",
+    "local": "societypal.test"
+  },
+  "hosting": {
+    "provider": "Hostinger",
+    "sshAlias": "hostinger-factolo",
+    "serverIp": "31.97.195.108",
+    "serverUsername": "u227177893",
+    "sshPort": "65002"
+  },
+  "github": {
+    "owner": "rovony",
+    "repo": "SocietyPal",
+    "httpsUrl": "https://github.com/rovony/SocietyPal",
+    "sshUrl": "git@github.com:rovony/SocietyPal.git"
+  },
+  "paths": {
+    "projectBasePath": "/Users/malekokour/Zaj_Master/MyApps/MyLaravel_Apps/2_Apps",
+    "projectFolderName": "SocietyPal-Project",
+    "appRootFolderName": "SocietyPalApp-Master/SocietyPalApp-Root",
+    "projectRoot": "/Users/malekokour/Zaj_Master/MyApps/MyLaravel_Apps/2_Apps/SocietyPal-Project/SocietyPalApp-Master/SocietyPalApp-Root",
+    "adminLocal": "/Users/malekokour/Zaj_Master/MyApps/MyLaravel_Apps/2_Apps/SocietyPal-Project/SocietyPalApp-Master/SocietyPalApp-Root/Admin-Local"
+  },
+  "database": {
+    "production": {
+      "name": "",
+      "user": "",
+      "host": "localhost"
+    },
+    "staging": {
+      "name": "",
+      "user": "",
+      "host": "localhost"
+    }
+  },
+  "deployment": {
+    "currentStep": "step-10.1",
+    "completedSteps": [
+      "step-01",
+      "step-02", 
+      "step-03",
+      "step-04",
+      "step-05",
+      "step-06",
+      "step-07",
+      "step-08",
+      "step-09",
+      "step-10",
+      "step-10.1"
+    ],
+    "progressPercentage": 79
+  },
+  "customizations": {
+    "vendorModifications": [],
+    "customFiles": [],
+    "configOverrides": {},
+    "lastVendorUpdateCheck": null
+  }
+}

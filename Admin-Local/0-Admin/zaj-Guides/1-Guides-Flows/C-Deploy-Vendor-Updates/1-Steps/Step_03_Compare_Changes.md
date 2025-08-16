@@ -2,8 +2,60 @@
 
 **Goal:** Systematically compare the current and new versions to identify changes and plan the update strategy while protecting customizations.
 
-**Time Required:** 30 minutes  
+**Time Required:** 30 minutes
 **Prerequisites:** Step 02 completed with new version analyzed
+
+---
+
+## **🔍 Tracking Integration**
+
+This step integrates with the **Linear Universal Tracking System (5-Tracking-System)** for organized progress management.
+
+### **Initialize Step 03 Tracking:**
+
+```bash
+# Continue from previous tracking session
+export PROJECT_ROOT="$(pwd)"
+export SESSION_DIR="$PROJECT_ROOT/Admin-Local/1-CurrentProject/Tracking"
+export UPDATE_SESSION="2-Update-or-Customization"
+
+# Update step tracking
+cat > "$SESSION_DIR/$UPDATE_SESSION/1-Planning/step-03-comparison-plan.md" << COMPARISON_PLAN
+# Step 03: Compare Changes & Plan Update
+
+**Date:** $(date)
+**Step:** 03 - Compare Changes & Plan Update
+**Session:** $UPDATE_SESSION
+
+## Comparison Checklist
+
+- [ ] Initialize comparison environment
+- [ ] Set up comparison workspace
+- [ ] Perform file-level change analysis
+- [ ] Identify changed files
+- [ ] Analyze critical file changes
+- [ ] Check customization conflicts
+- [ ] Create customization preservation plan
+- [ ] Analyze database changes
+- [ ] Compare dependencies (PHP & Frontend)
+- [ ] Generate detailed update execution plan
+- [ ] Update tracking logs
+
+## Analysis Results
+- Current Files: [To be filled]
+- New Files: [To be filled]
+- Changed Files: [To be filled]
+- Critical Changes: [To be filled]
+
+## Status
+COMPARISON_PLAN
+
+# Create baseline record for comparison
+echo "📊 Comparison analysis - $(date)" > "$SESSION_DIR/$UPDATE_SESSION/2-Baselines/step-03-comparison-baseline.txt"
+
+echo "🔍 Step 03 tracking initialized"
+echo "📁 Planning: $SESSION_DIR/$UPDATE_SESSION/1-Planning/step-03-comparison-plan.md"
+```
 
 ---
 
@@ -19,21 +71,27 @@ Based on **Laravel - Final Guides/V1_vs_V2_Comparison_Report.md** and **V2 Missi
 
 ## **3.1: Initialize Comparison Environment**
 
+### **Set Project Variables (Project-Agnostic):**
+
+```bash
+# Detect project root and set variables
+export PROJECT_ROOT="$(pwd)"
+export ADMIN_LOCAL="$PROJECT_ROOT/Admin-Local"
+export PROJECT_NAME="$(basename "$PROJECT_ROOT" | sed 's/-Root$//' | sed 's/App-Master$//' | sed 's/.*\///g')"
+cd "$PROJECT_ROOT"
+
+echo "🏠 Project Root: $PROJECT_ROOT"
+echo "📁 Admin Local: $ADMIN_LOCAL"
+echo "🏷️ Project Name: $PROJECT_NAME"
+```
+
 ### **Setup Comparison Workspace:**
 
 1. **Locate working directories:**
 
-   ````bash
-   2. **Navigate to project root:**
-
    ```bash
-   # Set path variables for consistency
-   export PROJECT_ROOT="/Users/malekokour/Zaj_Master/MyApps/MyLaravel_Apps/2_Apps/SocietyPal-Project/SocietyPalApp-Master/SocietyPalApp-Root"
-   export ADMIN_LOCAL="$PROJECT_ROOT/Admin-Local"
-   cd "$PROJECT_ROOT"
-
    # Find the latest staging directory from Step 02
-   LATEST_STAGING=$(find Admin-Local/vendor_updates -name "202*" -type d | sort | tail -1)
+   LATEST_STAGING=$(find "$ADMIN_LOCAL/vendor_updates" -name "202*" -type d | sort | tail -1)
    if [ -z "$LATEST_STAGING" ]; then
        echo "❌ No staging directory found. Please complete Step 02 first."
        exit 1
@@ -44,10 +102,14 @@ Based on **Laravel - Final Guides/V1_vs_V2_Comparison_Report.md** and **V2 Missi
    NEW_APP_DIR=$(grep "Application Path:" "$STRATEGY_FILE" | cut -d' ' -f3)
 
    echo "🔍 Starting detailed comparison..."
-   echo "   Current: $(pwd)"
+   echo "   Current: $PROJECT_ROOT"
    echo "   New:     $NEW_APP_DIR"
    echo "   Staging: $LATEST_STAGING"
-   ````
+
+   # Update tracking with comparison info
+   echo "Latest Staging: $LATEST_STAGING" >> "$SESSION_DIR/$UPDATE_SESSION/2-Baselines/step-03-comparison-baseline.txt"
+   echo "New App Directory: $NEW_APP_DIR" >> "$SESSION_DIR/$UPDATE_SESSION/2-Baselines/step-03-comparison-baseline.txt"
+   ```
 
 2. **Create comparison workspace:**
 
@@ -56,11 +118,34 @@ Based on **Laravel - Final Guides/V1_vs_V2_Comparison_Report.md** and **V2 Missi
    COMPARE_DIR="$LATEST_STAGING/comparison"
    mkdir -p "$COMPARE_DIR"/{reports,file_changes,custom_preservation}
 
-   # Get customization mode from backup
-   CUSTOMIZATION_MODE=$(grep "CUSTOMIZATION_MODE=" Admin-Local/update_logs/update_*.md | tail -1 | cut -d'"' -f2)
+   # Get customization mode from backup (project-agnostic path)
+   CUSTOMIZATION_MODE=$(grep "CUSTOMIZATION_MODE=" "$ADMIN_LOCAL/update_logs/update_*.md" | tail -1 | cut -d'"' -f2)
+   
+   # If not found, detect from project structure
+   if [ -z "$CUSTOMIZATION_MODE" ]; then
+       if [ -d "app/Custom" ]; then
+           CUSTOMIZATION_MODE="protected"
+       else
+           CUSTOMIZATION_MODE="simple"
+       fi
+   fi
 
    echo "📊 Comparison workspace: $COMPARE_DIR"
    echo "🛡️ Customization mode: $CUSTOMIZATION_MODE"
+   
+   # Update tracking with comparison workspace info
+   cat >> "$SESSION_DIR/$UPDATE_SESSION/2-Baselines/step-03-comparison-baseline.txt" << WORKSPACE_INFO
+
+## Comparison Workspace Setup
+- Workspace Directory: $COMPARE_DIR
+- Customization Mode: $CUSTOMIZATION_MODE
+- Timestamp: $(date)
+
+WORKSPACE_INFO
+   
+   # Update execution tracking
+   echo "✅ Comparison workspace created" >> "$SESSION_DIR/$UPDATE_SESSION/3-Execution/step-03-execution.log"
+   echo "📁 $COMPARE_DIR" >> "$SESSION_DIR/$UPDATE_SESSION/3-Execution/step-03-execution.log"
    ```
 
 ---
@@ -94,6 +179,19 @@ Based on **Laravel - Final Guides/V1_vs_V2_Comparison_Report.md** and **V2 Missi
    echo "   Added:   $(wc -l < "$COMPARE_DIR/added_files.txt") files"
    echo "   Removed: $(wc -l < "$COMPARE_DIR/removed_files.txt") files"
    echo "   Common:  $(wc -l < "$COMPARE_DIR/common_files.txt") files"
+
+   # Update tracking with file analysis results
+   cat >> "$SESSION_DIR/$UPDATE_SESSION/2-Baselines/step-03-comparison-baseline.txt" << FILE_ANALYSIS
+
+## File Analysis Results
+- Added Files: $(wc -l < "$COMPARE_DIR/added_files.txt")
+- Removed Files: $(wc -l < "$COMPARE_DIR/removed_files.txt")
+- Common Files: $(wc -l < "$COMPARE_DIR/common_files.txt")
+- Analysis Date: $(date)
+
+FILE_ANALYSIS
+
+   echo "📝 File analysis results recorded in tracking" >> "$SESSION_DIR/$UPDATE_SESSION/3-Execution/step-03-execution.log"
    ```
 
 2. **Analyze critical file changes:**
@@ -457,13 +555,34 @@ Based on **Laravel - Final Guides/V1_vs_V2_Comparison_Report.md** and **V2 Missi
    PLAN_EOF
 
    echo "✅ Update execution plan created: $COMPARE_DIR/UPDATE_EXECUTION_PLAN.md"
+   
+   # Update tracking with execution plan details
+   cat >> "$SESSION_DIR/$UPDATE_SESSION/5-Documentation/step-03-execution-plan.md" << PLAN_SUMMARY
+# Step 03: Update Execution Plan Summary
+
+**Generated:** $(date)
+**Plan File:** $COMPARE_DIR/UPDATE_EXECUTION_PLAN.md
+
+## Summary Details
+- **Complexity:** $COMPLEXITY
+- **Customization Mode:** $CUSTOMIZATION_MODE
+- **Files Changed:** $(wc -l < "$COMPARE_DIR/common_files.txt") total files to check
+- **New Files:** $(wc -l < "$COMPARE_DIR/added_files.txt") files
+- **Removed Files:** $(wc -l < "$COMPARE_DIR/removed_files.txt") files
+
+## Critical Changes
+$(grep "⚠️" "$COMPARE_DIR/reports/file_changes.md" 2>/dev/null | head -10 || echo "- No critical changes detected")
+
+PLAN_SUMMARY
+
+   echo "📋 Execution plan documented in tracking" >> "$SESSION_DIR/$UPDATE_SESSION/3-Execution/step-03-execution.log"
    ```
 
-2. **Update the update log:**
+2. **Update the update log and tracking:**
 
    ```bash
-   # Update the current update log
-   LATEST_LOG=$(find Admin-Local/update_logs -name "update_*.md" | sort | tail -1)
+   # Update the current update log (project-agnostic path)
+   LATEST_LOG=$(find "$ADMIN_LOCAL/update_logs" -name "update_*.md" | sort | tail -1)
 
    if [ -n "$LATEST_LOG" ]; then
        # Mark Step 03 as complete
@@ -481,6 +600,39 @@ Based on **Laravel - Final Guides/V1_vs_V2_Comparison_Report.md** and **V2 Missi
 
        echo "✅ Update log updated: $LATEST_LOG"
    fi
+
+   # Mark step as completed in tracking
+   sed -i 's/- \[ \] Generate detailed update execution plan/- [x] Generate detailed update execution plan/' "$SESSION_DIR/$UPDATE_SESSION/1-Planning/step-03-comparison-plan.md"
+   sed -i 's/- \[ \] Update tracking logs/- [x] Update tracking logs/' "$SESSION_DIR/$UPDATE_SESSION/1-Planning/step-03-comparison-plan.md"
+   
+   # Final tracking summary
+   cat >> "$SESSION_DIR/$UPDATE_SESSION/4-Verification/step-03-verification.md" << VERIFICATION_COMPLETE
+# Step 03: Compare Changes - Verification Complete
+
+**Date:** $(date)
+**Status:** ✅ COMPLETED
+
+## Deliverables Created
+- [x] File comparison analysis
+- [x] Critical file changes identification
+- [x] Customization conflict analysis
+- [x] Database migration analysis
+- [x] Dependency change analysis
+- [x] Execution plan generation
+- [x] Risk assessment
+- [x] Update log updates
+
+## Key Files Generated
+- Execution Plan: $COMPARE_DIR/UPDATE_EXECUTION_PLAN.md
+- Preservation Plan: $COMPARE_DIR/custom_preservation/PRESERVATION_PLAN.md
+- Change Report: $COMPARE_DIR/reports/file_changes.md
+
+## Next Action
+- Continue to [Step 04: Update Vendor Files](Step_04_Update_Vendor_Files.md)
+
+VERIFICATION_COMPLETE
+
+   echo "✅ Step 03 completed and verified in tracking system"
    ```
 
 ---
