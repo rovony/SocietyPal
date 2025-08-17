@@ -1,0 +1,1854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocietyPal - Phase 2 Pre-Deployment Checklist</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Modern Typography & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            font-size: 1.1rem;
+            color: #718096;
+            margin-bottom: 20px;
+        }
+
+        /* Search Bar */
+        .search-container {
+            position: relative;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 20px 12px 50px;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #a0aec0;
+        }
+
+        /* Progress Indicator */
+        .progress-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .progress-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .progress-stats {
+            font-size: 0.9rem;
+            color: #718096;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #48bb78, #38a169);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        /* Step Navigation */
+        .step-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .step-nav-header {
+            padding: 20px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .step-nav-header h2 {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+        }
+
+        .step-nav-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .step-nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1px;
+            background: #e2e8f0;
+        }
+
+        .step-nav-item {
+            background: white;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+        }
+
+        .step-nav-item:hover {
+            background: #f7fafc;
+        }
+
+        .step-nav-item.active {
+            background: rgba(102, 126, 234, 0.1);
+            border-left: 4px solid #667eea;
+        }
+
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #667eea;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .step-info {
+            flex: 1;
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+
+        .step-desc {
+            font-size: 12px;
+            color: #718096;
+        }
+
+        .step-status {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .step-status.pending {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .step-status.progress {
+            background: #faf089;
+            color: #d69e2e;
+        }
+
+        .step-status.complete {
+            background: #c6f6d5;
+            color: #2f855a;
+        }
+
+        /* Step Content */
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        /* Section Cards */
+        .section-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .section-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .section-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #e2e8f0;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+
+        .section-header:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .section-icon {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .section-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-reference {
+            font-size: 11px;
+            padding: 3px 8px;
+            background: #e2e8f0;
+            color: #4a5568;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .step-reference:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .toggle-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .section-header.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .section-content {
+            padding: 25px;
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        .section-content.collapsed {
+            display: none;
+        }
+
+        /* Why Box */
+        .why-box {
+            background: linear-gradient(135deg, #e6fffa 0%, #f0fff4 100%);
+            border: 1px solid #38b2ac;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            position: relative;
+        }
+
+        .why-box::before {
+            content: '💡';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+        }
+
+        .why-box-content {
+            margin-left: 35px;
+        }
+
+        .why-box h4 {
+            color: #2c7a7b;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .why-box p {
+            color: #2d3748;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* Checklist Items */
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+
+        .checkbox-container {
+            position: relative;
+            margin-top: 2px;
+        }
+
+        .checkbox {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox:checked {
+            background: #667eea;
+            border-color: #667eea;
+        }
+
+        .checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .item-content {
+            flex: 1;
+        }
+
+        .item-title {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+
+        .item-description {
+            font-size: 13px;
+            color: #718096;
+            margin-bottom: 10px;
+        }
+
+        .item-details {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .item-details.expanded {
+            display: block;
+        }
+
+        /* Code Blocks */
+        .code-block {
+            position: relative;
+            margin: 15px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #1a202c;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background: #2d3748;
+            color: #e2e8f0;
+            font-size: 12px;
+        }
+
+        .code-lang {
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .copy-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #5a67d8;
+        }
+
+        .code-content {
+            padding: 15px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #e2e8f0;
+            overflow-x: auto;
+        }
+
+        /* Terminal Style */
+        .terminal {
+            background: #1a202c;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 13px;
+            color: #e2e8f0;
+        }
+
+        .terminal-line {
+            margin: 5px 0;
+        }
+
+        .terminal-prompt {
+            color: #48bb78;
+        }
+
+        .terminal-command {
+            color: #90cdf4;
+        }
+
+        .terminal-output {
+            color: #cbd5e0;
+        }
+
+        .terminal-error {
+            color: #fc8181;
+        }
+
+        .terminal-success {
+            color: #68d391;
+        }
+
+        /* Tooltips */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .tooltip-icon {
+            color: #667eea;
+            margin-left: 5px;
+        }
+
+        .tooltip-content {
+            visibility: hidden;
+            width: 300px;
+            background: #2d3748;
+            color: #e2e8f0;
+            text-align: left;
+            border-radius: 8px;
+            padding: 12px;
+            position: absolute;
+            z-index: 1000;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -150px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+            line-height: 1.5;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .tooltip-content::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #2d3748 transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltip-content {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .step-nav-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .checklist-item {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .checkbox-container {
+                align-self: flex-start;
+            }
+
+            .tooltip-content {
+                width: 250px;
+                margin-left: -125px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+
+        /* Hidden class */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header fade-in">
+            <h1>📋 SocietyPal Phase 2 Pre-Deployment Checklist</h1>
+            <p class="subtitle">Interactive checklist following exact Phase 2 step sequence (Steps 15-20)</p>
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Search steps, commands, or concepts...">
+            </div>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="progress-container fade-in">
+            <div class="progress-header">
+                <div class="progress-title">🎯 Phase 2 Overall Progress</div>
+                <div class="progress-stats">
+                    <span id="completed-count">0</span> of <span id="total-count">0</span> items completed
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+
+        <!-- Step Navigation -->
+        <div class="step-nav fade-in">
+            <div class="step-nav-header">
+                <h2>🚀 Phase 2: Pre-Deployment Preparation</h2>
+                <p class="step-nav-subtitle">Follow the exact sequence from the Phase 2 guide</p>
+            </div>
+            <div class="step-nav-grid">
+                <div class="step-nav-item active" data-step="step15">
+                    <div class="step-icon"><i class="fas fa-download"></i></div>
+                    <div class="step-info">
+                        <div class="step-title">Step 15: Install Dependencies</div>
+                        <div class="step-desc">Generate lock files for reproducible builds</div>
+                    </div>
+                    <div class="step-status pending">Pending</div>
+                </div>
+                <div class="step-nav-item" data-step="step16">
+                    <div class="step-icon"><i class="fas fa-hammer"></i></div>
+                    <div class="step-info">
+                        <div class="step-title">Step 16: Test Build Process</div>
+                        <div class="step-desc">Verify production build works locally</div>
+                    </div>
+                    <div class="step-status pending">Pending</div>
+                </div>
+                <div class="step-nav-item" data-step="step17">
+                    <div class="step-icon"><i class="fas fa-shield-alt"></i></div>
+                    <div class="step-info">
+                        <div class="step-title">Step 17: Customization Protection</div>
+                        <div class="step-desc">Implement update-safe custom layer</div>
+                    </div>
+                    <div class="step-status pending">Pending</div>
+                </div>
+                <div class="step-nav-item" data-step="step18">
+                    <div class="step-icon"><i class="fas fa-database"></i></div>
+                    <div class="step-info">
+                        <div class="step-title">Step 18: Data Persistence</div>
+                        <div class="step-desc">Zero data loss deployment system</div>
+                    </div>
+                    <div class="step-status pending">Pending</div>
+                </div>
+                <div class="step-nav-item" data-step="step19">
+                    <div class="step-icon"><i class="fas fa-file-alt"></i></div>
+                    <div class="step-info">
+                        <div class="step-title">Step 19: Documentation</div>
+                        <div class="step-desc">Investment protection & team handoff</div>
+                    </div>
+                    <div class="step-status pending">Pending</div>
+                </div>
+                <div class="step-nav-item" data-step="step20">
+                    <div class="step-icon"><i class="fas fa-code-branch"></i></div>
+                    <div class="step-info">
+                        <div class="step-title">Step 20: Commit Pre-Deploy</div>
+                        <div class="step-desc">Secure all work in repository</div>
+                    </div>
+                    <div class="step-status pending">Pending</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 15: Install Dependencies -->
+        <div class="step-content active" id="step15">
+            <div class="section-card">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <div class="section-title">
+                        <i class="fas fa-cube section-icon"></i>
+                        PHP Dependencies (Composer)
+                    </div>
+                    <div class="section-meta">
+                        <a href="#" class="step-reference" title="Reference: Step_15_Install_Dependencies.md">📄 Step 15</a>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="why-box">
+                        <div class="why-box-content">
+                            <h4>Why composer install (not update)?</h4>
+                            <p>Using <code>install</code> ensures reproducible builds by using exact versions from composer.lock. The <code>update</code> command would change package versions and potentially break functionality.</p>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item">
+                        <div class="checkbox-container">
+                            <input type="checkbox" class="checkbox" data-item="navigate-project-root">
+                        </div>
+                        <div class="item-content">
+                            <div class="item-title" onclick="toggleDetails(this)">Navigate to Project Root</div>
+                            <div class="item-description">Ensure you're in the correct project directory</div>
+                            <div class="item-details">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span class="code-lang">bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                    </div>
+                    <i class="fas fa-server"></i> Backend
+                </button>
+                <button class="tab-btn" data-tab="database">
+                    <i class="fas fa-database"></i> Database
+                </button>
+                <button class="tab-btn" data-tab="deployment">
+                    <i class="fas fa-rocket"></i> Deployment
+                </button>
+            </div>
+
+            <!-- Frontend Tab -->
+            <div class="tab-content active" id="tab-frontend">
+                <!-- Dependencies Section -->
+                <div class="section-card">
+                    <div class="section-header" onclick="toggleSection(this)">
+                        <div class="section-title color-dependencies">
+                            <i class="fas fa-download section-icon"></i>
+                            Frontend Dependencies
+                        </div>
+                        <div class="section-status">
+                            <div class="status-badge status-pending">Pending</div>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <div class="checklist-item">
+                            <div class="checkbox-container">
+                                <input type="checkbox" class="checkbox" data-item="npm-install">
+                            </div>
+                            <div class="item-content">
+                                <div class="item-title" onclick="toggleDetails(this)">Install NPM Dependencies</div>
+                                <div class="item-description">Install and lock frontend package dependencies</div>
+                                <div class="item-details">
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <span class="code-lang">bash</span>
+                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                        </div>
+                                        <div class="code-content">npm install</div>
+                                    </div>
+                                    <p><strong>Purpose:</strong> Installs all dependencies listed in package.json and creates package-lock.json for reproducible builds.</p>
+                                    <p><strong>Expected Output:</strong> node_modules/ directory and package-lock.json file created.</p>
+                                    <div class="platform-icons">
+                                        <span class="platform-icon platform-windows">Windows</span>
+                                        <span class="platform-icon platform-macos">macOS</span>
+                                        <span class="platform-icon platform-linux">Linux</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="checklist-item">
+                            <div class="checkbox-container">
+                                <input type="checkbox" class="checkbox" data-item="npm-audit">
+                            </div>
+                            <div class="item-content">
+                                <div class="item-title" onclick="toggleDetails(this)">Audit Dependencies 
+                                    <span class="tooltip">
+                                        <i class="fas fa-info-circle tooltip-icon"></i>
+                                        <span class="tooltip-content">
+                                            Scans for known security vulnerabilities in dependencies and provides recommendations for fixes.
+                                        </span>
+                                    </span>
+                                </div>
+                                <div class="item-description">Check for security vulnerabilities in packages</div>
+                                <div class="item-details">
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <span class="code-lang">bash</span>
+                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                        </div>
+                                        <div class="code-content">npm audit
+npm audit fix</div>
+                                    </div>
+                                    <div class="terminal">
+                                        <div class="terminal-line">
+                                            <span class="terminal-prompt">$</span> 
+                                            <span class="terminal-command">npm audit</span>
+                                        </div>
+                                        <div class="terminal-line terminal-success">✓ found 0 vulnerabilities</div>
+                                        <div class="terminal-line">
+                                            <span class="terminal-prompt">$</span> 
+                                            <span class="terminal-command">npm audit fix</span>
+                                        </div>
+                                        <div class="terminal-line terminal-output">up to date, audited 1337 packages in 2s</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="checklist-item">
+                            <div class="checkbox-container">
+                                <input type="checkbox" class="checkbox" data-item="build-assets">
+                            </div>
+                            <div class="item-content">
+                                <div class="item-title" onclick="toggleDetails(this)">Build Production Assets</div>
+                                <div class="item-description">Compile and optimize CSS/JS for production</div>
+                                <div class="item-details">
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <span class="code-lang">bash</span>
+                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                        </div>
+                                        <div class="code-content">npm run build</div>
+                                    </div>
+                                    <p><strong>Purpose:</strong> Compiles, minifies, and optimizes frontend assets for production deployment.</p>
+                                    <p><strong>Output Location:</strong> public/css/, public/js/, public/mix-manifest.json</p>
+                                    <p><strong>Troubleshooting:</strong> If build fails, check webpack configuration and ensure all dependencies are installed.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Asset Optimization Section -->
+                <div class="section-card">
+                    <div class="section-header" onclick="toggleSection(this)">
+                        <div class="section-title color-performance">
+                            <i class="fas fa-tachometer-alt section-icon"></i>
+                            Asset Optimization
+                        </div>
+                        <div class="section-status">
+                            <div class="status-badge status-pending">Pending</div>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <div class="checklist-item">
+                            <div class="checkbox-container">
+                                <input type="checkbox" class="checkbox" data-item="image-optimization">
+                            </div>
+                            <div class="item-content">
+                                <div class="item-title" onclick="toggleDetails(this)">Optimize Images</div>
+                                <div class="item-description">Compress and optimize image assets</div>
+                                <div class="item-details">
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <span class="code-lang">bash</span>
+                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                        </div>
+                                        <div class="code-content"># Install imagemin-cli globally
+npm install -g imagemin-cli
+
+# Optimize images
+imagemin public/images/* --out-dir=public/images/optimized</div>
+                                    </div>
+                                    <p><strong>Supported Formats:</strong> PNG, JPG, GIF, SVG, WebP</p>
+                                    <p><strong>Expected Reduction:</strong> 30-70% file size reduction without visible quality loss</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="checklist-item">
+                            <div class="checkbox-container">
+                                <input type="checkbox" class="checkbox" data-item="css-purge">
+                            </div>
+                            <div class="item-content">
+                                <div class="item-title" onclick="toggleDetails(this)">Purge Unused CSS</div>
+                                <div class="item-description">Remove unused CSS to reduce bundle size</div>
+                                <div class="item-details">
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <span class="code-lang">javascript</span>
+                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                        </div>
+                                        <div class="code-content">// webpack.mix.js
+const mix = require('laravel-mix');
+
+mix.js('resources/js/app.js', 'public/js')
+   .sass('resources/sass/app.scss', 'public/css')
+   .options({
+       purifyCss: {
+           paths: [
+               path.join(__dirname, 'resources/views/**/*.blade.php'),
+               path.join(__dirname, 'resources/js/**/*.js')
+           ]
+       }
+   });</div>
+                                    </div>
+                                    <p><strong>Benefit:</strong> Can reduce CSS file size by 50-90% by removing unused selectors</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Backend Tab -->
+            <div class="tab-content" id="tab-backend">
+                <!-- Composer Dependencies -->
+                <div class="section-card">
+                    <div class="section-header" onclick="toggleSection(this)">
+                        <div class="section-title color-dependencies">
+                            <i class="fas fa-cube section-icon"></i>
+                            Composer Dependencies
+                        </div>
+                        <div class="section-status">
+                            <div class="status-badge status-pending">Pending</div>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <div class="checklist-item">
+                            <div class="checkbox-container">
+                                <input type="checkbox" class="checkbox" data-item="composer-install">
+                            </div>
+                            <div class="item-content">
+                                <div class="item-title" onclick="toggleDetails(this)">Install Composer Dependencies</div>
+                                <div class="item-description">Install PHP packages without dev dependencies</div>
+                                <div class="item-details">
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <span class="code-lang">bash</span>
+                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                        </div>
+                                        <div class="code-content">composer install --no-dev --optimize-autoloader</div>
+                                    </div>
+                                    <p><strong>Purpose:</strong> Installs production dependencies and optimizes autoloader for better performance</p>
+                                    <p><strong>Output:</strong> vendor/ directory and optimized autoload files</p>
+                                    <p><strong>Note:</strong> --no-dev excludes development packages like PHPUnit, Xdebug</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="checklist-item">
+                            <div class="checkbox-container">
+                                <input type="checkbox" class="checkbox" data-item="laravel-optimize">
+                            </div>
+                            <div class="item-content">
+                                <div class="item-title" onclick="toggleDetails(this)">Laravel Optimizations</div>
+                                <div class="item-description">Cache configurations, routes, and views</div>
+                                <div class="item-details">
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <span class="code-lang">bash</span>
+                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                        </div>
+                                        <div class="code-content"># Clear existing caches
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+
+# Generate optimized caches
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache</div>
+                                    </div>
+                                    <p><strong>Performance Impact:</strong> Can improve response times by 20-50%</p>
+                                    <p><strong>Important:</strong> Routes cache only works with closure-based routes converted to controller methods</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Section -->
+                <div class="section-card">
+                    <div class="section-header" onclick="toggleSection(this)">
+                        <div class="section-title color-security">
+                            <i class="fas fa-shield-alt section-icon"></i>
+                            Security Validation
+                        </div>
+                        <div class="section-status">
+                            <div class="status-badge status-pending">Pending</div>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <div class="checklist-item">
+                            <div class="checkbox-container">
+                                <input type="checkbox" class="checkbox" data-item="env-validation">
+                            </div>
+                            <div class="item-content">
+                                <div class="item-title" onclick="toggleDetails(this)">Environment Variables Validation 
+                                    <span class="tooltip">
+                                        <i class="fas fa-info-circle tooltip-icon"></i>
+                                        <span class="tooltip-content">
+                                            Ensures all required environment variables are set and validates their format/values for security compliance.
+                                        </span>
+                                    </span>
+                                </div>
+                                <div class="item-description">Verify all required environment variables are configured</div>
+                                <div class="item-details">
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <span class="code-lang">bash</span>
+                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                        </div>
+                                        <div class="code-content"># Check required environment variables
+php -r "
+$required = ['APP_KEY', 'DB_HOST', 'DB_DATABASE', 'DB_USERNAME', 'DB_PASSWORD'];
+$missing = [];
+foreach($required as $var) {
+    if(empty(getenv($var))) $missing[] = $var;
+}
+if($missing) {
+    echo 'Missing: ' . implode(', ', $missing) . PHP_EOL;
+    exit(1);
+}
+echo 'All required environment variables are set.' . PHP_EOL;
+"</div>
+                                    </div>
+                                    <p><strong>Critical Variables:</strong> APP_KEY, DB_*, MAIL_*, CACHE_DRIVER, SESSION_DRIVER</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="checklist-item">
+                            <div class="checkbox-container">
+                                <input type="checkbox" class="checkbox" data-item="security-scan">
+                            </div>
+                            <div class="item-content">
+                                <div class="item-title" onclick="toggleDetails(this)">Security Vulnerability Scan</div>
+                                <div class="item-description">Scan for known vulnerabilities in Composer packages</div>
+                                <div class="item-details">
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <span class="code-lang">bash</span>
+                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                        </div>
+                                        <div class="code-content"># Install security checker
+composer global require enlightn/security-checker
+
+# Run security audit
+php ~/.composer/vendor/bin/security-checker security:check composer.lock</div>
+                                    </div>
+                                    <div class="terminal">
+                                        <div class="terminal-line">
+                                            <span class="terminal-prompt">$</span> 
+                                            <span class="terminal-command">security-checker security:check</span>
+                                        </div>
+                                        <div class="terminal-line terminal-success">[OK] 0 packages have known vulnerabilities</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="checklist-item">
+                            <div class="checkbox-container">
+                                <input type="checkbox" class="checkbox" data-item="ssl-setup">
+                            </div>
+                            <div class="item-content">
+                                <div class="item-title" onclick="toggleDetails(this)">SSL Certificate Configuration</div>
+                                <div class="item-description">Ensure HTTPS is properly configured</div>
+                                <div class="item-details">
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <span class="code-lang">bash</span>
+                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                        </div>
+                                        <div class="code-content"># Test SSL configuration
+curl -I https://your-domain.com
+
+# Check SSL certificate expiry
+echo | openssl s_client -servername your-domain.com -connect your-domain.com:443 2>/dev/null | openssl x509 -noout -dates</div>
+                                    </div>
+                                    <p><strong>Validation Checklist:</strong></p>
+                                    <ul style="margin-left: 20px; margin-top: 10px;">
+                                        <li>Certificate is valid and not expired</li>
+                                        <li>HTTP redirects to HTTPS</li>
+                                        <li>HSTS headers are present</li>
+                                        <li>SSL Labs grade A or A+</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Database Tab -->
+            <div class="tab-content" id="tab-database">
+                <!-- Database Setup -->
+                <div class="section-card">
+                    <div class="section-header" onclick="toggleSection(this)">
+                        <div class="section-title color-database">
+                            <i class="fas fa-database section-icon"></i>
+                            Database Migration & Seeding
+                        </div>
+                        <div class="section-status">
+                            <div class="status-badge status-pending">Pending</div>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <div class="checklist-item">
+                            <div class="checkbox-container">
+                                <input type="checkbox" class="checkbox" data-item="db-connection">
+                            </div>
+                            <div class="item-content">
+                                <div class="item-title" onclick="toggleDetails(this)">Test Database Connection</div>
+                                <div class="item-description">Verify database connectivity and credentials</div>
+                                <div class="item-details">
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <span class="code-lang">bash</span>
+                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                        </div>
+                                        <div class="code-content"># Test database connection
+php artisan tinker
+
+# In Tinker console:
+DB::connection()->getPdo();</div>
+                                    </div>
+                                    <div class="terminal">
+                                        <div class="terminal-line">
+                                            <span class="terminal-prompt">Psy Shell v0.11.8</span>
+                                        </div>
+                                        <div class="terminal-line">
+                                            <span class="terminal-prompt">></span>
+                                            <span class="terminal-command">DB::connection()->getPdo()</span>
+                                        </div>
+                                        <div class="terminal-line terminal-success">=> PDO {#connection_info}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="checklist-item">
+                            <div class="checkbox-container">
+                                <input type="checkbox" class="checkbox" data-item="db-migrate">
+                            </div>
+                            <div class="item-content">
+                                <div class="item-title" onclick="toggleDetails(this)">Run Database Migrations</div>
+                                <div class="item-description">Execute pending database migrations</div>
+                                <div class="item-details">
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <span class="code-lang">bash</span>
+                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                        </div>
+                                        <div class="code-content"># Check migration status
+php artisan migrate:status
+
+# Run pending migrations
+php artisan migrate --force</div>
+                                    </div>
+                                    <p><strong>Important:</strong> --force flag bypasses confirmation in production</p>
+                                    <p><strong>Backup First:</strong> Always backup database before running migrations in production</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="checklist-item">
+                            <div class="checkbox-container">
+                                <input type="checkbox" class="checkbox" data-item="db-seed">
+                            </div>
+                            <div class="item-content">
+                                <div class="item-title" onclick="toggleDetails(this)">Database Seeding (Optional)</div>
+                                <div class="item-description">Populate database with initial data</div>
+                                <div class="item-details">
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <span class="code-lang">bash</span>
+                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                        </div>
+                                        <div class="code-content"># Seed production data only
+php artisan db:seed --class=ProductionSeeder</div>
+                                    </div>
+                                    <p><strong>Warning:</strong> Only run seeders designed for production environments</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Database Optimization -->
+                <div class="section-card">
+                    <div class="section-header" onclick="toggleSection(this)">
+                        <div class="section-title color-performance">
+                            <i class="fas fa-chart-line section-icon"></i>
+                            Database Optimization
+                        </div>
+                        <div class="section-status">
+                            <div class="status-badge status-pending">Pending</div>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <div class="checklist-item">
+                            <div class="checkbox-container">
+                                <input type="checkbox" class="checkbox" data-item="db-indexes">
+                            </div>
+                            <div class="item-content">
+                                <div class="item-title" onclick="toggleDetails(this)">Verify Database Indexes</div>
+                                <div class="item-description">Ensure all necessary indexes are in place</div>
+                                <div class="item-details">
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <span class="code-lang">sql</span>
+                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                        </div>
+                                        <div class="code-content">-- Check indexes on frequently queried tables
+SHOW INDEX FROM users;
+SHOW INDEX FROM posts;
+SHOW INDEX FROM sessions;</div>
+                                    </div>
+                                    <p><strong>Key Indexes:</strong> Primary keys, foreign keys, frequently searched columns</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="checklist-item">
+                            <div class="checkbox-container">
+                                <input type="checkbox" class="checkbox" data-item="query-optimization">
+                            </div>
+                            <div class="item-content">
+                                <div class="item-title" onclick="toggleDetails(this)">Query Performance Testing</div>
+                                <div class="item-description">Test slow query performance and optimization</div>
+                                <div class="item-details">
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <span class="code-lang">bash</span>
+                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                        </div>
+                                        <div class="code-content"># Enable query logging
+php artisan tinker
+
+# Log slow queries
+DB::listen(function ($query) {
+    if ($query->time > 100) { // Log queries > 100ms
+        Log::info('Slow Query: ' . $query->sql . ' [' . $query->time . 'ms]');
+    }
+});</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Deployment Tab -->
+            <div class="tab-content" id="tab-deployment">
+                <!-- CDN & Monitoring -->
+                <div class="section-card">
+                    <div class="section-header" onclick="toggleSection(this)">
+                        <div class="section-title color-deployment">
+                            <i class="fas fa-cloud section-icon"></i>
+                            CDN & Performance
+                        </div>
+                        <div class="section-status">
+                            <div class="status-badge status-pending">Pending</div>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <div class="checklist-item">
+                            <div class="checkbox-container">
+                                <input type="checkbox" class="checkbox" data-item="cdn-setup">
+                            </div>
+                            <div class="item-content">
+                                <div class="item-title" onclick="toggleDetails(this)">CDN Configuration</div>
+                                <div class="item-description">Setup Content Delivery Network for static assets</div>
+                                <div class="item-details">
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <span class="code-lang">bash</span>
+                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                        </div>
+                                        <div class="code-content"># CloudFlare CDN setup
+# Add in .env
+CDN_URL=https://cdn.your-domain.com
+
+# Update asset URLs in config/app.php
+'asset_url' => env('CDN_URL'),</div>
+                                    </div>
+                                    <p><strong>Benefits:</strong> Faster load times, reduced server load, better global performance</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="checklist-item">
+                            <div class="checkbox-container">
+                                <input type="checkbox" class="checkbox" data-item="monitoring-setup">
+                            </div>
+                            <div class="item-content">
+                                <div class="item-title" onclick="toggleDetails(this)">Monitoring Integration
+                                    <span class="tooltip">
+                                        <i class="fas fa-info-circle tooltip-icon"></i>
+                                        <span class="tooltip-content">
+                                            Application performance monitoring helps detect issues before they impact users and provides insights for optimization.
+                                        </span>
+                                    </span>
+                                </div>
+                                <div class="item-description">Setup application and server monitoring</div>
+                                <div class="item-details">
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <span class="code-lang">bash</span>
+                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                        </div>
+                                        <div class="code-content"># Install Laravel Telescope (for development/staging)
+composer require laravel/telescope
+php artisan telescope:install
+php artisan migrate
+
+# For production monitoring (New Relic example)
+# Add to .env
+NEWRELIC_LICENSE_KEY=your_license_key</div>
+                                    </div>
+                                    <p><strong>Monitoring Tools:</strong> New Relic, Datadog, Laravel Telescope, Bugsnag</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rollback Procedures -->
+                <div class="section-card">
+                    <div class="section-header" onclick="toggleSection(this)">
+                        <div class="section-title color-security">
+                            <i class="fas fa-undo section-icon"></i>
+                            Rollback Procedures
+                        </div>
+                        <div class="section-status">
+                            <div class="status-badge status-pending">Pending</div>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <div class="checklist-item">
+                            <div class="checkbox-container">
+                                <input type="checkbox" class="checkbox" data-item="backup-strategy">
+                            </div>
+                            <div class="item-content">
+                                <div class="item-title" onclick="toggleDetails(this)">Backup Strategy</div>
+                                <div class="item-description">Ensure comprehensive backup system is in place</div>
+                                <div class="item-details">
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <span class="code-lang">bash</span>
+                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                        </div>
+                                        <div class="code-content"># Database backup
+mysqldump -u username -p database_name > backup_$(date +%Y%m%d_%H%M%S).sql
+
+# Full application backup
+tar -czf app_backup_$(date +%Y%m%d_%H%M%S).tar.gz \
+    --exclude=node_modules \
+    --exclude=vendor \
+    --exclude=.git \
+    /path/to/application</div>
+                                    </div>
+                                    <p><strong>Backup Schedule:</strong> Daily database backups, Weekly full application backups</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="checklist-item">
+                            <div class="checkbox-container">
+                                <input type="checkbox" class="checkbox" data-item="rollback-script">
+                            </div>
+                            <div class="item-content">
+                                <div class="item-title" onclick="toggleDetails(this)">Rollback Script</div>
+                                <div class="item-description">Prepare automated rollback procedure</div>
+                                <div class="item-details">
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <span class="code-lang">bash</span>
+                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                        </div>
+                                        <div class="code-content">#!/bin/bash
+# rollback.sh - Emergency rollback script
+
+echo "🔄 Starting emergency rollback..."
+
+# Switch to previous release
+cd /var/www/societypal.com
+PREVIOUS_RELEASE=$(ls -t releases/ | sed -n '2p')
+
+if [ -z "$PREVIOUS_RELEASE" ]; then
+    echo "❌ No previous release found"
+    exit 1
+fi
+
+echo "📦 Rolling back to: $PREVIOUS_RELEASE"
+ln -nfs releases/$PREVIOUS_RELEASE current
+
+echo "✅ Rollback completed successfully"
+echo "🌐 Application restored to previous version"</div>
+                                    </div>
+                                    <p><strong>Test Rollback:</strong> Always test rollback procedures in staging environment</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Post-Deployment Validation -->
+                <div class="section-card">
+                    <div class="section-header" onclick="toggleSection(this)">
+                        <div class="section-title color-build">
+                            <i class="fas fa-check-circle section-icon"></i>
+                            Post-Deployment Validation
+                        </div>
+                        <div class="section-status">
+                            <div class="status-badge status-pending">Pending</div>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <div class="checklist-item">
+                            <div class="checkbox-container">
+                                <input type="checkbox" class="checkbox" data-item="smoke-tests">
+                            </div>
+                            <div class="item-content">
+                                <div class="item-title" onclick="toggleDetails(this)">Smoke Tests</div>
+                                <div class="item-description">Verify critical application functionality</div>
+                                <div class="item-details">
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <span class="code-lang">bash</span>
+                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                        </div>
+                                        <div class="code-content"># Test critical endpoints
+curl -I https://your-domain.com
+curl -I https://your-domain.com/login
+curl -I https://your-domain.com/api/health
+
+# Test database connectivity
+php artisan tinker -c "DB::connection()->getPdo(); echo 'Database OK';"</div>
+                                    </div>
+                                    <div class="terminal">
+                                        <div class="terminal-line">
+                                            <span class="terminal-prompt">$</span>
+                                            <span class="terminal-command">curl -I https://your-domain.com</span>
+                                        </div>
+                                        <div class="terminal-line terminal-success">HTTP/2 200</div>
+                                        <div class="terminal-line terminal-success">content-type: text/html; charset=UTF-8</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="checklist-item">
+                            <div class="checkbox-container">
+                                <input type="checkbox" class="checkbox" data-item="performance-check">
+                            </div>
+                            <div class="item-content">
+                                <div class="item-title" onclick="toggleDetails(this)">Performance Validation</div>
+                                <div class="item-description">Verify application performance meets requirements</div>
+                                <div class="item-details">
+                                    <div class="code-block">
+                                        <div class="code-header">
+                                            <span class="code-lang">bash</span>
+                                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                                        </div>
+                                        <div class="code-content"># Test page load times
+curl -w "@curl-format.txt" -s -o /dev/null https://your-domain.com
+
+# curl-format.txt content:
+# time_namelookup:  %{time_namelookup}\n
+# time_connect:     %{time_connect}\n
+# time_pretransfer: %{time_pretransfer}\n
+# time_redirect:    %{time_redirect}\n
+# time_starttransfer: %{time_starttransfer}\n
+# time_total:       %{time_total}\n</div>
+                                    </div>
+                                    <p><strong>Performance Targets:</strong> Page load < 2s, API response < 500ms, Database queries < 100ms</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for Interactivity -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <script>
+        // Application State
+        let checklistState = JSON.parse(localStorage.getItem('deploymentChecklist')) || {};
+        let allItems = [];
+        let filteredItems = [];
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            loadChecklistState();
+            updateProgress();
+            setupEventListeners();
+        });
+
+        function initializeApp() {
+            // Collect all checklist items
+            allItems = Array.from(document.querySelectorAll('.checklist-item'));
+            filteredItems = allItems;
+            
+            // Update total count
+            document.getElementById('total-count').textContent = allItems.length;
+            
+            // Initialize Prism.js for syntax highlighting
+            if (typeof Prism !== 'undefined') {
+                Prism.highlightAll();
+            }
+        }
+
+        function setupEventListeners() {
+            // Tab switching
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    switchTab(this.dataset.tab);
+                });
+            });
+
+            // Search functionality
+            const searchInput = document.querySelector('.search-input');
+            searchInput.addEventListener('input', function() {
+                performSearch(this.value);
+            });
+
+            // Checkbox state management
+            document.querySelectorAll('.checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    handleCheckboxChange(this);
+                });
+            });
+        }
+
+        function switchTab(tabId) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+        }
+
+        function toggleSection(headerElement) {
+            const content = headerElement.nextElementSibling;
+            const toggleIcon = headerElement.querySelector('.toggle-icon');
+            
+            if (content.classList.contains('collapsed')) {
+                content.classList.remove('collapsed');
+                headerElement.classList.remove('collapsed');
+                toggleIcon.style.transform = 'rotate(0deg)';
+            } else {
+                content.classList.add('collapsed');
+                headerElement.classList.add('collapsed');
+                toggleIcon.style.transform = 'rotate(-90deg)';
+            }
+        }
+
+        function toggleDetails(titleElement) {
+            const itemContent = titleElement.parentElement;
+            const details = itemContent.querySelector('.item-details');
+            
+            if (details.classList.contains('expanded')) {
+                details.classList.remove('expanded');
+                titleElement.style.color = '#2d3748';
+            } else {
+                details.classList.add('expanded');
+                titleElement.style.color = '#667eea';
+            }
+        }
+
+        function handleCheckboxChange(checkbox) {
+            const itemId = checkbox.dataset.item;
+            const isChecked = checkbox.checked;
+            
+            // Update state
+            checklistState[itemId] = isChecked;
+            localStorage.setItem('deploymentChecklist', JSON.stringify(checklistState));
+            
+            // Update section status
+            updateSectionStatus(checkbox);
+            
+            // Update overall progress
+            updateProgress();
+        }
+
+        function updateSectionStatus(checkbox) {
+            const section = checkbox.closest('.section-card');
+            const checkboxes = section.querySelectorAll('.checkbox');
+            const checkedBoxes = section.querySelectorAll('.checkbox:checked');
+            const statusBadge = section.querySelector('.status-badge');
+            
+            if (checkedBoxes.length === 0) {
+                statusBadge.className = 'status-badge status-pending';
+                statusBadge.textContent = 'Pending';
+            } else if (checkedBoxes.length === checkboxes.length) {
+                statusBadge.className = 'status-badge status-complete';
+                statusBadge.textContent = 'Complete';
+            } else {
+                statusBadge.className = 'status-badge status-progress';
+                statusBadge.textContent = 'In Progress';
+            }
+        }
+
+        function updateProgress() {
+            const totalItems = allItems.length;
+            const completedItems = Object.values(checklistState).filter(Boolean).length;
+            const percentage = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
+            
+            document.getElementById('completed-count').textContent = completedItems;
+            document.getElementById('progress-fill').style.width = `${percentage}%`;
+        }
+
+        function loadChecklistState() {
+            // Restore checkbox states
+            Object.entries(checklistState).forEach(([itemId, isChecked]) => {
+                const checkbox = document.querySelector(`[data-item="${itemId}"]`);
+                if (checkbox) {
+                    checkbox.checked = isChecked;
+                    updateSectionStatus(checkbox);
+                }
+            });
+        }
+
+        function performSearch(query) {
+            if (!query.trim()) {
+                // Show all items
+                filteredItems = allItems;
+                allItems.forEach(item => {
+                    item.classList.remove('hidden');
+                    item.closest('.section-card').classList.remove('hidden');
+                });
+                return;
+            }
+
+            const searchTerms = query.toLowerCase().trim().split(' ');
+            
+            filteredItems = allItems.filter(item => {
+                const itemText = item.textContent.toLowerCase();
+                return searchTerms.every(term => itemText.includes(term));
+            });
+
+            // Hide all items first
+            allItems.forEach(item => {
+                item.classList.add('hidden');
+            });
+
+            // Show filtered items
+            filteredItems.forEach(item => {
+                item.classList.remove('hidden');
+                item.closest('.section-card').classList.remove('hidden');
+            });
+
+            // Hide sections with no visible items
+            document.querySelectorAll('.section-card').forEach(section => {
+                const visibleItems = section.querySelectorAll('.checklist-item:not(.hidden)');
+                if (visibleItems.length === 0) {
+                    section.classList.add('hidden');
+                } else {
+                    section.classList.remove('hidden');
+                }
+            });
+        }
+
+        function copyCode(button) {
+            const codeContent = button.parentElement.nextElementSibling;
+            const text = codeContent.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                // Visual feedback
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.style.background = '#48bb78';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#667eea';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy code:', err);
+                
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                textArea.style.top = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                
+                try {
+                    document.execCommand('copy');
+                    button.textContent = 'Copied!';
+                    setTimeout(() => {
+                        button.textContent = 'Copy';
+                    }, 2000);
+                } catch (err) {
+                    button.textContent = 'Copy Failed';
+                    setTimeout(() => {
+                        button.textContent = 'Copy';
+                    }, 2000);
+                }
+                
+                document.body.removeChild(textArea);
+            });
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + K for search focus
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                document.querySelector('.search-input').focus();
+            }
+            
+            // Escape to clear search
+            if (e.key === 'Escape') {
+                const searchInput = document.querySelector('.search-input');
+                searchInput.value = '';
+                performSearch('');
+            }
+        });
+
+        // Auto-save progress every 30 seconds
+        setInterval(() => {
+            localStorage.setItem('deploymentChecklist', JSON.stringify(checklistState));
+        }, 30000);
+
+        // Export/Import functionality
+        function exportProgress() {
+            const data = {
+                timestamp: new Date().toISOString(),
+                checklist: checklistState,
+                progress: {
+                    total: allItems.length,
+                    completed: Object.values(checklistState).filter(Boolean).length
+                }
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `deployment-checklist-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function importProgress(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    checklistState = data.checklist || {};
+                    localStorage.setItem('deploymentChecklist', JSON.stringify(checklistState));
+                    loadChecklistState();
+                    updateProgress();
+                    
+                    // Show success message
+                    const message = document.createElement('div');
+                    message.textContent = '✅ Progress imported successfully!';
+                    message.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        background: #48bb78;
+                        color: white;
+                        padding: 12px 20px;
+                        border-radius: 8px;
+                        z-index: 10000;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                    `;
+                    document.body.appendChild(message);
+                    
+                    setTimeout(() => {
+                        document.body.removeChild(message);
+                    }, 3000);
+                } catch (err) {
+                    alert('Failed to import progress. Please check the file format.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Add export/import buttons to header
+        window.addEventListener('load', function() {
+            const headerActions = document.createElement('div');
+            headerActions.style.cssText = 'margin-top: 15px; display: flex; gap: 10px; justify-content: center;';
+            headerActions.innerHTML = `
+                <button onclick="exportProgress()" style="
+                    background: #667eea;
+                    color: white;
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 6px;
+                    font-size: 12px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                ">
+                    <i class="fas fa-download"></i> Export Progress
+                </button>
+                <label style="
+                    background: #48bb78;
+                    color: white;
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 6px;
+                    font-size: 12px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                ">
+                    <i class="fas fa-upload"></i> Import Progress
+                    <input type="file" accept=".json" onchange="importProgress(event)" style="display: none;">
+                </label>
+            `;
+            document.querySelector('.header').appendChild(headerActions);
+        });
+    </script>
+</body>
+</html>

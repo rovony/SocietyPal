@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step 01: Project Information Collector - Laravel Deployment Guide V3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.05) 10px,
+                rgba(255,255,255,0.05) 20px
+            );
+            animation: slide 20s linear infinite;
+        }
+        
+        @keyframes slide {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .intro {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .intro h2 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .intro p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .form-section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .form-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-section h3::before {
+            content: attr(data-icon);
+            font-size: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.95rem;
+        }
+        
+        input[type="text"], input[type="email"], input[type="url"], select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+        
+        input[type="text"]:focus, input[type="email"]:focus, input[type="url"]:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .example {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        
+        .button-group {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e9ecef;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        }
+        
+        .btn-secondary:hover {
+            box-shadow: 0 10px 20px rgba(149, 165, 166, 0.3);
+        }
+        
+        .output-section {
+            margin-top: 40px;
+            padding: 30px;
+            background: #2c3e50;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .output-section h3 {
+            color: #ecf0f1;
+            margin-bottom: 20px;
+        }
+        
+        .code-output {
+            background: #34495e;
+            color: #2ecc71;
+            padding: 20px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .copy-btn {
+            background: #27ae60;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background: #229954;
+            transform: translateY(-1px);
+        }
+        
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            border-left: 4px solid;
+        }
+        
+        .alert-info {
+            background-color: #d1ecf1;
+            border-color: #17a2b8;
+            color: #0c5460;
+        }
+        
+        .alert-warning {
+            background-color: #fff3cd;
+            border-color: #ffc107;
+            color: #856404;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid #3498db;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Step 01: Project Information Collector</h1>
+            <div class="subtitle">Laravel Deployment Guide V3 - Human Interactive Interface</div>
+        </div>
+        
+        <div class="content">
+            <div class="intro">
+                <h2>🎯 Project Configuration Setup</h2>
+                <p>Complete the form below to generate your project-specific deployment configuration. This information will be used throughout the entire deployment guide to customize commands, paths, and scripts.</p>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>⚠️ Template Notice:</strong> This form uses SocietyPal as an example. Replace all example values with your actual project details.
+            </div>
+
+            <form id="projectForm">
+                <!-- Project Basics -->
+                <div class="form-section">
+                    <h3 data-icon="📋">Project Basics</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="projectName">Project Name *</label>
+                            <input type="text" id="projectName" name="projectName" required>
+                            <div class="example">e.g., SocietyPal, EcommerceApp, BlogSystem</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="codecanyonApp">CodeCanyon App Name</label>
+                            <input type="text" id="codecanyonApp" name="codecanyonApp">
+                            <div class="example">e.g., SocietyPro, LaravelEcommerce</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="appVersion">App Version</label>
+                        <input type="text" id="appVersion" name="appVersion" placeholder="v1.0.4">
+                        <div class="example">e.g., v1.0.4, v2.1.0</div>
+                    </div>
+                </div>
+
+                <!-- Domain Configuration -->
+                <div class="form-section">
+                    <h3 data-icon="🌐">Domain Configuration</h3>
+                    <div class="form-group">
+                        <label for="productionUrl">Production URL *</label>
+                        <input type="url" id="productionUrl" name="productionUrl" required>
+                        <div class="example">e.g., societypal.com, myapp.com</div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="stagingUrl">Staging URL</label>
+                            <input type="url" id="stagingUrl" name="stagingUrl">
+                            <div class="example">e.g., staging.societypal.com</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="localUrl">Local URL</label>
+                            <input type="text" id="localUrl" name="localUrl">
+                            <div class="example">e.g., societypal.test, myapp.local</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hosting Details -->
+                <div class="form-section">
+                    <h3 data-icon="🖥️">Hosting Details</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="hostingProvider">Provider *</label>
+                            <select id="hostingProvider" name="hostingProvider" required>
+                                <option value="">Select Provider</option>
+                                <option value="Hostinger">Hostinger</option>
+                                <option value="DigitalOcean">DigitalOcean</option>
+                                <option value="AWS">AWS</option>
+                                <option value="Linode">Linode</option>
+                                <option value="Vultr">Vultr</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="sshAlias">SSH Alias</label>
+                            <input type="text" id="sshAlias" name="sshAlias">
+                            <div class="example">e.g., hostinger-factolo, myserver</div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="serverIp">IP Address *</label>
+                            <input type="text" id="serverIp" name="serverIp" required>
+                            <div class="example">e.g., 31.97.195.108</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="serverUsername">Username *</label>
+                            <input type="text" id="serverUsername" name="serverUsername" required>
+                            <div class="example">e.g., u227177893, root</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="sshPort">SSH Port</label>
+                        <input type="text" id="sshPort" name="sshPort" placeholder="22">
+                        <div class="example">e.g., 22, 65002</div>
+                    </div>
+                </div>
+
+                <!-- GitHub Repository -->
+                <div class="form-section">
+                    <h3 data-icon="🐙">GitHub Repository</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="githubOwner">Repository Owner *</label>
+                            <input type="text" id="githubOwner" name="githubOwner" required>
+                            <div class="example">e.g., rovony, myusername</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="githubRepo">Repository Name *</label>
+                            <input type="text" id="githubRepo" name="githubRepo" required>
+                            <div class="example">e.g., SocietyPal, MyApp</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Local Development Paths -->
+                <div class="form-section">
+                    <h3 data-icon="💻">Local Development Paths</h3>
+                    <div class="alert alert-info">
+                        <strong>💡 Path Structure:</strong> Choose a pattern that fits your development workflow. The final path will be: Base Path / Project Folder / App Root Folder
+                    </div>
+                    <div class="form-group">
+                        <label for="projectBasePath">Mac Project Base Path *</label>
+                        <input type="text" id="projectBasePath" name="projectBasePath" required>
+                        <div class="example">e.g., /Users/username/Projects, /Users/username/Development/Laravel</div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="projectFolderName">Project Folder Name *</label>
+                            <input type="text" id="projectFolderName" name="projectFolderName" required>
+                            <div class="example">e.g., SocietyPal-Project, MyApp-Project</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="appRootFolderName">App Root Folder Name *</label>
+                            <input type="text" id="appRootFolderName" name="appRootFolderName" required>
+                            <div class="example">e.g., SocietyPalApp-Master/SocietyPalApp-Root, app</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Database Credentials -->
+                <div class="form-section">
+                    <h3 data-icon="🗄️">Database Credentials</h3>
+                    <div class="alert alert-warning">
+                        <strong>🔒 Security Notice:</strong> These credentials are for configuration generation only. Never share your actual database passwords.
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="prodDbName">Production DB Name</label>
+                            <input type="text" id="prodDbName" name="prodDbName">
+                            <div class="example">e.g., u227177893_p_zaj_socpal_d</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="prodDbUser">Production DB User</label>
+                            <input type="text" id="prodDbUser" name="prodDbUser">
+                            <div class="example">e.g., u227177893_p_zaj_socpal_u</div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="stagingDbName">Staging DB Name</label>
+                            <input type="text" id="stagingDbName" name="stagingDbName">
+                            <div class="example">e.g., u227177893_s_zaj_socpal_d</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="stagingDbUser">Staging DB User</label>
+                            <input type="text" id="stagingDbUser" name="stagingDbUser">
+                            <div class="example">e.g., u227177893_s_zaj_socpal_u</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn btn-secondary" onclick="clearForm()">🗑️ Clear Form</button>
+                    <button type="submit" class="btn">🚀 Generate Configuration</button>
+                </div>
+            </form>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <span>Generating your project configuration...</span>
+            </div>
+
+            <div class="output-section" id="outputSection">
+                <h3>📋 Generated Configuration</h3>
+                <div class="alert alert-info">
+                    <strong>📋 Usage Instructions:</strong> Copy the configuration below and paste it into your terminal. This will set up all environment variables needed for the deployment guide.
+                </div>
+                <div class="code-output" id="codeOutput"></div>
+                <button class="copy-btn" onclick="copyToClipboard()">📋 Copy to Clipboard</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('projectForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            
+            setTimeout(() => {
+                const config = collectFormData();
+                saveProjectData(config);
+                generateConfiguration(config);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('outputSection').style.display = 'block';
+                document.getElementById('outputSection').scrollIntoView({ behavior: 'smooth' });
+            }, 1500);
+        });
+
+        function collectFormData() {
+            const form = document.getElementById('projectForm');
+            const formData = new FormData(form);
+            
+            const config = {};
+            for (let [key, value] of formData.entries()) {
+                config[key] = value;
+            }
+            
+            // Auto-generate missing values
+            if (!config.stagingUrl && config.productionUrl) {
+                config.stagingUrl = 'staging.' + config.productionUrl.replace(/^https?:\/\//, '').replace('www.', '');
+            }
+            
+            if (!config.localUrl && config.productionUrl) {
+                const domain = config.productionUrl.replace(/^https?:\/\//, '').replace('www.', '').split('.')[0];
+                config.localUrl = domain + '.test';
+            }
+            
+            if (!config.sshPort) {
+                config.sshPort = '22';
+            }
+
+            return config;
+        }
+
+        function saveProjectData(config) {
+            // Create project.json structure
+            const projectData = {
+                projectInfo: {
+                    name: config.projectName || '',
+                    codecanyonApp: config.codecanyonApp || '',
+                    version: config.appVersion || '',
+                    description: '',
+                    lastUpdated: new Date().toISOString(),
+                    status: 'setup-in-progress'
+                },
+                domains: {
+                    production: config.productionUrl ? config.productionUrl.replace(/^https?:\/\//, '').replace('www.', '') : '',
+                    staging: config.stagingUrl ? config.stagingUrl.replace(/^https?:\/\//, '').replace('www.', '') : '',
+                    local: config.localUrl || ''
+                },
+                hosting: {
+                    provider: config.hostingProvider || '',
+                    sshAlias: config.sshAlias || '',
+                    serverIp: config.serverIp || '',
+                    serverUsername: config.serverUsername || '',
+                    sshPort: config.sshPort || '22'
+                },
+                github: {
+                    owner: config.githubOwner || '',
+                    repo: config.githubRepo || '',
+                    httpsUrl: config.githubOwner && config.githubRepo ? `https://github.com/${config.githubOwner}/${config.githubRepo}` : '',
+                    sshUrl: config.githubOwner && config.githubRepo ? `git@github.com:${config.githubOwner}/${config.githubRepo}.git` : ''
+                },
+                paths: {
+                    projectBasePath: config.projectBasePath || '',
+                    projectFolderName: config.projectFolderName || '',
+                    appRootFolderName: config.appRootFolderName || '',
+                    projectRoot: config.projectBasePath && config.projectFolderName && config.appRootFolderName ?
+                        `${config.projectBasePath}/${config.projectFolderName}/${config.appRootFolderName}` : '',
+                    adminLocal: config.projectBasePath && config.projectFolderName && config.appRootFolderName ?
+                        `${config.projectBasePath}/${config.projectFolderName}/${config.appRootFolderName}/Admin-Local` : ''
+                },
+                database: {
+                    production: {
+                        name: config.prodDbName || '',
+                        user: config.prodDbUser || '',
+                        host: 'localhost'
+                    },
+                    staging: {
+                        name: config.stagingDbName || '',
+                        user: config.stagingDbUser || '',
+                        host: 'localhost'
+                    }
+                },
+                deployment: {
+                    currentStep: 'step-01',
+                    completedSteps: ['step-01'],
+                    progressPercentage: 7
+                },
+                customizations: {
+                    vendorModifications: [],
+                    customFiles: [],
+                    configOverrides: {},
+                    lastVendorUpdateCheck: null
+                }
+            };
+
+            // Save to localStorage for persistence
+            localStorage.setItem('societypal_project_config', JSON.stringify(projectData));
+            
+            // Create download button for project.json
+            createDownloadButton('project.json', JSON.stringify(projectData, null, 2));
+        }
+
+        function generateConfiguration(config) {
+            const bashConfig = generateBashConfiguration(config);
+            document.getElementById('codeOutput').textContent = bashConfig;
+        }
+
+        function createDownloadButton(filename, content) {
+            // Remove existing download buttons
+            const existingBtn = document.querySelector('.download-btn');
+            if (existingBtn) existingBtn.remove();
+            
+            const downloadBtn = document.createElement('button');
+            downloadBtn.textContent = `📥 Download ${filename}`;
+            downloadBtn.className = 'download-btn copy-btn';
+            downloadBtn.style.marginLeft = '15px';
+            downloadBtn.style.background = '#8e44ad';
+            
+            downloadBtn.onclick = function() {
+                const blob = new Blob([content], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                // Visual feedback
+                downloadBtn.textContent = '✅ Downloaded!';
+                setTimeout(() => {
+                    downloadBtn.textContent = `📥 Download ${filename}`;
+                }, 2000);
+            };
+            
+            // Add to output section
+            const copyBtn = document.querySelector('.copy-btn');
+            copyBtn.parentNode.insertBefore(downloadBtn, copyBtn.nextSibling);
+        }
+
+        function generateBashConfiguration(config) {
+            const currentDate = new Date().toISOString().split('T')[0];
+            
+            return `# =======================================================================
+# PROJECT CONFIGURATION - Generated on ${currentDate}
+# Laravel Deployment Guide V3 - Step 01 Configuration
+# =======================================================================
+
+echo "🚀 Setting up project configuration for ${config.projectName || 'YourProject'}..."
+echo "=================================================================="
+
+# PATH VARIABLES
+export PROJECT_BASE_PATH="${config.projectBasePath || '/Users/username/Projects'}"
+export PROJECT_FOLDER_NAME="${config.projectFolderName || 'YourProject-Project'}"
+export APP_ROOT_FOLDER_NAME="${config.appRootFolderName || 'app'}"
+export PROJECT_ROOT="$PROJECT_BASE_PATH/$PROJECT_FOLDER_NAME/$APP_ROOT_FOLDER_NAME"
+export ADMIN_LOCAL="$PROJECT_ROOT/Admin-Local"
+export PROJECT_NAME="${config.projectName || 'YourProject'}"
+
+# DOMAIN CONFIGURATION
+export PRODUCTION_DOMAIN="${config.productionUrl ? config.productionUrl.replace(/^https?:\/\//, '').replace('www.', '') : 'yourproject.com'}"
+export STAGING_DOMAIN="${config.stagingUrl ? config.stagingUrl.replace(/^https?:\/\//, '').replace('www.', '') : 'staging.yourproject.com'}"
+export LOCAL_DOMAIN="${config.localUrl || 'yourproject.test'}"
+
+# HOSTING CONFIGURATION
+export HOSTING_PROVIDER="${config.hostingProvider || 'YourProvider'}"
+export SSH_ALIAS="${config.sshAlias || 'your-server'}"
+export SERVER_IP="${config.serverIp || '0.0.0.0'}"
+export SERVER_USERNAME="${config.serverUsername || 'username'}"
+export SSH_PORT="${config.sshPort || '22'}"
+
+# GITHUB CONFIGURATION
+export GITHUB_OWNER="${config.githubOwner || 'yourusername'}"
+export GITHUB_REPO="${config.githubRepo || 'YourRepo'}"
+export GITHUB_HTTPS="https://github.com/$GITHUB_OWNER/$GITHUB_REPO"
+export GITHUB_SSH="git@github.com:$GITHUB_OWNER/$GITHUB_REPO.git"
+
+# DATABASE CONFIGURATION (Optional)
+${config.prodDbName ? `export PROD_DB_NAME="${config.prodDbName}"` : '# export PROD_DB_NAME="your_prod_db"'}
+${config.prodDbUser ? `export PROD_DB_USER="${config.prodDbUser}"` : '# export PROD_DB_USER="your_prod_user"'}
+${config.stagingDbName ? `export STAGING_DB_NAME="${config.stagingDbName}"` : '# export STAGING_DB_NAME="your_staging_db"'}
+${config.stagingDbUser ? `export STAGING_DB_USER="${config.stagingDbUser}"` : '# export STAGING_DB_USER="your_staging_user"'}
+
+# CODECANYON APPLICATION (Optional)
+${config.codecanyonApp ? `export CODECANYON_APP="${config.codecanyonApp}"` : '# export CODECANYON_APP="Your CodeCanyon App"'}
+${config.appVersion ? `export APP_VERSION="${config.appVersion}"` : '# export APP_VERSION="v1.0.0"'}
+
+# VERIFICATION
+echo ""
+echo "✅ Configuration Variables Set:"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "📁 Project Root: $PROJECT_ROOT"
+echo "📁 Admin-Local: $ADMIN_LOCAL" 
+echo "🌐 Production Domain: $PRODUCTION_DOMAIN"
+echo "🌐 Staging Domain: $STAGING_DOMAIN"
+echo "🌐 Local Domain: $LOCAL_DOMAIN"
+echo "🖥️  Hosting Provider: $HOSTING_PROVIDER"
+echo "🐙 GitHub Repository: $GITHUB_HTTPS"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "🎯 Next Steps:"
+echo "1. Verify all paths exist and are accessible"
+echo "2. Test GitHub repository access"
+echo "3. Proceed to Step 02: Create GitHub Repository"
+echo ""
+echo "💡 To make these variables persistent, add them to your shell profile:"
+echo "echo 'source /path/to/this/config.sh' >> ~/.zshrc"
+echo ""`;
+        }
+
+        function clearForm() {
+            if (confirm('Are you sure you want to clear all form data?')) {
+                document.getElementById('projectForm').reset();
+                document.getElementById('outputSection').style.display = 'none';
+            }
+        }
+
+        function copyToClipboard() {
+            const codeOutput = document.getElementById('codeOutput');
+            const text = codeOutput.textContent;
+            
+            navigator.clipboard.writeText(text).then(function() {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✅ Copied!';
+                btn.style.background = '#27ae60';
+                
+                setTimeout(function() {
+                    btn.textContent = originalText;
+                    btn.style.background = '#27ae60';
+                }, 2000);
+            }).catch(function(err) {
+                console.error('Failed to copy text: ', err);
+                alert('Failed to copy to clipboard. Please select and copy manually.');
+            });
+        }
+
+        // Auto-populate staging and local URLs based on production URL
+        document.getElementById('productionUrl').addEventListener('input', function() {
+            const prodUrl = this.value;
+            if (prodUrl) {
+                const domain = prodUrl.replace(/^https?:\/\//, '').replace('www.', '');
+                const baseDomain = domain.split('.')[0];
+                
+                // Auto-populate staging URL if empty
+                const stagingInput = document.getElementById('stagingUrl');
+                if (!stagingInput.value) {
+                    stagingInput.value = 'staging.' + domain;
+                }
+                
+                // Auto-populate local URL if empty
+                const localInput = document.getElementById('localUrl');
+                if (!localInput.value) {
+                    localInput.value = baseDomain + '.test';
+                }
+            }
+        });
+
+        // Auto-populate project folder name based on project name
+        document.getElementById('projectName').addEventListener('input', function() {
+            const projectName = this.value;
+            if (projectName) {
+                const folderInput = document.getElementById('projectFolderName');
+                if (!folderInput.value) {
+                    folderInput.value = projectName + '-Project';
+                }
+                
+                const appRootInput = document.getElementById('appRootFolderName');
+                if (!appRootInput.value) {
+                    appRootInput.value = projectName + 'App-Master/' + projectName + 'App-Root';
+                }
+                
+                const repoInput = document.getElementById('githubRepo');
+                if (!repoInput.value) {
+                    repoInput.value = projectName;
+                }
+            }
+        });
+
+        // Form validation
+        document.getElementById('projectForm').addEventListener('submit', function(e) {
+            const requiredFields = this.querySelectorAll('input[required], select[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.style.borderColor = '#e74c3c';
+                    isValid = false;
+                } else {
+                    field.style.borderColor = '#e9ecef';
+                }
+            });
+            
+            if (!isValid) {
+                e.preventDefault();
+                alert('Please fill in all required fields marked with *');
+                return;
+            }
+        });
+    </script>
+</body>
+</html>

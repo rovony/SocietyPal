@@ -1,0 +1,1532 @@
+# Backend API Customization Documentation
+
+**API/Service Name:** [Name]  
+**Implementation Date:** [YYYY-MM-DD]  
+**Developer:** [Name]  
+**Laravel Version:** [Version]  
+**API Version:** [v1/v2]  
+**Authentication:** [Sanctum/Passport/Session]
+
+---
+
+## 📋 **Overview**
+
+### Purpose
+[What business problem does this API solve?]
+
+### Service Architecture
+- **Type:** [REST API/GraphQL/Event-driven]
+- **Data Format:** [JSON/XML]
+- **Authentication:** [Bearer Token/Session-based/API Key]
+- **Rate Limiting:** [Requests per minute/hour]
+
+### Integration Points
+- **Frontend Integration:** [How frontend consumes this API]
+- **Third-party APIs:** [External services this API communicates with]
+- **Database Dependencies:** [Tables and relationships involved]
+
+---
+
+## 🏗️ **Technical Implementation**
+
+### File Structure
+```bash
+app/
+├── Custom/
+│   ├── [Feature]/
+│   │   ├── Controllers/
+│   │   │   ├── Api/
+│   │   │   │   ├── [Feature]Controller.php      # Main API controller
+│   │   │   │   ├── [Feature]AdminController.php # Admin-specific endpoints
+│   │   │   │   └── [Feature]ReportController.php # Reporting endpoints
+│   │   │   └── Web/
+│   │   │       └── [Feature]WebController.php   # Web interface controller
+│   │   │
+│   │   ├── Services/
+│   │   │   ├── [Feature]Service.php              # Business logic service
+│   │   │   ├── [Feature]ValidationService.php    # Validation logic
+│   │   │   ├── [Feature]ExportService.php        # Export/import logic
+│   │   │   └── [Feature]NotificationService.php  # Notification handling
+│   │   │
+│   │   ├── Models/
+│   │   │   ├── [Feature].php                     # Main model
+│   │   │   ├── [Feature]Category.php             # Related models
+│   │   │   └── [Feature]History.php              # Audit/history tracking
+│   │   │
+│   │   ├── Requests/
+│   │   │   ├── Store[Feature]Request.php         # Validation for creation
+│   │   │   ├── Update[Feature]Request.php        # Validation for updates
+│   │   │   └── [Feature]FilterRequest.php        # Filtering/search validation
+│   │   │
+│   │   ├── Resources/
+│   │   │   ├── [Feature]Resource.php             # API resource transformation
+│   │   │   ├── [Feature]Collection.php           # Collection resource
+│   │   │   └── [Feature]AdminResource.php        # Admin-specific resource
+│   │   │
+│   │   ├── Events/
+│   │   │   ├── [Feature]Created.php              # Domain events
+│   │   │   ├── [Feature]Updated.php
+│   │   │   └── [Feature]Deleted.php
+│   │   │
+│   │   ├── Listeners/
+│   │   │   ├── Send[Feature]Notification.php     # Event listeners
+│   │   │   ├── Update[Feature]Cache.php
+│   │   │   └── Log[Feature]Activity.php
+│   │   │
+│   │   ├── Jobs/
+│   │   │   ├── Process[Feature]Job.php           # Background jobs
+│   │   │   ├── Export[Feature]DataJob.php
+│   │   │   └── Sync[Feature]Job.php
+│   │   │
+│   │   ├── Traits/
+│   │   │   ├── [Feature]Filterable.php           # Query filtering
+│   │   │   ├── [Feature]Cacheable.php            # Caching logic
+│   │   │   └── [Feature]Auditable.php            # Audit trail
+│   │   │
+│   │   └── Policies/
+│   │       ├── [Feature]Policy.php               # Authorization policies
+│   │       └── [Feature]AdminPolicy.php          # Admin authorization
+│
+├── Http/
+│   └── Middleware/
+│       ├── [Feature]RateLimit.php                # Custom rate limiting
+│       ├── [Feature]Authorization.php            # Custom auth middleware
+│       └── [Feature]RequestLogging.php           # Request logging
+│
+└── Providers/
+    └── [Feature]ServiceProvider.php              # Service registration
+```
+
+### Route Configuration
+```php
+// routes/api.php - API Routes
+
+use App\Custom\[Feature]\Controllers\Api\[Feature]Controller;
+use App\Custom\[Feature]\Controllers\Api\[Feature]AdminController;
+
+Route::group([
+    'prefix' => 'v1',
+    'middleware' => ['auth:sanctum', 'throttle:60,1']
+], function () {
+    
+    // Public API endpoints
+    Route::apiResource('[features]', [Feature]Controller::class);
+    Route::get('[features]/search', [[Feature]Controller::class, 'search']);
+    Route::get('[features]/export', [[Feature]Controller::class, 'export']);
+    
+    // Admin-only endpoints
+    Route::group(['prefix' => 'admin', 'middleware' => ['admin']], function () {
+        Route::get('[features]/analytics', [[Feature]AdminController::class, 'analytics']);
+        Route::post('[features]/bulk-update', [[Feature]AdminController::class, 'bulkUpdate']);
+        Route::delete('[features]/bulk-delete', [[Feature]AdminController::class, 'bulkDelete']);
+    });
+    
+    // Real-time endpoints
+    Route::get('[features]/live-updates', [[Feature]Controller::class, 'liveUpdates']);
+});
+
+// routes/web.php - Web Routes
+Route::group(['middleware' => ['auth', 'verified']], function () {
+    Route::get('[features]', '[Feature]WebController@index')->name('[features].index');
+    Route::get('[features]/dashboard', '[Feature]WebController@dashboard')->name('[features].dashboard');
+});
+```
+
+### Controller Implementation
+```php
+<?php
+// app/Custom/[Feature]/Controllers/Api/[Feature]Controller.php
+
+namespace App\Custom\[Feature]\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Custom\[Feature]\Services\[Feature]Service;
+use App\Custom\[Feature]\Requests\Store[Feature]Request;
+use App\Custom\[Feature]\Requests\Update[Feature]Request;
+use App\Custom\[Feature]\Requests\[Feature]FilterRequest;
+use App\Custom\[Feature]\Resources\[Feature]Resource;
+use App\Custom\[Feature]\Resources\[Feature]Collection;
+use App\Custom\[Feature]\Models\[Feature];
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
+class [Feature]Controller extends Controller
+{
+    protected [Feature]Service $service;
+
+    public function __construct([Feature]Service $service)
+    {
+        $this->service = $service;
+        
+        // Apply policies
+        $this->authorizeResource([Feature]::class, '[feature]');
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param [Feature]FilterRequest $request
+     * @return [Feature]Collection
+     */
+    public function index([Feature]FilterRequest $request): [Feature]Collection
+    {
+        $[features] = $this->service->getFiltered($request->validated());
+        
+        return new [Feature]Collection($[features]);
+    }
+
+    /**
+     * Store a newly created resource.
+     *
+     * @param Store[Feature]Request $request
+     * @return JsonResponse
+     */
+    public function store(Store[Feature]Request $request): JsonResponse
+    {
+        $[feature] = $this->service->create($request->validated());
+        
+        return response()->json([
+            'message' => '[Feature] created successfully',
+            'data' => new [Feature]Resource($[feature])
+        ], 201);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param [Feature] $[feature]
+     * @return [Feature]Resource
+     */
+    public function show([Feature] $[feature]): [Feature]Resource
+    {
+        $[feature] = $this->service->getWithRelations($[feature]);
+        
+        return new [Feature]Resource($[feature]);
+    }
+
+    /**
+     * Update the specified resource.
+     *
+     * @param Update[Feature]Request $request
+     * @param [Feature] $[feature]
+     * @return JsonResponse
+     */
+    public function update(Update[Feature]Request $request, [Feature] $[feature]): JsonResponse
+    {
+        $updated[Feature] = $this->service->update($[feature], $request->validated());
+        
+        return response()->json([
+            'message' => '[Feature] updated successfully',
+            'data' => new [Feature]Resource($updated[Feature])
+        ]);
+    }
+
+    /**
+     * Remove the specified resource.
+     *
+     * @param [Feature] $[feature]
+     * @return JsonResponse
+     */
+    public function destroy([Feature] $[feature]): JsonResponse
+    {
+        $this->service->delete($[feature]);
+        
+        return response()->json([
+            'message' => '[Feature] deleted successfully'
+        ]);
+    }
+
+    /**
+     * Search resources based on criteria.
+     *
+     * @param Request $request
+     * @return [Feature]Collection
+     */
+    public function search(Request $request): [Feature]Collection
+    {
+        $results = $this->service->search($request->get('q'), [
+            'filters' => $request->only(['category', 'status', 'priority']),
+            'sort' => $request->get('sort', 'created_at'),
+            'direction' => $request->get('direction', 'desc')
+        ]);
+        
+        return new [Feature]Collection($results);
+    }
+
+    /**
+     * Export data in specified format.
+     *
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function export(Request $request)
+    {
+        $format = $request->get('format', 'csv');
+        $filters = $request->only(['category', 'status', 'date_from', 'date_to']);
+        
+        return $this->service->export($format, $filters);
+    }
+
+    /**
+     * Get live updates via Server-Sent Events.
+     *
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
+    public function liveUpdates(Request $request)
+    {
+        return response()->stream(function () use ($request) {
+            while (true) {
+                $updates = $this->service->getRecentUpdates();
+                
+                echo "data: " . json_encode($updates) . "\n\n";
+                
+                if (connection_aborted()) {
+                    break;
+                }
+                
+                sleep(5); // Poll every 5 seconds
+            }
+        }, 200, [
+            'Content-Type' => 'text/event-stream',
+            'Cache-Control' => 'no-cache',
+            'Connection' => 'keep-alive',
+        ]);
+    }
+}
+```
+
+### Service Layer Implementation
+```php
+<?php
+// app/Custom/[Feature]/Services/[Feature]Service.php
+
+namespace App\Custom\[Feature]\Services;
+
+use App\Custom\[Feature]\Models\[Feature];
+use App\Custom\[Feature]\Events\[Feature]Created;
+use App\Custom\[Feature]\Events\[Feature]Updated;
+use App\Custom\[Feature]\Events\[Feature]Deleted;
+use App\Custom\[Feature]\Jobs\Process[Feature]Job;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+
+class [Feature]Service
+{
+    protected [Feature] $model;
+    protected int $cacheTime = 3600; // 1 hour
+
+    public function __construct([Feature] $model)
+    {
+        $this->model = $model;
+    }
+
+    /**
+     * Get filtered and paginated results.
+     *
+     * @param array $filters
+     * @return LengthAwarePaginator
+     */
+    public function getFiltered(array $filters): LengthAwarePaginator
+    {
+        $query = $this->model->newQuery();
+
+        // Apply filters
+        if (!empty($filters['search'])) {
+            $query->where(function ($q) use ($filters) {
+                $q->where('title', 'like', "%{$filters['search']}%")
+                  ->orWhere('description', 'like', "%{$filters['search']}%");
+            });
+        }
+
+        if (!empty($filters['category'])) {
+            $query->where('category_id', $filters['category']);
+        }
+
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        if (!empty($filters['priority'])) {
+            $query->where('priority', $filters['priority']);
+        }
+
+        if (!empty($filters['date_from'])) {
+            $query->whereDate('created_at', '>=', $filters['date_from']);
+        }
+
+        if (!empty($filters['date_to'])) {
+            $query->whereDate('created_at', '<=', $filters['date_to']);
+        }
+
+        // Apply sorting
+        $sortField = $filters['sort'] ?? 'created_at';
+        $sortDirection = $filters['direction'] ?? 'desc';
+        $query->orderBy($sortField, $sortDirection);
+
+        // Include relations
+        $query->with(['category', 'user', 'comments']);
+
+        return $query->paginate($filters['per_page'] ?? 15);
+    }
+
+    /**
+     * Create a new resource.
+     *
+     * @param array $data
+     * @return [Feature]
+     */
+    public function create(array $data): [Feature]
+    {
+        return DB::transaction(function () use ($data) {
+            // Create the main resource
+            $[feature] = $this->model->create($data);
+
+            // Handle related data
+            if (!empty($data['tags'])) {
+                $[feature]->tags()->sync($data['tags']);
+            }
+
+            if (!empty($data['attachments'])) {
+                $this->handleAttachments($[feature], $data['attachments']);
+            }
+
+            // Fire event
+            event(new [Feature]Created($[feature]));
+
+            // Queue background processing if needed
+            Process[Feature]Job::dispatch($[feature])->delay(now()->addMinutes(5));
+
+            // Clear related caches
+            $this->clearCache();
+
+            return $[feature]->load(['category', 'user', 'tags']);
+        });
+    }
+
+    /**
+     * Update an existing resource.
+     *
+     * @param [Feature] $[feature]
+     * @param array $data
+     * @return [Feature]
+     */
+    public function update([Feature] $[feature], array $data): [Feature]
+    {
+        return DB::transaction(function () use ($[feature], $data) {
+            $[feature]->update($data);
+
+            // Handle related data updates
+            if (array_key_exists('tags', $data)) {
+                $[feature]->tags()->sync($data['tags'] ?? []);
+            }
+
+            if (!empty($data['attachments'])) {
+                $this->handleAttachments($[feature], $data['attachments']);
+            }
+
+            // Fire event
+            event(new [Feature]Updated($[feature]));
+
+            // Clear caches
+            $this->clearCache();
+            $this->clearItemCache($[feature]->id);
+
+            return $[feature]->load(['category', 'user', 'tags']);
+        });
+    }
+
+    /**
+     * Delete a resource.
+     *
+     * @param [Feature] $[feature]
+     * @return bool
+     */
+    public function delete([Feature] $[feature]): bool
+    {
+        return DB::transaction(function () use ($[feature]) {
+            // Clean up related data
+            $[feature]->comments()->delete();
+            $[feature]->attachments()->delete();
+            
+            // Remove physical files
+            $this->removeAttachmentFiles($[feature]);
+
+            // Fire event before deletion
+            event(new [Feature]Deleted($[feature]));
+
+            // Delete the resource
+            $result = $[feature]->delete();
+
+            // Clear caches
+            $this->clearCache();
+            $this->clearItemCache($[feature]->id);
+
+            return $result;
+        });
+    }
+
+    /**
+     * Search resources.
+     *
+     * @param string $query
+     * @param array $options
+     * @return LengthAwarePaginator
+     */
+    public function search(string $query, array $options = []): LengthAwarePaginator
+    {
+        $searchQuery = $this->model->newQuery();
+
+        // Full-text search
+        $searchQuery->where(function ($q) use ($query) {
+            $q->where('title', 'like', "%{$query}%")
+              ->orWhere('description', 'like', "%{$query}%")
+              ->orWhereHas('category', function ($categoryQuery) use ($query) {
+                  $categoryQuery->where('name', 'like', "%{$query}%");
+              });
+        });
+
+        // Apply additional filters
+        if (!empty($options['filters'])) {
+            foreach ($options['filters'] as $field => $value) {
+                if ($value !== null) {
+                    $searchQuery->where($field, $value);
+                }
+            }
+        }
+
+        // Apply sorting
+        $sortField = $options['sort'] ?? 'relevance';
+        $sortDirection = $options['direction'] ?? 'desc';
+        
+        if ($sortField === 'relevance') {
+            // Custom relevance scoring
+            $searchQuery->selectRaw('*, 
+                CASE 
+                    WHEN title LIKE ? THEN 3
+                    WHEN description LIKE ? THEN 2
+                    ELSE 1
+                END as relevance_score', 
+                ["%{$query}%", "%{$query}%"]
+            )->orderBy('relevance_score', 'desc');
+        } else {
+            $searchQuery->orderBy($sortField, $sortDirection);
+        }
+
+        return $searchQuery->with(['category', 'user'])->paginate(15);
+    }
+
+    /**
+     * Export data in specified format.
+     *
+     * @param string $format
+     * @param array $filters
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function export(string $format, array $filters = [])
+    {
+        $data = $this->getFiltered($filters);
+        $fileName = '[features]_export_' . now()->format('Y-m-d_H-i-s') . '.' . $format;
+
+        switch ($format) {
+            case 'csv':
+                return $this->exportToCsv($data, $fileName);
+            case 'xlsx':
+                return $this->exportToExcel($data, $fileName);
+            case 'pdf':
+                return $this->exportToPdf($data, $fileName);
+            default:
+                throw new \InvalidArgumentException("Unsupported export format: {$format}");
+        }
+    }
+
+    /**
+     * Get recent updates for real-time features.
+     *
+     * @return Collection
+     */
+    public function getRecentUpdates(): Collection
+    {
+        return Cache::remember('recent_[features]_updates', 30, function () {
+            return $this->model
+                ->where('updated_at', '>=', now()->subMinutes(5))
+                ->with(['user'])
+                ->orderBy('updated_at', 'desc')
+                ->limit(10)
+                ->get();
+        });
+    }
+
+    /**
+     * Get analytics data.
+     *
+     * @param array $options
+     * @return array
+     */
+    public function getAnalytics(array $options = []): array
+    {
+        $cacheKey = 'analytics_[features]_' . md5(serialize($options));
+        
+        return Cache::remember($cacheKey, $this->cacheTime, function () use ($options) {
+            $dateFrom = $options['date_from'] ?? now()->subDays(30);
+            $dateTo = $options['date_to'] ?? now();
+
+            return [
+                'total_count' => $this->model->count(),
+                'recent_count' => $this->model->where('created_at', '>=', $dateFrom)->count(),
+                'status_distribution' => $this->getStatusDistribution($dateFrom, $dateTo),
+                'priority_distribution' => $this->getPriorityDistribution($dateFrom, $dateTo),
+                'daily_trends' => $this->getDailyTrends($dateFrom, $dateTo),
+                'category_breakdown' => $this->getCategoryBreakdown($dateFrom, $dateTo),
+            ];
+        });
+    }
+
+    /**
+     * Handle file attachments.
+     *
+     * @param [Feature] $[feature]
+     * @param array $attachments
+     * @return void
+     */
+    protected function handleAttachments([Feature] $[feature], array $attachments): void
+    {
+        foreach ($attachments as $attachment) {
+            if ($attachment instanceof \Illuminate\Http\UploadedFile) {
+                $path = $attachment->store('[features]/attachments', 'public');
+                
+                $[feature]->attachments()->create([
+                    'file_name' => $attachment->getClientOriginalName(),
+                    'file_path' => $path,
+                    'file_size' => $attachment->getSize(),
+                    'mime_type' => $attachment->getMimeType(),
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Clear all related caches.
+     *
+     * @return void
+     */
+    protected function clearCache(): void
+    {
+        Cache::forget('recent_[features]_updates');
+        Cache::flush(); // Consider more specific cache invalidation
+    }
+
+    /**
+     * Clear item-specific cache.
+     *
+     * @param int $id
+     * @return void
+     */
+    protected function clearItemCache(int $id): void
+    {
+        Cache::forget("[feature]_details_{$id}");
+    }
+}
+```
+
+### Model Implementation
+```php
+<?php
+// app/Custom/[Feature]/Models/[Feature].php
+
+namespace App\Custom\[Feature]\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Custom\[Feature]\Traits\[Feature]Filterable;
+use App\Custom\[Feature]\Traits\[Feature]Cacheable;
+use App\Models\User;
+
+class [Feature] extends Model
+{
+    use HasFactory, SoftDeletes, [Feature]Filterable, [Feature]Cacheable;
+
+    protected $table = '[features]';
+
+    protected $fillable = [
+        'title',
+        'description',
+        'status',
+        'priority',
+        'category_id',
+        'user_id',
+        'due_date',
+        'metadata',
+        'is_active'
+    ];
+
+    protected $casts = [
+        'due_date' => 'datetime',
+        'metadata' => 'array',
+        'is_active' => 'boolean',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime'
+    ];
+
+    protected $hidden = [
+        'deleted_at'
+    ];
+
+    protected $appends = [
+        'is_overdue',
+        'days_remaining',
+        'completion_percentage'
+    ];
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (auth()->check()) {
+                $model->user_id = auth()->id();
+            }
+        });
+    }
+
+    /**
+     * Relationships
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo([Feature]Category::class, 'category_id');
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany([Feature]Comment::class);
+    }
+
+    public function attachments(): HasMany
+    {
+        return $this->hasMany([Feature]Attachment::class);
+    }
+
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany([Feature]Tag::class, '[feature]_tag');
+    }
+
+    public function history(): HasMany
+    {
+        return $this->hasMany([Feature]History::class);
+    }
+
+    /**
+     * Accessors
+     */
+    public function getIsOverdueAttribute(): bool
+    {
+        return $this->due_date && $this->due_date->isPast() && $this->status !== 'completed';
+    }
+
+    public function getDaysRemainingAttribute(): ?int
+    {
+        if (!$this->due_date || $this->status === 'completed') {
+            return null;
+        }
+
+        return now()->diffInDays($this->due_date, false);
+    }
+
+    public function getCompletionPercentageAttribute(): int
+    {
+        // Calculate based on status or sub-tasks
+        switch ($this->status) {
+            case 'completed':
+                return 100;
+            case 'in_progress':
+                return 50;
+            case 'pending':
+                return 25;
+            default:
+                return 0;
+        }
+    }
+
+    /**
+     * Scopes
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function scopeByStatus($query, string $status)
+    {
+        return $query->where('status', $status);
+    }
+
+    public function scopeByPriority($query, string $priority)
+    {
+        return $query->where('priority', $priority);
+    }
+
+    public function scopeOverdue($query)
+    {
+        return $query->where('due_date', '<', now())
+                     ->where('status', '!=', 'completed');
+    }
+
+    public function scopeDueToday($query)
+    {
+        return $query->whereDate('due_date', today())
+                     ->where('status', '!=', 'completed');
+    }
+
+    public function scopeRecent($query, int $days = 7)
+    {
+        return $query->where('created_at', '>=', now()->subDays($days));
+    }
+
+    /**
+     * Methods
+     */
+    public function markAsCompleted(): void
+    {
+        $this->update([
+            'status' => 'completed',
+            'completed_at' => now()
+        ]);
+    }
+
+    public function assignTo(User $user): void
+    {
+        $this->update(['user_id' => $user->id]);
+    }
+
+    public function addComment(string $content, User $user = null): [Feature]Comment
+    {
+        return $this->comments()->create([
+            'content' => $content,
+            'user_id' => $user ? $user->id : auth()->id()
+        ]);
+    }
+}
+```
+
+### Request Validation
+```php
+<?php
+// app/Custom/[Feature]/Requests/Store[Feature]Request.php
+
+namespace App\Custom\[Feature]\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+class Store[Feature]Request extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return auth()->check();
+    }
+
+    public function rules(): array
+    {
+        return [
+            'title' => [
+                'required',
+                'string',
+                'max:255',
+                'min:3'
+            ],
+            'description' => [
+                'nullable',
+                'string',
+                'max:10000'
+            ],
+            'status' => [
+                'required',
+                Rule::in(['pending', 'in_progress', 'completed', 'cancelled'])
+            ],
+            'priority' => [
+                'required',
+                Rule::in(['low', 'medium', 'high', 'critical'])
+            ],
+            'category_id' => [
+                'required',
+                'exists:categories,id'
+            ],
+            'due_date' => [
+                'nullable',
+                'date',
+                'after:today'
+            ],
+            'tags' => [
+                'nullable',
+                'array'
+            ],
+            'tags.*' => [
+                'integer',
+                'exists:tags,id'
+            ],
+            'attachments' => [
+                'nullable',
+                'array',
+                'max:5' // Maximum 5 files
+            ],
+            'attachments.*' => [
+                'file',
+                'max:10240', // 10MB max
+                'mimes:jpg,jpeg,png,pdf,doc,docx,txt'
+            ],
+            'metadata' => [
+                'nullable',
+                'array'
+            ],
+            'is_active' => [
+                'boolean'
+            ]
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'title.required' => 'The [feature] title is required.',
+            'title.min' => 'The [feature] title must be at least 3 characters.',
+            'category_id.required' => 'Please select a category.',
+            'category_id.exists' => 'The selected category is invalid.',
+            'due_date.after' => 'The due date must be in the future.',
+            'attachments.max' => 'You can upload a maximum of 5 files.',
+            'attachments.*.max' => 'Each file must be smaller than 10MB.',
+        ];
+    }
+
+    public function prepareForValidation(): void
+    {
+        $this->merge([
+            'is_active' => $this->boolean('is_active', true),
+        ]);
+    }
+}
+```
+
+---
+
+## 🗄️ **Database Design**
+
+### Migration Files
+```php
+<?php
+// database/migrations/create_[features]_table.php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up()
+    {
+        Schema::create('[features]', function (Blueprint $table) {
+            $table->id();
+            
+            // Core fields
+            $table->string('title');
+            $table->text('description')->nullable();
+            $table->enum('status', ['pending', 'in_progress', 'completed', 'cancelled'])
+                  ->default('pending');
+            $table->enum('priority', ['low', 'medium', 'high', 'critical'])
+                  ->default('medium');
+            
+            // Relationships
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('category_id')->constrained('[feature]_categories');
+            
+            // Dates
+            $table->timestamp('due_date')->nullable();
+            $table->timestamp('completed_at')->nullable();
+            
+            // Additional data
+            $table->json('metadata')->nullable();
+            $table->boolean('is_active')->default(true);
+            
+            // Audit fields
+            $table->timestamps();
+            $table->softDeletes();
+            
+            // Indexes for performance
+            $table->index(['status', 'priority']);
+            $table->index(['user_id', 'status']);
+            $table->index(['category_id', 'created_at']);
+            $table->index(['due_date', 'status']);
+            $table->index('is_active');
+        });
+    }
+
+    public function down()
+    {
+        Schema::dropIfExists('[features]');
+    }
+};
+```
+
+### Related Tables
+```php
+<?php
+// database/migrations/create_[feature]_categories_table.php
+
+return new class extends Migration
+{
+    public function up()
+    {
+        Schema::create('[feature]_categories', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('slug')->unique();
+            $table->text('description')->nullable();
+            $table->string('color', 7)->default('#6B7280'); // Hex color
+            $table->string('icon')->nullable(); // Icon class name
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+        });
+    }
+};
+
+// database/migrations/create_[feature]_comments_table.php
+return new class extends Migration
+{
+    public function up()
+    {
+        Schema::create('[feature]_comments', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('[feature]_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->text('content');
+            $table->timestamps();
+            
+            $table->index(['[feature]_id', 'created_at']);
+        });
+    }
+};
+
+// database/migrations/create_[feature]_attachments_table.php
+return new class extends Migration
+{
+    public function up()
+    {
+        Schema::create('[feature]_attachments', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('[feature]_id')->constrained()->onDelete('cascade');
+            $table->string('file_name');
+            $table->string('file_path');
+            $table->string('mime_type');
+            $table->unsignedBigInteger('file_size'); // in bytes
+            $table->timestamps();
+        });
+    }
+};
+```
+
+---
+
+## 🔒 **Security Implementation**
+
+### Authorization Policies
+```php
+<?php
+// app/Custom/[Feature]/Policies/[Feature]Policy.php
+
+namespace App\Custom\[Feature]\Policies;
+
+use App\Models\User;
+use App\Custom\[Feature]\Models\[Feature];
+use Illuminate\Auth\Access\HandlesAuthorization;
+
+class [Feature]Policy
+{
+    use HandlesAuthorization;
+
+    public function viewAny(User $user): bool
+    {
+        return $user->hasPermission('view_[features]');
+    }
+
+    public function view(User $user, [Feature] $[feature]): bool
+    {
+        return $user->hasPermission('view_[features]') 
+            || $[feature]->user_id === $user->id;
+    }
+
+    public function create(User $user): bool
+    {
+        return $user->hasPermission('create_[features]');
+    }
+
+    public function update(User $user, [Feature] $[feature]): bool
+    {
+        return $user->hasPermission('update_[features]') 
+            || ($[feature]->user_id === $user->id && $user->hasPermission('update_own_[features]'));
+    }
+
+    public function delete(User $user, [Feature] $[feature]): bool
+    {
+        return $user->hasPermission('delete_[features]') 
+            || ($[feature]->user_id === $user->id && $user->hasPermission('delete_own_[features]'));
+    }
+}
+```
+
+### Rate Limiting
+```php
+<?php
+// app/Http/Middleware/[Feature]RateLimit.php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
+
+class [Feature]RateLimit
+{
+    public function handle(Request $request, Closure $next, int $maxAttempts = 60, int $decayMinutes = 1)
+    {
+        $key = $this->resolveRequestSignature($request);
+
+        if (RateLimiter::tooManyAttempts($key, $maxAttempts)) {
+            return response()->json([
+                'message' => 'Too many requests. Please try again later.',
+                'retry_after' => RateLimiter::availableIn($key)
+            ], 429);
+        }
+
+        RateLimiter::hit($key, $decayMinutes * 60);
+
+        return $next($request);
+    }
+
+    protected function resolveRequestSignature(Request $request): string
+    {
+        return sha1(
+            $request->method() .
+            '|' . $request->server('SERVER_NAME') .
+            '|' . $request->path() .
+            '|' . ($request->user()?->id ?? $request->ip())
+        );
+    }
+}
+```
+
+---
+
+## 📊 **Performance Optimization**
+
+### Caching Strategy
+```php
+<?php
+// app/Custom/[Feature]/Traits/[Feature]Cacheable.php
+
+namespace App\Custom\[Feature]\Traits;
+
+use Illuminate\Support\Facades\Cache;
+
+trait [Feature]Cacheable
+{
+    protected static $cachePrefix = '[feature]_';
+    protected static $cacheTime = 3600; // 1 hour
+
+    public static function bootCacheable()
+    {
+        static::created(function ($model) {
+            $model->clearModelCache();
+        });
+
+        static::updated(function ($model) {
+            $model->clearModelCache();
+        });
+
+        static::deleted(function ($model) {
+            $model->clearModelCache();
+        });
+    }
+
+    public function getCacheKey(string $suffix = ''): string
+    {
+        return self::$cachePrefix . $this->getTable() . '_' . $this->id . ($suffix ? '_' . $suffix : '');
+    }
+
+    public function rememberCache(string $key, \Closure $callback, int $ttl = null)
+    {
+        return Cache::remember($key, $ttl ?? self::$cacheTime, $callback);
+    }
+
+    public function clearModelCache(): void
+    {
+        $patterns = [
+            $this->getCacheKey(),
+            $this->getCacheKey('*'),
+            self::$cachePrefix . 'list_*',
+            self::$cachePrefix . 'analytics_*'
+        ];
+
+        foreach ($patterns as $pattern) {
+            Cache::forget($pattern);
+        }
+    }
+}
+```
+
+### Database Query Optimization
+```php
+<?php
+// app/Custom/[Feature]/Traits/[Feature]Filterable.php
+
+namespace App\Custom\[Feature]\Traits;
+
+use Illuminate\Database\Eloquent\Builder;
+
+trait [Feature]Filterable
+{
+    public function scopeFilterBy(Builder $query, array $filters): Builder
+    {
+        foreach ($filters as $field => $value) {
+            if ($value === null || $value === '') {
+                continue;
+            }
+
+            match($field) {
+                'search' => $query->where(function ($q) use ($value) {
+                    $q->where('title', 'like', "%{$value}%")
+                      ->orWhere('description', 'like', "%{$value}%");
+                }),
+                'status' => $query->where('status', $value),
+                'priority' => $query->where('priority', $value),
+                'category_id' => $query->where('category_id', $value),
+                'user_id' => $query->where('user_id', $value),
+                'date_from' => $query->whereDate('created_at', '>=', $value),
+                'date_to' => $query->whereDate('created_at', '<=', $value),
+                'is_active' => $query->where('is_active', (bool) $value),
+                default => null
+            };
+        }
+
+        return $query;
+    }
+
+    public function scopeWithOptimalRelations(Builder $query): Builder
+    {
+        return $query->with([
+            'user:id,name,email,avatar',
+            'category:id,name,color,icon',
+            'tags:id,name,color'
+        ]);
+    }
+
+    public function scopeForApi(Builder $query): Builder
+    {
+        return $query->withOptimalRelations()
+                     ->withCount(['comments', 'attachments']);
+    }
+}
+```
+
+---
+
+## 🧪 **Testing Strategy**
+
+### Feature Tests
+```php
+<?php
+// tests/Custom/Feature/[Feature]ApiTest.php
+
+namespace Tests\Custom\Feature;
+
+use Tests\TestCase;
+use App\Models\User;
+use App\Custom\[Feature]\Models\[Feature];
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
+
+class [Feature]ApiTest extends TestCase
+{
+    use RefreshDatabase, WithFaker;
+
+    protected User $user;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        
+        $this->user = User::factory()->create();
+        $this->actingAs($this->user, 'sanctum');
+    }
+
+    /** @test */
+    public function can_list_[features]()
+    {
+        [Feature]::factory(5)->create(['user_id' => $this->user->id]);
+
+        $response = $this->getJson('/api/v1/[features]');
+
+        $response->assertSuccessful()
+                 ->assertJsonStructure([
+                     'data' => [
+                         '*' => [
+                             'id',
+                             'title',
+                             'description',
+                             'status',
+                             'priority',
+                             'category',
+                             'user',
+                             'created_at',
+                             'updated_at'
+                         ]
+                     ],
+                     'meta' => [
+                         'current_page',
+                         'per_page',
+                         'total'
+                     ]
+                 ]);
+    }
+
+    /** @test */
+    public function can_create_[feature]()
+    {
+        $[feature]Data = [
+            'title' => $this->faker->sentence,
+            'description' => $this->faker->paragraph,
+            'status' => 'pending',
+            'priority' => 'medium',
+            'category_id' => 1
+        ];
+
+        $response = $this->postJson('/api/v1/[features]', $[feature]Data);
+
+        $response->assertCreated()
+                 ->assertJsonFragment([
+                     'title' => $[feature]Data['title'],
+                     'status' => $[feature]Data['status']
+                 ]);
+
+        $this->assertDatabaseHas('[features]', [
+            'title' => $[feature]Data['title'],
+            'user_id' => $this->user->id
+        ]);
+    }
+
+    /** @test */
+    public function can_update_own_[feature]()
+    {
+        $[feature] = [Feature]::factory()->create(['user_id' => $this->user->id]);
+
+        $updateData = [
+            'title' => 'Updated Title',
+            'status' => 'in_progress'
+        ];
+
+        $response = $this->putJson("/api/v1/[features]/{$[feature]->id}", $updateData);
+
+        $response->assertSuccessful()
+                 ->assertJsonFragment([
+                     'title' => 'Updated Title',
+                     'status' => 'in_progress'
+                 ]);
+    }
+
+    /** @test */
+    public function cannot_update_others_[feature]()
+    {
+        $other[Feature] = [Feature]::factory()->create(); // Different user
+
+        $response = $this->putJson("/api/v1/[features]/{$other[Feature]->id}", [
+            'title' => 'Unauthorized Update'
+        ]);
+
+        $response->assertForbidden();
+    }
+
+    /** @test */
+    public function can_search_[features]()
+    {
+        [Feature]::factory()->create([
+            'title' => 'Important Task',
+            'user_id' => $this->user->id
+        ]);
+
+        [Feature]::factory()->create([
+            'title' => 'Regular Task',
+            'user_id' => $this->user->id
+        ]);
+
+        $response = $this->getJson('/api/v1/[features]/search?q=Important');
+
+        $response->assertSuccessful()
+                 ->assertJsonCount(1, 'data')
+                 ->assertJsonFragment(['title' => 'Important Task']);
+    }
+
+    /** @test */
+    public function validates_required_fields()
+    {
+        $response = $this->postJson('/api/v1/[features]', []);
+
+        $response->assertUnprocessable()
+                 ->assertJsonValidationErrors([
+                     'title',
+                     'status',
+                     'priority',
+                     'category_id'
+                 ]);
+    }
+}
+```
+
+### Unit Tests
+```php
+<?php
+// tests/Custom/Unit/[Feature]ServiceTest.php
+
+namespace Tests\Custom\Unit;
+
+use Tests\TestCase;
+use App\Custom\[Feature]\Services\[Feature]Service;
+use App\Custom\[Feature]\Models\[Feature];
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+class [Feature]ServiceTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected [Feature]Service $service;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        
+        $this->service = app([Feature]Service::class);
+    }
+
+    /** @test */
+    public function can_create_[feature]_with_service()
+    {
+        $data = [
+            'title' => 'Test [Feature]',
+            'description' => 'Test description',
+            'status' => 'pending',
+            'priority' => 'medium',
+            'category_id' => 1,
+            'user_id' => 1
+        ];
+
+        $[feature] = $this->service->create($data);
+
+        $this->assertInstanceOf([Feature]::class, $[feature]);
+        $this->assertEquals('Test [Feature]', $[feature]->title);
+        $this->assertDatabaseHas('[features]', ['title' => 'Test [Feature]']);
+    }
+
+    /** @test */
+    public function can_filter_[features]_by_status()
+    {
+        [Feature]::factory()->create(['status' => 'pending']);
+        [Feature]::factory()->create(['status' => 'completed']);
+        [Feature]::factory()->create(['status' => 'pending']);
+
+        $results = $this->service->getFiltered(['status' => 'pending']);
+
+        $this->assertEquals(2, $results->total());
+        $this->assertTrue($results->every(function ($item) {
+            return $item->status === 'pending';
+        }));
+    }
+}
+```
+
+---
+
+## 📈 **Monitoring & Analytics**
+
+### Performance Monitoring
+```php
+<?php
+// app/Custom/[Feature]/Services/[Feature]MonitoringService.php
+
+namespace App\Custom\[Feature]\Services;
+
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
+
+class [Feature]MonitoringService
+{
+    public function logApiCall(string $endpoint, float $duration, int $statusCode): void
+    {
+        Log::channel('api')->info('[Feature] API Call', [
+            'endpoint' => $endpoint,
+            'duration_ms' => round($duration * 1000, 2),
+            'status_code' => $statusCode,
+            'memory_usage' => memory_get_peak_usage(true),
+            'timestamp' => now()->toISOString()
+        ]);
+
+        // Update metrics cache
+        $this->updateMetrics($endpoint, $duration, $statusCode);
+    }
+
+    public function getPerformanceMetrics(): array
+    {
+        return Cache::remember('api_metrics_[features]', 300, function () {
+            return [
+                'average_response_time' => $this->getAverageResponseTime(),
+                'error_rate' => $this->getErrorRate(),
+                'requests_per_minute' => $this->getRequestsPerMinute(),
+                'memory_usage_trend' => $this->getMemoryUsageTrend()
+            ];
+        });
+    }
+
+    protected function updateMetrics(string $endpoint, float $duration, int $statusCode): void
+    {
+        $key = "metrics_[features]_{$endpoint}";
+        $metrics = Cache::get($key, [
+            'total_requests' => 0,
+            'total_duration' => 0,
+            'errors' => 0,
+            'last_updated' => now()
+        ]);
+
+        $metrics['total_requests']++;
+        $metrics['total_duration'] += $duration;
+        
+        if ($statusCode >= 400) {
+            $metrics['errors']++;
+        }
+        
+        $metrics['last_updated'] = now();
+
+        Cache::put($key, $metrics, 3600);
+    }
+}
+```
+
+---
+
+**Documentation Last Updated:** [Date]  
+**API Version:** [Version]  
+**Laravel Version:** [Version]  
+**Performance Baseline:** [Date]

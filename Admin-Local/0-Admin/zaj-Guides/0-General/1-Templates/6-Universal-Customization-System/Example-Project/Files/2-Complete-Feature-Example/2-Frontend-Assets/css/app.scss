@@ -1,0 +1,260 @@
+// Priority Task Analytics Dashboard Styles
+// Safe from vendor updates - located in resources/Custom/css/
+
+// Import utilities and variables
+@import "utilities/variables";
+@import "utilities/mixins";
+
+// Analytics Dashboard Layout
+.analytics-dashboard {
+    @include custom-container;
+
+    .dashboard-header {
+        @include flex-between;
+        margin-bottom: $spacing-lg;
+
+        h1 {
+            color: $analytics-primary;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .time-selector {
+            @include custom-dropdown;
+            background: $analytics-card-bg;
+        }
+    }
+
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: $spacing-md;
+        margin-bottom: $spacing-xl;
+
+        .metric-card {
+            @include analytics-card;
+
+            .metric-icon {
+                width: 40px;
+                height: 40px;
+                border-radius: 8px;
+                @include flex-center;
+                margin-bottom: $spacing-sm;
+
+                &.tasks-completed {
+                    background: $success-gradient;
+                }
+                &.priority-high {
+                    background: $warning-gradient;
+                }
+                &.productivity {
+                    background: $info-gradient;
+                }
+                &.time-saved {
+                    background: $primary-gradient;
+                }
+            }
+
+            .metric-value {
+                font-size: 2.5rem;
+                font-weight: 700;
+                color: $text-primary;
+                line-height: 1;
+            }
+
+            .metric-label {
+                color: $text-secondary;
+                font-size: 0.875rem;
+                margin-bottom: $spacing-xs;
+            }
+
+            .metric-change {
+                @include flex-center;
+                font-size: 0.75rem;
+
+                &.positive {
+                    color: $success-color;
+
+                    &::before {
+                        content: "↗";
+                        margin-right: 4px;
+                    }
+                }
+
+                &.negative {
+                    color: $danger-color;
+
+                    &::before {
+                        content: "↘";
+                        margin-right: 4px;
+                    }
+                }
+            }
+        }
+    }
+
+    .charts-section {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: $spacing-lg;
+        margin-bottom: $spacing-xl;
+
+        @include mobile {
+            grid-template-columns: 1fr;
+        }
+
+        .chart-container {
+            @include analytics-card;
+
+            .chart-header {
+                @include flex-between;
+                margin-bottom: $spacing-md;
+
+                h3 {
+                    color: $text-primary;
+                    font-size: 1.125rem;
+                    font-weight: 600;
+                }
+
+                .chart-controls {
+                    @include flex-center;
+                    gap: $spacing-xs;
+
+                    button {
+                        @include chart-control-button;
+
+                        &.active {
+                            background: $analytics-primary;
+                            color: white;
+                        }
+                    }
+                }
+            }
+
+            .chart-wrapper {
+                position: relative;
+                height: 300px;
+
+                canvas {
+                    max-width: 100%;
+                    height: auto !important;
+                }
+            }
+        }
+    }
+
+    .priority-breakdown {
+        @include analytics-card;
+
+        .priority-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+
+            .priority-item {
+                @include flex-between;
+                padding: $spacing-sm 0;
+                border-bottom: 1px solid $border-light;
+
+                &:last-child {
+                    border-bottom: none;
+                }
+
+                .priority-info {
+                    @include flex-start;
+
+                    .priority-dot {
+                        width: 12px;
+                        height: 12px;
+                        border-radius: 50%;
+                        margin-right: $spacing-sm;
+
+                        &.high {
+                            background: $priority-high;
+                        }
+                        &.medium {
+                            background: $priority-medium;
+                        }
+                        &.low {
+                            background: $priority-low;
+                        }
+                    }
+
+                    .priority-label {
+                        font-weight: 500;
+                        color: $text-primary;
+                    }
+                }
+
+                .priority-stats {
+                    @include flex-center;
+                    gap: $spacing-sm;
+
+                    .task-count {
+                        color: $text-secondary;
+                        font-size: 0.875rem;
+                    }
+
+                    .percentage {
+                        font-weight: 600;
+                        color: $analytics-accent;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Real-time update animations
+.metric-card {
+    transition: all 0.3s ease;
+
+    &.updating {
+        transform: scale(1.02);
+        box-shadow: 0 8px 25px rgba($analytics-primary, 0.15);
+    }
+}
+
+// Chart loading states
+.chart-loading {
+    @include flex-center;
+    height: 300px;
+    color: $text-secondary;
+
+    .spinner {
+        @include spinner-animation;
+        margin-right: $spacing-sm;
+    }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+    .analytics-dashboard {
+        .metric-card {
+            background: $dark-card-bg;
+            border-color: $dark-border;
+        }
+
+        .chart-container {
+            background: $dark-card-bg;
+            border-color: $dark-border;
+        }
+    }
+}
+
+// Development mode: show custom indicators
+@if env("APP_DEBUG", false) {
+    .analytics-dashboard::before {
+        content: "🎯 Analytics Dashboard (Custom Layer)";
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: rgba($analytics-primary, 0.9);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 10px;
+        z-index: 9999;
+        display: block !important;
+    }
+}

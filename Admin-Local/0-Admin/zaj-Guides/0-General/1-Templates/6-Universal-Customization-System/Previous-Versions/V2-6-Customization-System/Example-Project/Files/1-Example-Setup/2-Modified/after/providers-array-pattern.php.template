@@ -1,0 +1,17 @@
+<?php
+
+return [
+    App\Providers\AppServiceProvider::class,
+    App\Providers\FortifyServiceProvider::class,
+    App\Providers\JetstreamServiceProvider::class,
+    Illuminate\Translation\TranslationServiceProvider::class,
+
+    // Vendor service providers (e.g., package providers)
+    // {{VENDOR_PROVIDERS}} - Replace with your app's vendor providers
+    
+    // Existing custom providers
+    // {{EXISTING_PROVIDERS}} - Replace with your app's existing providers
+    
+    // ✅ ADD YOUR CUSTOMIZATION PROVIDER HERE:
+    App\Providers\CustomizationServiceProvider::class,
+];

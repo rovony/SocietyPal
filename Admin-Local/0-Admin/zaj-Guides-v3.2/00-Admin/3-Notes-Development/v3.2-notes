@@ -1,0 +1,30 @@
+
+
+
+# FIXES WE Needs
+The workflow should be:
+1- update the steps maybe names (Admin-Local/3-Guides-V3-Consolidated/1-Setup-New-Project/Phase-1-Project-Setup) and in general the Admin-Local/3-Guides-V3-Consolidated/00-General/Master_Checklist.md
+Step 9: Commit Original Vendor Files - Preserve pristine CodeCanyon files first
+Step 10: Create Admin-Local Directory Structure - Create organizational structure
+Step 8: CodeCanyon Configuration & License Management - Use the structure to set up management systems
+
+
+
+# later for frotnend update one click updates weh need to consdier similar to the below
+(permission fixed, and i clicked instlation and now installtion is happening. now instllation is complete and we were given (Application has been successfully installed.
+
+Superadmin login details
+Email:	superadmin@example.com
+Password:	123456) but some other codecanyon apps may have the superadmin info on docs - either wy add step in guide 14 to ask user to collect that info and you need to caputre it as a file in Admin-Local/1-CurrentProject added to gitiginroe or maybe added to .env.local as info before we change it later.
+
+but also see the guide we created on permissions @/Admin-Local/3-Guides-V3-Consolidated/99-Understand/Laravel_File_Permissions_Security_Guide.md and see if any steps needed to be added before and or after the install we just finished - the current step.
+
+lastly as i want to be able to track thinkgs i think we need a step where once we do finish install and have permission good to run an analysis to understand, and document what did the install do - changes in files and also changes in dataset- we will have one later similar for updates ..
+)
+Based on these requirements, we will need to:
+
+1-Apply post-installation security lockdown (per the permissions guide)
+2-Add post-installation analysis step to document changes
+3-Complete related Step  with all these requirements
+
+

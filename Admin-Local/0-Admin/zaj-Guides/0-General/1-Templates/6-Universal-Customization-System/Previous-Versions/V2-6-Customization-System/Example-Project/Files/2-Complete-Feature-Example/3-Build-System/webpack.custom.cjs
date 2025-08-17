@@ -1,0 +1,194 @@
+const mix = require("laravel-mix");
+
+/*
+ |--------------------------------------------------------------------------
+ | Priority Task Analytics Dashboard - Custom Build Configuration
+ |--------------------------------------------------------------------------
+ | This webpack config handles the compilation of analytics dashboard assets
+ | These assets are separate from main app assets and safe from vendor updates
+ */
+
+// Analytics dashboard assets
+mix.js("resources/Custom/js/app.js", "public/Custom/js/analytics.js")
+    .sass("resources/Custom/css/app.scss", "public/Custom/css/analytics.css")
+
+    // Individual component compilation for modular loading
+    .js(
+        "resources/Custom/js/components/AnalyticsDashboard.js",
+        "public/Custom/js/components/"
+    )
+    .js(
+        "resources/Custom/js/components/TaskMetrics.js",
+        "public/Custom/js/components/"
+    )
+    .js(
+        "resources/Custom/js/components/PriorityCharts.js",
+        "public/Custom/js/components/"
+    )
+
+    // Copy static assets
+    .copy("resources/Custom/images/", "public/Custom/images/")
+    .copy("resources/Custom/fonts/", "public/Custom/fonts/")
+
+    // Version for cache busting
+    .version();
+
+// Custom webpack configuration for analytics
+mix.webpackConfig({
+    resolve: {
+        alias: {
+            "@analytics": path.resolve("resources/Custom/js"),
+            "@analytics-css": path.resolve("resources/Custom/css"),
+            "@analytics-components": path.resolve(
+                "resources/Custom/js/components"
+            ),
+        },
+    },
+
+    // External dependencies (loaded via CDN)
+    externals: {
+        "chart.js": "Chart",
+        moment: "moment",
+    },
+
+    // Output configuration
+    output: {
+        library: "TaskAnalytics",
+        libraryTarget: "umd",
+        globalObject: "this",
+    },
+
+    // Development server configuration
+    devServer: {
+        port: 3001, // Different port from main app
+        hot: true,
+        overlay: true,
+    },
+});
+
+// Performance optimizations
+mix.options({
+    processCssUrls: false,
+    clearConsole: false,
+
+    // Custom PostCSS plugins for analytics
+    postCss: [
+        require("autoprefixer"),
+        require("cssnano")({
+            preset: [
+                "default",
+                {
+                    discardComments: {
+                        removeAll: true,
+                    },
+                },
+            ],
+        }),
+    ],
+});
+
+// Development configuration
+if (!mix.inProduction()) {
+    mix.sourceMaps(true, "source-map").options({
+        hmrOptions: {
+            host: "localhost",
+            port: 3001,
+        },
+    });
+
+    // Enable BrowserSync for analytics dashboard
+    mix.browserSync({
+        proxy: process.env.APP_URL || "http://localhost:8000",
+        files: ["resources/Custom/**/*", "public/Custom/**/*"],
+        port: 3002,
+        ui: {
+            port: 3003,
+        },
+    });
+}
+
+// Production optimizations
+if (mix.inProduction()) {
+    mix.version().options({
+        // Terser optimizations for analytics code
+        terser: {
+            terserOptions: {
+                compress: {
+                    drop_console: true,
+                    drop_debugger: true,
+                    pure_funcs: ["console.log", "console.info"],
+                },
+                mangle: {
+                    reserved: ["Chart", "TaskAnalytics"],
+                },
+            },
+        },
+
+        // CSS optimization
+        cssNano: {
+            preset: [
+                "default",
+                {
+                    discardComments: {
+                        removeAll: true,
+                    },
+                    normalizeWhitespace: true,
+                    mergeLonghand: true,
+                },
+            ],
+        },
+    });
+}
+
+// Custom task for generating analytics build manifest
+mix.extend(
+    "analyticsManifest",
+    new (class {
+        register(options = {}) {
+            // Generate custom manifest for analytics assets
+            this.options = Object.assign(
+                {
+                    output: "public/Custom/manifest.json",
+                },
+                options
+            );
+        }
+
+        boot() {
+            // Hook into webpack compilation
+        }
+
+        webpackConfig(config) {
+            config.plugins.push(
+                new (require("webpack").DefinePlugin)({
+                    ANALYTICS_VERSION: JSON.stringify(
+                        process.env.ANALYTICS_VERSION || "1.0.0"
+                    ),
+                    BUILD_TIME: JSON.stringify(new Date().toISOString()),
+                    ENVIRONMENT: JSON.stringify(
+                        process.env.NODE_ENV || "development"
+                    ),
+                })
+            );
+        }
+    })()
+);
+
+// Enable analytics manifest generation
+mix.analyticsManifest();
+
+// Custom commands for analytics build
+if (process.argv.includes("--analytics-only")) {
+    // Build only analytics assets
+    mix.disableSuccessNotifications();
+    console.log("🎯 Building Analytics Dashboard assets only...");
+}
+
+// Watch for changes in analytics files specifically
+if (process.argv.includes("--watch-analytics")) {
+    mix.options({
+        clearConsole: true,
+    });
+
+    console.log("👀 Watching Analytics Dashboard files for changes...");
+}

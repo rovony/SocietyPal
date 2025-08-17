@@ -1,0 +1,32 @@
+but also u were doing this sub todo list
+Done -completed:
+Task 1.1.1: Rename 5-Universal-Tracking-System to 5-Tracking-System
+Task 1.1.2: Create setup-tracking.sh script
+Task 1.1.3: Update README.md structure
+Task 1.1.4-1.1.8: Create complete tracking directory structure
+Task 1.2.1-1.2.3: Organize CurrentProject tracking structure
+Task 1.3.1-1.3.5: Make customization system project-agnostic
+Task 2.1.1: Rename Deploy-Updates to Deploy-Vendor-Updates
+Task 2.1.2: Read all vendor update step files
+Task 2.2.1-2.2.7: Integrate tracking into Steps 01-07
+Task 2.2.8: Complete Step_08_Deploy_Updates.md tracking integration
+ongoing:
+Task 2.2.9: Complete Step_09_Verify_Deployment.md tracking integration
+To be done:
+Task 2.3.1: Update master pipeline documentation
+Task 2.3.2: Create verification scripts for vendor update flow
+after u finsih
+Reminder - Master todo is below:
+Task 2.2.1-9: MODIFY all 9 step files for tracking integration - Step 07 next
+Task 2.2.10: CREATE C-Deploy-Vendor-Updates/2-Files/ directory structure
+Task 3.1.1-6: CREATE E-Customize-App/1-Steps/ (6 step files)
+Task 3.2.1-4: CREATE E-Customize-App/2-Files/ supporting scripts
+Task 4.1.1-4: COPY/MOVE project files to templates
+Task 4.2.1-6: REVERT project root changes
+Task 4.3.1-6: MOVE Data Persistence & Investment files to templates
+Task 5.1.1-4: CREATE master regeneration scripts
+Task 5.2.1-3: CREATE integration testing scripts
+Task 6.1.1-6: UPDATE Phase 2 steps for template integration
+Task 6.2.1-3: CREATE master integration documentation
+Task 7.1.1-5: Complete integration testing
+Task 7.2.1-4: Final documentation & commit

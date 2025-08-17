@@ -1,0 +1,16 @@
+{
+    "scripts": {
+        "custom:build": "mix --mix-config=webpack.custom.cjs --production",
+        "custom:dev": "mix --mix-config=webpack.custom.cjs",
+        "custom:watch": "mix --mix-config=webpack.custom.cjs --watch",
+        "custom:clean": "rm -rf public/Custom/js/* public/Custom/css/*",
+        "custom:setup": "npm run custom:clean && npm run custom:build"
+    },
+    "devDependencies": {
+        "laravel-mix": "^6.0.49",
+        "sass": "^1.90.0",
+        "sass-loader": "^16.0.5",
+        "webpack": "^5.101.2",
+        "webpack-cli": "^6.0.1"
+    }
+}

@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laravel Deployment Guide V3 - Human Instructions Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #3b82f6;
+            --success-color: #059669;
+            --warning-color: #d97706;
+            --danger-color: #dc2626;
+            --background-color: #f8fafc;
+            --surface-color: #ffffff;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--background-color) 0%, #e0e7ff 100%);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: var(--surface-color);
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
+        .tab-container {
+            background: var(--surface-color);
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .tab-navigation {
+            display: flex;
+            flex-wrap: wrap;
+            background: #f1f5f9;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .tab-button {
+            flex: 1;
+            min-width: 200px;
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab-button:hover {
+            background: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .tab-button.active {
+            background: var(--surface-color);
+            color: var(--primary-color);
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 2rem;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .step-card {
+            background: #f8fafc;
+            border: 2px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .step-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .step-icon.info { background: var(--primary-color); }
+        .step-icon.warning { background: var(--warning-color); }
+        .step-icon.success { background: var(--success-color); }
+        .step-icon.danger { background: var(--danger-color); }
+
+        .step-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .step-instructions {
+            background: var(--surface-color);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            border-left: 4px solid var(--primary-color);
+            margin: 1rem 0;
+        }
+
+        .instruction-list {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+
+        .instruction-list li {
+            counter-increment: step-counter;
+            margin-bottom: 1rem;
+            padding-left: 2.5rem;
+            position: relative;
+        }
+
+        .instruction-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 1.5rem;
+            height: 1.5rem;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin: 0.25rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #047857;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(5, 150, 105, 0.3);
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #b45309;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(217, 119, 6, 0.3);
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            border-color: var(--primary-color);
+            color: #1e40af;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            border-color: var(--warning-color);
+            color: #92400e;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            border-color: var(--success-color);
+            color: #065f46;
+        }
+
+        .alert-danger {
+            background: #fee2e2;
+            border-color: var(--danger-color);
+            color: #991b1b;
+        }
+
+        .checklist {
+            background: var(--surface-color);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+
+        .checklist-checkbox {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 1rem;
+            cursor: pointer;
+        }
+
+        .progress-container {
+            background: var(--border-color);
+            border-radius: 1rem;
+            height: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .progress-bar {
+            background: var(--success-color);
+            border-radius: 1rem;
+            height: 100%;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .tab-button {
+                min-width: 150px;
+                padding: 0.75rem 1rem;
+                font-size: 0.8rem;
+            }
+            
+            .tab-content {
+                padding: 1rem;
+            }
+        }
+
+        .floating-help {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+
+        .help-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .help-button:hover {
+            background: var(--secondary-color);
+            transform: scale(1.1);
+        }
+
+        .copy-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .copy-btn:hover {
+            background: var(--secondary-color);
+        }
+
+        .download-link {
+            background: var(--success-color);
+            color: white;
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            display: inline-block;
+            margin: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .download-link:hover {
+            background: #047857;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(5, 150, 105, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🚀 Laravel Deployment Guide V3</h1>
+            <p>Human Instructions Portal - Complete Interactive Guide for All Manual Steps</p>
+        </header>
+
+        <div class="tab-container">
+            <nav class="tab-navigation">
+                <button class="tab-button active" onclick="showTab('step01')">📋 Project Info</button>
+                <button class="tab-button" onclick="showTab('github')">🐙 GitHub Setup</button>
+                <button class="tab-button" onclick="showTab('codecanyon')">📦 CodeCanyon</button>
+                <button class="tab-button" onclick="showTab('herd-install')">⚡ Herd Install</button>
+                <button class="tab-button" onclick="showTab('herd-config')">🖥️ Herd Config</button>
+                <button class="tab-button" onclick="showTab('ssh-config')">🔑 SSH Setup</button>
+                <button class="tab-button" onclick="showTab('server-setup')">🖥️ Server Setup</button>
+            </nav>
+
+            <!-- Step 01: Project Information -->
+            <div class="tab-content active" id="step01">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-icon info">📋</div>
+                        <div class="step-title">Step 01: Project Information Collection</div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <strong>Purpose:</strong> Collect and configure all project-specific information that will be used throughout the deployment process.
+                    </div>
+
+                    <form id="projectForm" onsubmit="generateProjectConfig(event)">
+                        <div class="form-group">
+                            <label class="form-label">Project Name (used for domains, folders, etc.)</label>
+                            <input type="text" class="form-input" id="projectName" placeholder="SocietyPal" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">CodeCanyon Application Name</label>
+                            <input type="text" class="form-input" id="codecanyonApp" placeholder="SocietyPro - Society Management Software" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">CodeCanyon Version</label>
+                            <input type="text" class="form-input" id="codecanyonVersion" placeholder="v1.0.42" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">GitHub Username</label>
+                            <input type="text" class="form-input" id="githubUsername" placeholder="rovony" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Production Domain</label>
+                            <input type="text" class="form-input" id="productionDomain" placeholder="societypal.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Staging Domain</label>
+                            <input type="text" class="form-input" id="stagingDomain" placeholder="staging.societypal.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Local Development URL</label>
+                            <input type="text" class="form-input" id="localUrl" placeholder="https://societypal.test" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Project Root Path (absolute path)</label>
+                            <input type="text" class="form-input" id="projectRoot" placeholder="/Users/malekokour/Zaj_Master/MyApps/..." required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">📋 Generate Project Configuration</button>
+                    </form>
+
+                    <div id="projectOutput" style="display: none; margin-top: 2rem;">
+                        <h3>Generated Configuration</h3>
+                        <div class="code-block" id="projectConfigOutput"></div>
+                        <button class="btn btn-success" onclick="copyProjectConfig()">📋 Copy Configuration</button>
+                        <div id="projectDownloadSection"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GitHub Repository Setup -->
+            <div class="tab-content" id="github">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-icon warning">🐙</div>
+                        <div class="step-title">Step 02: GitHub Repository Creation</div>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <strong>⚠️ Human Action Required:</strong> This step requires manual interaction with GitHub.com
+                    </div>
+
+                    <div class="step-instructions">
+                        <h3>🌐 GitHub Repository Setup Instructions:</h3>
+                        <ol class="instruction-list">
+                            <li>Open browser and navigate to <strong>GitHub.com</strong></li>
+                            <li>Click the <strong>+ New Repository</strong> button (or go to github.com/new)</li>
+                            <li>Configure repository settings:
+                                <div class="code-block">
+Repository name: [Your Project Name]
+Visibility: Private
+❌ Initialize with README: Unchecked
+❌ Add .gitignore: None selected  
+❌ Choose a license: None selected</div>
+                            </li>
+                            <li>Click <strong>"Create repository"</strong></li>
+                            <li>Copy the SSH URL for later use (git@github.com:username/repository.git)</li>
+                        </ol>
+                    </div>
+
+                    <div class="checklist">
+                        <h4>✅ Completion Checklist:</h4>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="github-1">
+                            <label for="github-1">GitHub repository created as private</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="github-2">
+                            <label for="github-2">Repository is empty (no README, .gitignore, or license)</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="github-3">
+                            <label for="github-3">SSH URL copied and noted</label>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>💡 Note:</strong> The repository must be empty initially. The deployment guide will create and manage all necessary files including README, .gitignore, and project structure.
+                    </div>
+                </div>
+            </div>
+
+            <!-- CodeCanyon Download -->
+            <div class="tab-content" id="codecanyon">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-icon warning">📦</div>
+                        <div class="step-title">Step 07: CodeCanyon Application Download</div>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <strong>⚠️ Human Action Required:</strong> CodeCanyon account access and manual download required.
+                    </div>
+
+                    <div class="step-instructions">
+                        <h3>📦 CodeCanyon Download Process:</h3>
+                        <ol class="instruction-list">
+                            <li>Login to your <strong>CodeCanyon account</strong> at codecanyon.net</li>
+                            <li>Navigate to your <strong>downloads/purchases</strong> section</li>
+                            <li>Find your purchased Laravel application</li>
+                            <li>Download the <strong>latest version</strong> of the application</li>
+                            <li>Rename the downloaded ZIP file to include version:
+                                <div class="code-block">Example: SocietyPro-v1.0.42.zip</div>
+                            </li>
+                            <li>Create temporary extraction directory:
+                                <div class="code-block">mkdir -p tmp-zip-extract</div>
+                            </li>
+                            <li>Move the downloaded ZIP to the <strong>tmp-zip-extract/</strong> directory</li>
+                        </ol>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>💡 Important:</strong> Note the exact version number as it will be needed for Git tags and deployment tracking. The guide will handle the extraction and integration automatically after download.
+                    </div>
+
+                    <div class="checklist">
+                        <h4>✅ Completion Checklist:</h4>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="codecanyon-1">
+                            <label for="codecanyon-1">Logged into CodeCanyon account</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="codecanyon-2">
+                            <label for="codecanyon-2">Latest application version downloaded</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="codecanyon-3">
+                            <label for="codecanyon-3">ZIP file renamed with version number</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="codecanyon-4">
+                            <label for="codecanyon-4">File moved to tmp-zip-extract/ directory</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="codecanyon-5">
+                            <label for="codecanyon-5">Version number noted for later use</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Herd Installation -->
+            <div class="tab-content" id="herd-install">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-icon warning">⚡</div>
+                        <div class="step-title">Computer Setup: Herd Installation</div>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <strong>⚠️ Human Action Required:</strong> Manual download and installation from Laravel Herd website.
+                    </div>
+
+                    <div class="step-instructions">
+                        <h3>🌐 Herd Installation Process:</h3>
+                        <ol class="instruction-list">
+                            <li>Visit <strong>https://herd.laravel.com</strong> in your browser</li>
+                            <li>Click <strong>"Download for macOS"</strong> button</li>
+                            <li>Wait for the <strong>.dmg file</strong> to download completely</li>
+                            <li>Open the downloaded <strong>.dmg file</strong></li>
+                            <li>Drag <strong>Laravel Herd</strong> to the <strong>Applications folder</strong></li>
+                            <li>Launch Herd from Applications folder</li>
+                            <li>Grant permissions when prompted (required for DNS/networking)</li>
+                            <li>Enter your <strong>macOS password</strong> when requested</li>
+                            <li>Wait for automatic configuration to complete</li>
+                        </ol>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>🎯 What Herd Automatically Configures:</strong><br>
+                        ✅ PHP 8.3 (latest stable)<br>
+                        ✅ Nginx web server<br>
+                        ✅ DNS masq for .test domains<br>
+                        ✅ Composer globally available<br>
+                        ✅ Node.js via NVM integration
+                    </div>
+
+                    <div class="checklist">
+                        <h4>✅ Installation Checklist:</h4>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="herd-install-1">
+                            <label for="herd-install-1">Downloaded Herd from official website</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="herd-install-2">
+                            <label for="herd-install-2">Installed to Applications folder</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="herd-install-3">
+                            <label for="herd-install-3">Granted all requested permissions</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="herd-install-4">
+                            <label for="herd-install-4">Automatic configuration completed</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="herd-install-5">
+                            <label for="herd-install-5">Herd running in system tray</label>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-success">
+                        <strong>💰 Herd Pro Recommendation:</strong> Consider upgrading to Herd Pro ($99/year) for built-in MySQL, Redis, Mailpit, and advanced debugging tools - excellent value for professional development.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Herd Configuration -->
+            <div class="tab-content" id="herd-config">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-icon info">🖥️</div>
+                        <div class="step-title">Step 11: Herd Local Development Site Setup</div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>Purpose:</strong> Configure your Laravel project in Herd for local development with HTTPS.
+                    </div>
+
+                    <div class="step-instructions">
+                        <h3>🔧 Herd Site Configuration:</h3>
+                        <ol class="instruction-list">
+                            <li>Open <strong>Herd application</strong> from system tray</li>
+                            <li>Navigate to <strong>Settings → Sites</strong></li>
+                            <li>Click <strong>"Add"</strong> or <strong>"+"</strong> to add new site</li>
+                            <li>Configure site settings:
+                                <div class="code-block">
+Project Path: [Your project root folder path]
+Project Name: [lowercase project name, e.g., societypal]
+PHP Version: Check composer.json requirement (usually 8.2 or 8.3)
+HTTPS: Yes (enabled)
+                                </div>
+                            </li>
+                            <li>Click <strong>"Save"</strong> or <strong>"Add Site"</strong></li>
+                            <li>Test by clicking <strong>"Open in browser"</strong></li>
+                            <li>Should open: <strong>https://[projectname].test</strong></li>
+                        </ol>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Check PHP Version Requirement:</label>
+                        <div class="code-block">cat composer.json | grep php
+# Look for: "php": "^8.2" or "^8.3"</div>
+                        <button class="copy-btn" onclick="copyToClipboard('cat composer.json | grep php')">📋 Copy Command</button>
+                    </div>
+
+                    <div class="checklist">
+                        <h4>✅ Configuration Checklist:</h4>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="herd-config-1">
+                            <label for="herd-config-1">Herd Settings → Sites opened</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="herd-config-2">
+                            <label for="herd-config-2">Project path added to Herd</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="herd-config-3">
+                            <label for="herd-config-3">Correct PHP version selected</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="herd-config-4">
+                            <label for="herd-config-4">HTTPS enabled</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="herd-config-5">
+                            <label for="herd-config-5">Site accessible at .test URL</label>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-success">
+                        <strong>✅ Expected Result:</strong> Local development site accessible at https://[projectname].test with valid SSL certificate.
+                    </div>
+                </div>
+            </div>
+
+            <!-- SSH Configuration -->
+            <div class="tab-content" id="ssh-config">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-icon warning">🔑</div>
+                        <div class="step-title">Computer Setup: SSH Configuration</div>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <strong>⚠️ Human Action Required:</strong> Hostinger hPanel SSH key configuration needed.
+                    </div>
+
+                    <div class="step-instructions">
+                        <h3>🌐 Hostinger hPanel SSH Key Setup:</h3>
+                        <ol class="instruction-list">
+                            <li>The deployment script will generate and copy your SSH key to clipboard</li>
+                            <li>Open <strong>Hostinger hPanel</strong> in your browser</li>
+                            <li>Navigate to <strong>"SSH Access"</strong> section</li>
+                            <li>Click <strong>"Add SSH Key"</strong> or <strong>"Add New SSH Key"</strong></li>
+                            <li>Configure SSH key:
+                                <div class="code-block">
+Name: MacBook-[hostname] or descriptive name
+Public Key: [Paste from clipboard]
+                                </div>
+                            </li>
+                            <li>Click <strong>"Save"</strong> to add the key</li>
+                            <li>Wait <strong>1-2 minutes</strong> for key activation</li>
+                        </ol>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>💡 Important Notes:</strong><br>
+                        • SSH key should start with 'ssh-ed25519 AAAA...'<br>
+                        • Key activation may take 1-2 minutes<br>
+                        • Use a descriptive name like 'MacBook' or 'WorkStation'
+                    </div>
+
+                    <div class="checklist">
+                        <h4>✅ SSH Configuration Checklist:</h4>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="ssh-1">
+                            <label for="ssh-1">Logged into Hostinger hPanel</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="ssh-2">
+                            <label for="ssh-2">Found SSH Access section</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="ssh-3">
+                            <label for="ssh-3">SSH key pasted successfully</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="ssh-4">
+                            <label for="ssh-4">Descriptive name provided</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="ssh-5">
+                            <label for="ssh-5">Key saved and activation waited</label>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-success">
+                        <strong>🎯 Expected Result:</strong> Passwordless SSH access to server configured. Test with the provided commands after setup.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Server Setup -->
+            <div class="tab-content" id="server-setup">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-icon warning">🖥️</div>
+                        <div class="step-title">Computer Setup: Server GitHub Integration</div>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <strong>⚠️ Human Action Required:</strong> GitHub SSH key setup for server access.
+                    </div>
+
+                    <div class="step-instructions">
+                        <h3>🌐 GitHub SSH Key Setup Instructions:</h3>
+                        <ol class="instruction-list">
+                            <li>The server setup script will generate and display a public SSH key</li>
+                            <li>Copy the displayed public key (starts with ssh-ed25519)</li>
+                            <li>For <strong>personal account</strong> (rovony):
+                                <div class="code-block">Navigate to: github.com/settings/keys</div>
+                            </li>
+                            <li>For <strong>organizations</strong>:
+                                <div class="code-block">Add to repository → Settings → Deploy Keys</div>
+                            </li>
+                            <li>Click <strong>"New SSH key"</strong> or <strong>"Add SSH key"</strong></li>
+                            <li>Configure the key:
+                                <div class="code-block">
+Title: Hostinger Server [YYYY-MM-DD]
+Key type: Authentication Key (for personal) or Deploy Key
+Key: [Paste the copied public key]
+                                </div>
+                            </li>
+                            <li>Click <strong>"Add SSH key"</strong></li>
+                        </ol>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>🔒 Security Note:</strong> This key enables the server to access your GitHub repositories for automated deployments. It should be added to your personal GitHub account or as deploy keys for specific repositories.
+                    </div>
+
+                    <div class="checklist">
+                        <h4>✅ GitHub Integration Checklist:</h4>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="server-1">
+                            <label for="server-1">Server public key copied</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="server-2">
+                            <label for="server-2">GitHub settings/keys accessed</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="server-3">
+                            <label for="server-3">SSH key added to GitHub</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="server-4">
+                            <label for="server-4">Descriptive title provided</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="checklist-checkbox" id="server-5">
+                            <label for="server-5">Key activation confirmed</label>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-success">
+                        <strong>🎯 Expected Result:</strong> Server can authenticate with GitHub for repository access, enabling automated deployments and Git operations.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Summary -->
+        <div class="step-card" style="margin-top: 2rem;">
+            <div class="step-header">
+                <div class="step-icon success">📊</div>
+                <div class="step-title">Overall Progress</div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="overallProgress"></div>
+            </div>
+            
+            <div id="progressText">0% Complete - Get started with Step 01: Project Information</div>
+            
+            <button class="btn btn-primary" onclick="updateProgress()" style="margin-top: 1rem;">🔄 Update Progress</button>
+        </div>
+    </div>
+
+    <!-- Floating Help Button -->
+    <div class="floating-help">
+        <button class="help-button" onclick="showHelp()" title="Help & Documentation">?</button>
+    </div>
+
+    <script>
+        // Tab functionality
+        function showTab(tabId) {
+            // Hide all tab contents
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+            
+            // Remove active class from all tab buttons
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(button => button.classList.remove('active'));
+            
+            // Show selected tab content
+            document.getElementById(tabId).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+            
+            // Update URL hash
+            window.location.hash = tabId;
+        }
+
+        // Initialize tab from URL hash
+        window.addEventListener('load', function() {
+            const hash = window.location.hash.slice(1);
+            if (hash && document.getElementById(hash)) {
+                const button = document.querySelector(`[onclick="showTab('${hash}')"]`);
+                if (button) {
+                    button.click();
+                }
+            }
+            
+            // Load saved form data
+            loadSavedData();
+            updateProgress();
+        });
+
+        // Project configuration generation
+        function generateProjectConfig(event) {
+            event.preventDefault();
+            
+            const formData = {
+                projectName: document.getElementById('projectName').value,
+                codecanyonApp: document.getElementById('codecanyonApp').value,
+                codecanyonVersion: document.getElementById('codecanyonVersion').value,
+                githubUsername: document.getElementById('githubUsername').value,
+                productionDomain: document.getElementById('productionDomain').value,
+                stagingDomain: document.getElementById('stagingDomain').value,
+                localUrl: document.getElementById('localUrl').value,
+                projectRoot: document.getElementById('projectRoot').value
+            };
+
+            // Generate bash configuration
+            const bashConfig = `#!/bin/bash
+# Project Configuration - Generated on ${new Date().toISOString()}
+
+# Project Information
+export PROJECT_NAME="${formData.projectName}"
+export CODECANYON_APP="${formData.codecanyonApp}"
+export CODECANYON_VERSION="${formData.codecanyonVersion}"
+
+# GitHub Configuration  
+export GITHUB_USERNAME="${formData.githubUsername}"
+export GITHUB_SSH="git@github.com:${formData.githubUsername}/${formData.projectName}.git"
+
+# Domain Configuration
+export PRODUCTION_DOMAIN="${formData.productionDomain}"
+export STAGING_DOMAIN="${formData.stagingDomain}"
+export LOCAL_URL="${formData.localUrl}"
+
+# Path Configuration
+export PROJECT_ROOT="${formData.projectRoot}"
+export ADMIN_LOCAL="$PROJECT_ROOT/Admin-Local"
+
+# Auto-generated values
+export LOCAL_DOMAIN="${formData.projectName.toLowerCase()}.test"
+export TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+
+echo "✅ Project configuration loaded for ${formData.projectName}"`;
+
+            document.getElementById('projectConfigOutput').textContent = bashConfig;
+            document.getElementById('projectOutput').style.display = 'block';
+
+            // Save to localStorage
+            localStorage.setItem('societypal_project_config', JSON.stringify(formData));
+            
+            // Create download link
+            createProjectDownload(formData, bashConfig);
+        }
+
+        function createProjectDownload(formData, bashConfig) {
+            // Create project.json
+            const projectJson = {
+                projectInfo: {
+                    name: formData.projectName,
+                    codecanyonApp: formData.codecanyonApp,
+                    version: formData.codecanyonVersion,
+                    description: `${formData.codecanyonApp} deployment project`,
+                    lastUpdated: new Date().toISOString(),
+                    status: "setup-in-progress"
+                },
+                domains: {
+                    production: formData.productionDomain,
+                    staging: formData.stagingDomain,
+                    local: formData.localUrl
+                },
+                github: {
+                    username: formData.githubUsername,
+                    repository: formData.projectName,
+                    ssh: `git@github.com:${formData.githubUsername}/${formData.projectName}.git`
+                },
+                paths: {
+                    projectRoot: formData.projectRoot,
+                    adminLocal: `${formData.projectRoot}/Admin-Local`
+                },
+                deployment: {
+                    currentStep: "step-01",
+                    completedSteps: ["step-01"],
+                    progressPercentage: 7
+                }
+            };
+
+            // Create download section
+            const downloadSection = document.getElementById('projectDownloadSection');
+            downloadSection.innerHTML = `
+                <h4>📥 Download Configuration Files</h4>
+                <button class="btn btn-success" onclick="downloadFile('project.json', '${JSON.stringify(projectJson, null, 2).replace(/'/g, '\\\'').replace(/"/g, '\\"')}')">
+                    📄 Download project.json
+                </button>
+                <button class="btn btn-success" onclick="downloadFile('project-config.sh', '${bashConfig.replace(/'/g, '\\\'').replace(/"/g, '\\"')}')">
+                    🔧 Download Bash Configuration
+                </button>
+            `;
+        }
+
+        // Save form data
+        function saveFormData() {
+            const formData = {
+                projectName: document.getElementById('projectName').value,
+                codecanyonApp: document.getElementById('codecanyonApp').value,
+                codecanyonVersion: document.getElementById('codecanyonVersion').value,
+                githubUsername: document.getElementById('githubUsername').value,
+                productionDomain: document.getElementById('productionDomain').value,
+                stagingDomain: document.getElementById('stagingDomain').value,
+                localUrl: document.getElementById('localUrl').value,
+                projectRoot: document.getElementById('projectRoot').value
+            };
+            
+            localStorage.setItem('societypal_project_config', JSON.stringify(formData));
+        }
+
+        function copyProjectConfig() {
+            const configText = document.getElementById('projectConfigOutput').textContent;
+            navigator.clipboard.writeText(configText).then(() => {
+                alert('Configuration copied to clipboard!');
+            });
+        }
+
+        function downloadFile(filename, content) {
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content.replace(/\\"/g, '"').replace(/\\'/g, "'")));
+            element.setAttribute('download', filename);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        // Copy to clipboard functionality
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copied to clipboard!');
+            });
+        }
+
+        // Progress tracking
+        function updateProgress() {
+            let totalItems = 0;
+            let checkedItems = 0;
+            
+            const checkboxes = document.querySelectorAll('.checklist-checkbox');
+            checkboxes.forEach(checkbox => {
+                totalItems++;
+                if (checkbox.checked) {
+                    checkedItems++;
+                }
+            });
+            
+            const percentage = totalItems > 0 ? Math.round((checkedItems / totalItems) * 100) : 0;
+            const progressBar = document.getElementById('overallProgress');
+            const progressText = document.getElementById('progressText');
+            
+            progressBar.style.width = percentage + '%';
+            
+            let statusText = '';
+            if (percentage === 0) {
+                statusText = 'Get started with Step 01: Project Information';
+            } else if (percentage < 25) {
+                statusText = 'Initial setup in progress - Continue with current step';
+            } else if (percentage < 50) {
+                statusText = 'Good progress! Continue with remaining setup steps';
+            } else if (percentage < 75) {
+                statusText = 'Excellent progress! Most setup steps completed';
+            } else if (percentage < 100) {
+                statusText = 'Almost complete! Finish the remaining steps';
+            } else {
+                statusText = 'All manual setup steps completed! Ready to continue with automated steps';
+            }
+            
+            progressText.textContent = `${percentage}% Complete - ${statusText}`;
+            
+            // Save progress
+            saveProgress();
+        }
+
+        // Save form data and progress
+        function saveProgress() {
+            const checkboxes = document.querySelectorAll('.checklist-checkbox');
+            const progress = {};
+            checkboxes.forEach(checkbox => {
+                progress[checkbox.id] = checkbox.checked;
+            });
+            localStorage.setItem('deployment_progress', JSON.stringify(progress));
+        }
+
+        // Load saved data
+        function loadSavedData() {
+            // Load form data
+            const savedConfig = localStorage.getItem('societypal_project_config');
+            if (savedConfig) {
+                const config = JSON.parse(savedConfig);
+                Object.keys(config).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        element.value = config[key];
+                    }
+                });
+            }
+            
+            // Load progress
+            const savedProgress = localStorage.getItem('deployment_progress');
+            if (savedProgress) {
+                const progress = JSON.parse(savedProgress);
+                Object.keys(progress).forEach(id => {
+                    const checkbox = document.getElementById(id);
+                    if (checkbox) {
+                        checkbox.checked = progress[id];
+                    }
+                });
+                updateProgress();
+            }
+        }
+
+        // Help functionality
+        function showHelp() {
+            alert(`Laravel Deployment Guide V3 - Help
+
+This interactive guide helps you complete all manual steps required for Laravel deployment.
+
+Features:
+- 📋 Auto-saving forms and progress
+- 📥 Downloadable configuration files
+- ✅ Progress tracking with checklists
+- 🔄 Persistent data storage
+
+Navigation:
+- Use tabs to navigate between steps
+- Check off items as you complete them
+- Progress is automatically saved and restored
+
+For technical support, refer to the main deployment guides in Admin-Local/3-Guides-V3-Consolidated/`);
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSavedData();
+            updateProgress();
+
+            // Add event listeners to all checkboxes
+            const checkboxes = document.querySelectorAll('.checklist-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateProgress);
+            });
+
+            // Add event listeners to form inputs for auto-save
+            const formInputs = document.querySelectorAll('#projectForm input, #projectForm select, #projectForm textarea');
+            formInputs.forEach(input => {
+                input.addEventListener('change', saveFormData);
+                input.addEventListener('keyup', debounce(saveFormData, 1000));
+            });
+        });
+
+        // Debounce function for auto-save
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+    </script>
+
+</body>
+</html>

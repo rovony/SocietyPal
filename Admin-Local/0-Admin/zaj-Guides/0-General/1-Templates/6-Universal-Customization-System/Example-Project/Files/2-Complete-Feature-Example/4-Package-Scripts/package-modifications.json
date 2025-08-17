@@ -1,0 +1,45 @@
+{
+    "name": "priority-task-analytics-dashboard",
+    "description": "Custom analytics dashboard for task management with priority tracking",
+    "scripts": {
+        "analytics:dev": "npm run development -- --mix-config=webpack.custom.cjs",
+        "analytics:watch": "npm run watch -- --mix-config=webpack.custom.cjs --watch-analytics",
+        "analytics:hot": "npm run hot -- --mix-config=webpack.custom.cjs",
+        "analytics:build": "npm run production -- --mix-config=webpack.custom.cjs --analytics-only",
+        "analytics:clean": "rimraf public/Custom/js public/Custom/css public/Custom/mix-manifest.json",
+        "analytics:deploy": "npm run analytics:clean && npm run analytics:build",
+
+        "dev:all": "concurrently \"npm run development\" \"npm run analytics:dev\"",
+        "watch:all": "concurrently \"npm run watch\" \"npm run analytics:watch\"",
+        "build:all": "npm run production && npm run analytics:build"
+    },
+
+    "devDependencies": {
+        "@types/chart.js": "^2.9.37",
+        "chart.js": "^4.4.0",
+        "concurrently": "^8.2.0",
+        "rimraf": "^5.0.1"
+    },
+
+    "dependencies": {
+        "moment": "^2.29.4"
+    },
+
+    "engines": {
+        "node": ">=16.0.0",
+        "npm": ">=8.0.0"
+    },
+
+    "analytics": {
+        "version": "1.0.0",
+        "build": {
+            "source": "resources/Custom",
+            "output": "public/Custom",
+            "assets": ["js/analytics.js", "css/analytics.css", "js/components/"]
+        },
+        "dependencies": {
+            "external": ["chart.js", "moment"],
+            "internal": ["AnalyticsDashboard", "TaskMetrics", "PriorityCharts"]
+        }
+    }
+}

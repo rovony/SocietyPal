@@ -1,0 +1,104 @@
+// Priority Task Analytics Dashboard Variables
+// Safe from vendor updates
+
+// === ANALYTICS BRAND COLORS ===
+$analytics-primary: #2563eb !default; // Analytics Blue
+$analytics-secondary: #7c3aed !default; // Analytics Purple
+$analytics-accent: #059669 !default; // Analytics Green
+$analytics-warning: #d97706 !default; // Analytics Orange
+
+// === PRIORITY COLORS ===
+$priority-high: #dc2626 !default; // Red for high priority
+$priority-medium: #d97706 !default; // Orange for medium priority
+$priority-low: #059669 !default; // Green for low priority
+
+// === CHART COLORS ===
+$chart-colors: (
+    primary: $analytics-primary,
+    secondary: $analytics-secondary,
+    success: $analytics-accent,
+    warning: $analytics-warning,
+    danger: $priority-high,
+    info: #0ea5e9,
+    light: #f1f5f9,
+    dark: #1e293b,
+) !default;
+
+// === GRADIENT DEFINITIONS ===
+$success-gradient: linear-gradient(135deg, #10b981, #059669) !default;
+$warning-gradient: linear-gradient(135deg, #f59e0b, #d97706) !default;
+$info-gradient: linear-gradient(135deg, #3b82f6, #2563eb) !default;
+$primary-gradient: linear-gradient(
+    135deg,
+    $analytics-primary,
+    $analytics-secondary
+) !default;
+
+// === SPACING SYSTEM ===
+$spacing-xs: 0.25rem !default; // 4px
+$spacing-sm: 0.5rem !default; // 8px
+$spacing-md: 1rem !default; // 16px
+$spacing-lg: 1.5rem !default; // 24px
+$spacing-xl: 2rem !default; // 32px
+$spacing-2xl: 3rem !default; // 48px
+
+// === TYPOGRAPHY ===
+$font-family-analytics: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif !default;
+$font-size-xs: 0.75rem !default;
+$font-size-sm: 0.875rem !default;
+$font-size-base: 1rem !default;
+$font-size-lg: 1.125rem !default;
+$font-size-xl: 1.25rem !default;
+$font-size-2xl: 1.5rem !default;
+$font-size-3xl: 2rem !default;
+
+// === COMPONENT SIZING ===
+$card-padding: $spacing-lg !default;
+$card-radius: 12px !default;
+$button-radius: 8px !default;
+$input-radius: 6px !default;
+
+// === COLORS FOR LIGHT MODE ===
+$bg-primary: #ffffff !default;
+$bg-secondary: #f8fafc !default;
+$analytics-card-bg: #ffffff !default;
+$text-primary: #1e293b !default;
+$text-secondary: #64748b !default;
+$text-muted: #94a3b8 !default;
+$border-light: #e2e8f0 !default;
+$border-medium: #cbd5e1 !default;
+
+// === COLORS FOR DARK MODE ===
+$dark-bg-primary: #0f172a !default;
+$dark-bg-secondary: #1e293b !default;
+$dark-card-bg: #1e293b !default;
+$dark-text-primary: #f1f5f9 !default;
+$dark-text-secondary: #cbd5e1 !default;
+$dark-border: #334155 !default;
+
+// === ANIMATION TIMINGS ===
+$transition-fast: 0.15s ease !default;
+$transition-normal: 0.3s ease !default;
+$transition-slow: 0.5s ease !default;
+
+// === SHADOWS ===
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !default;
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06) !default;
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05) !default;
+$shadow-analytics: 0 8px 25px rgba($analytics-primary, 0.15) !default;
+
+// === BREAKPOINTS ===
+$breakpoint-sm: 640px !default;
+$breakpoint-md: 768px !default;
+$breakpoint-lg: 1024px !default;
+$breakpoint-xl: 1280px !default;
+$breakpoint-2xl: 1536px !default;
+
+// === Z-INDEX SCALE ===
+$z-dropdown: 1000 !default;
+$z-modal: 1050 !default;
+$z-tooltip: 1070 !default;
+$z-debug: 9999 !default;
