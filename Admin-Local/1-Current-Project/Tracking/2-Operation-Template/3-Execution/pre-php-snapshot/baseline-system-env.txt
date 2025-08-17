@@ -1,0 +1,4 @@
+Node Version: v21.1.0
+NPM Version: 10.2.0
+PHP Version: PHP 8.4.7 (cli) (built: May  6 2025 12:31:58) (NTS)
+Composer Version: Composer version 2.8.5 2025-01-21 15:23:40

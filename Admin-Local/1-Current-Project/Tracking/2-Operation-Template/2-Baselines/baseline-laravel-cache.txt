@@ -1,0 +1,5 @@
+Laravel Cache State - Pre-Build
+=================================
+❌ Config cache missing
+❌ Route cache missing
+✅ View cache directory exists (       0 cached views)

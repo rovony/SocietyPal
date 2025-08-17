@@ -1,0 +1,5 @@
+{
+  "js_framework": "blade-only",
+  "module_system": "esm",
+  "build_tool": "vite"
+}

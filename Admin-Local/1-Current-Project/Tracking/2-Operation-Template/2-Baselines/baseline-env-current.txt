@@ -1,0 +1,87 @@
+APP_NAME="SocietyPal Local"
+APP_ENV=local
+APP_KEY=base64:uEVW1yDu4MDdXiGZs3CATVtscAAAGJ5nV+xgcQ0fWog=
+APP_DEBUG=true
+APP_URL=https://societypal.test
+
+LOG_CHANNEL=stack
+LOG_DEPRECATIONS_CHANNEL=null
+LOG_LEVEL=debug
+
+#For redirect to https (disabled for local)
+REDIRECT_HTTPS=false
+
+# Database - Local MySQL (HERD)
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=societypal_local
+DB_USERNAME=root
+DB_PASSWORD=
+
+# Broadcasting
+BROADCAST_DRIVER=log
+
+# Cache - Redis (Local HERD)
+CACHE_DRIVER=redis
+CACHE_PREFIX=societypal_local
+
+# Filesystem
+FILESYSTEM_DISK=local
+
+# Queue - Redis
+QUEUE_CONNECTION=redis
+
+# Session - Redis
+SESSION_DRIVER=redis
+SESSION_LIFETIME=120
+
+# Redis - Local (HERD)
+REDIS_HOST=127.0.0.1
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+
+# Mail - Local development
+MAIL_MAILER=smtp
+MAIL_HOST=localhost
+MAIL_PORT=2525
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS="dev@societypal.test"
+MAIL_FROM_NAME="${APP_NAME}"
+
+# AWS (disabled for local)
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_DEFAULT_REGION=us-east-1
+AWS_BUCKET=
+AWS_USE_PATH_STYLE_ENDPOINT=false
+
+# Pusher (local testing - disabled)
+PUSHER_APP_ID=
+PUSHER_APP_KEY=
+PUSHER_APP_SECRET=
+PUSHER_HOST=
+PUSHER_PORT=443
+PUSHER_SCHEME=https
+PUSHER_APP_CLUSTER=mt1
+
+VITE_PUSHER_APP_KEY="${PUSHER_APP_KEY}"
+VITE_PUSHER_HOST="${PUSHER_HOST}"
+VITE_PUSHER_PORT="${PUSHER_PORT}"
+VITE_PUSHER_SCHEME="${PUSHER_SCHEME}"
+VITE_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
+
+# Froiden License (local development)
+FROIDEN_ENVATO_ID=
+FROIDEN_EMAIL=
+
+# Local Development Settings
+APP_TIMEZONE=America/New_York
+APP_LOCALE=en
+
+# Local Debugging
+LOG_SLACK_WEBHOOK_URL=
+LOG_FACEBOOK_PAGE_TOKEN=
+LOG_FACEBOOK_VERIFY_TOKEN=
