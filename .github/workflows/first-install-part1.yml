@@ -1,0 +1,323 @@
+name: 🎯 CodeCanyon First Installation Pipeline
+
+on:
+  push:
+    branches: [main, staging, production]
+    paths:
+      - '.codecanyon-config'
+      - 'install/**'
+      - 'installer/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment for first installation'
+        required: true
+        default: 'staging'
+        type: choice
+        options: [staging, production]
+      force_reinstall:
+        description: 'Force reinstallation (overrides completion flag)'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  PHP_VERSION: '8.2'
+  NODE_VERSION: '18'
+  PROJECT_NAME: 'SocietyPal'
+
+jobs:
+  check-codecanyon:
+    name: 🔍 Check if CodeCanyon Application
+    runs-on: ubuntu-latest
+    outputs:
+      is_codecanyon: ${{ steps.detect.outputs.is_codecanyon }}
+      codecanyon_type: ${{ steps.detect.outputs.codecanyon_type }}
+      installer_type: ${{ steps.detect.outputs.installer_type }}
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+    
+    - name: 🔍 Detect CodeCanyon Application
+      id: detect
+      run: |
+        # Check for CodeCanyon indicators
+        CODECANYON_APP=false
+        CODECANYON_TYPE=""
+        INSTALLER_TYPE=""
+        
+        if [ -f "install/index.php" ] || [ -f "installer/index.php" ]; then
+          CODECANYON_APP=true
+          INSTALLER_TYPE="web_installer"
+        fi
+        
+        if [ -f ".codecanyon-config" ]; then
+          CODECANYON_APP=true
+        fi
+        
+        if [ "$CODECANYON_APP" = "true" ]; then
+          echo "✅ CodeCanyon application detected"
+          echo "is_codecanyon=true" >> $GITHUB_OUTPUT
+          echo "codecanyon_type=$CODECANYON_TYPE" >> $GITHUB_OUTPUT
+          echo "installer_type=$INSTALLER_TYPE" >> $GITHUB_OUTPUT
+        else
+          echo "ℹ️ Not a CodeCanyon application"
+          echo "is_codecanyon=false" >> $GITHUB_OUTPUT
+        fi
+
+  first-install:
+    name: 🚀 Stage 1 - Pre-Installation Deployment
+    runs-on: ubuntu-latest
+    needs: check-codecanyon
+    if: needs.check-codecanyon.outputs.is_codecanyon == 'true'
+    
+    environment: ${{ github.ref_name == 'production' && 'production' || 'staging' }}
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: 🔧 Setup PHP ${{ env.PHP_VERSION }}
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ env.PHP_VERSION }}
+        extensions: mbstring, dom, fileinfo, mysql, gd, curl, zip, intl
+        coverage: none
+        tools: composer
+
+    - name: 🟢 Setup Node.js ${{ env.NODE_VERSION }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: 📦 Install Dependencies
+      run: |
+        composer install --optimize-autoloader --no-dev --prefer-dist --no-interaction --no-progress
+        npm ci --prefer-offline --no-audit
+
+    - name: 🏗️ Build Frontend Assets
+      run: npm run build
+      env:
+        NODE_ENV: production
+
+    - name: 🗜️ Create CodeCanyon Deployment Package
+      run: |
+        TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
+        PACKAGE_NAME="codecanyon-first-install-${TIMESTAMP}.tar.gz"
+        echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_ENV
+        echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_ENV
+        
+        # Create package preserving installer directories
+        tar -czf $PACKAGE_NAME \
+          --exclude='.git' \
+          --exclude='.github' \
+          --exclude='node_modules' \
+          --exclude='tests' \
+          --exclude='.env*' \
+          --exclude='*.log' \
+          --exclude='storage/logs/*' \
+          --exclude='storage/framework/cache/*' \
+          --exclude='storage/framework/sessions/*' \
+          --exclude='storage/framework/views/*' \
+          .
+        
+        echo "📦 CodeCanyon package created: $PACKAGE_NAME"
+
+    - name: 🔐 Setup SSH Key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        ssh-keyscan -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+    - name: 🌐 Determine Environment Variables
+      run: |
+        if [[ "${{ github.ref_name }}" == "production" ]]; then
+          echo "ENV_NAME=production" >> $GITHUB_ENV
+          echo "DOMAIN_PATH=/home/${{ secrets.SERVER_USER }}/domains/societypal.com" >> $GITHUB_ENV
+          echo "PUBLIC_PATH=/home/${{ secrets.SERVER_USER }}/domains/societypal.com/public_html" >> $GITHUB_ENV
+          echo "SHARED_PATH=/home/${{ secrets.SERVER_USER }}/domains/societypal.com/deploy/shared" >> $GITHUB_ENV
+          echo "RELEASES_PATH=/home/${{ secrets.SERVER_USER }}/domains/societypal.com/releases" >> $GITHUB_ENV
+          echo "INSTALL_URL=https://societypal.com/install" >> $GITHUB_ENV
+        else
+          echo "ENV_NAME=staging" >> $GITHUB_ENV
+          echo "DOMAIN_PATH=/home/${{ secrets.SERVER_USER }}/domains/staging.societypal.com" >> $GITHUB_ENV
+          echo "PUBLIC_PATH=/home/${{ secrets.SERVER_USER }}/domains/staging.societypal.com/public_html" >> $GITHUB_ENV
+          echo "SHARED_PATH=/home/${{ secrets.SERVER_USER }}/domains/staging.societypal.com/deploy/shared" >> $GITHUB_ENV
+          echo "RELEASES_PATH=/home/${{ secrets.SERVER_USER }}/domains/staging.societypal.com/releases" >> $GITHUB_ENV
+          echo "INSTALL_URL=https://staging.societypal.com/install" >> $GITHUB_ENV
+        fi
+
+    - name: 📤 Upload Package to Server
+      run: |
+        scp -P ${{ secrets.SERVER_PORT }} -i ~/.ssh/deploy_key \
+          ${{ env.PACKAGE_NAME }} \
+          ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/tmp/
+
+    - name: 🚀 Deploy CodeCanyon First Install
+      run: |
+        ssh -p ${{ secrets.SERVER_PORT }} -i ~/.ssh/deploy_key \
+          ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'ENDSSH'
+        
+        # Set variables
+        ENV_NAME="${{ env.ENV_NAME }}"
+        TIMESTAMP="${{ env.TIMESTAMP }}"
+        PACKAGE_NAME="${{ env.PACKAGE_NAME }}"
+        SHARED_PATH="${{ env.SHARED_PATH }}"
+        RELEASES_PATH="${{ env.RELEASES_PATH }}"
+        PUBLIC_PATH="${{ env.PUBLIC_PATH }}"
+        RELEASE_PATH="$RELEASES_PATH/$TIMESTAMP"
+        
+        echo "🎯 CodeCanyon First Install Deployment - Stage 1"
+        echo "Environment: $ENV_NAME"
+        echo "Release: $TIMESTAMP"
+        
+        # Check if already installed (unless force reinstall)
+        if [ "${{ github.event.inputs.force_reinstall }}" != "true" ] && [ -f "$SHARED_PATH/.codecanyon-installed" ]; then
+          echo "⚠️ CodeCanyon application already installed. Use force_reinstall to override."
+          echo "To complete post-installation: Run 'CodeCanyon Complete Installation' workflow"
+          exit 0
+        fi
+        
+        # Create directory structure
+        mkdir -p "$RELEASES_PATH" "$SHARED_PATH"
+        
+        # Extract package to release directory
+        echo "📦 Extracting package to $RELEASE_PATH"
+        mkdir -p "$RELEASE_PATH"
+        cd /tmp && tar -xzf "$PACKAGE_NAME" -C "$RELEASE_PATH"
+        
+        # Setup shared resources
+        echo "🔗 Setting up shared resources"
+        cd "$RELEASE_PATH"
+        
+        # Create shared storage if it doesn't exist
+        if [ ! -d "$SHARED_PATH/storage" ]; then
+          cp -r storage "$SHARED_PATH/"
+        fi
+        
+        # Link shared resources
+        rm -rf storage && ln -s "$SHARED_PATH/storage" storage
+        
+        # Create .env from shared or template
+        if [ ! -f "$SHARED_PATH/.env" ]; then
+          if [ -f ".env.example" ]; then
+            cp .env.example "$SHARED_PATH/.env"
+            echo "⚠️ Created .env from template - MANUAL CONFIGURATION REQUIRED"
+          fi
+        fi
+        rm -f .env && ln -s "$SHARED_PATH/.env" .env
+        
+        # Set PRE-INSTALLATION permissions (777 temporary)
+        echo "🛠️ Setting PRE-INSTALLATION permissions (TEMPORARY 777)"
+        echo "⚠️ These will be secured in Stage 2 after installation"
+        
+        # Core writable directories - TEMPORARY 777 for installation
+        chmod -R 777 "$SHARED_PATH/storage/"
+        chmod -R 777 bootstrap/cache/
+        
+        # Configuration and public directories (installer may modify)
+        chmod -R 777 config/
+        chmod -R 777 public/
+        
+        # Create uploads directories if they don't exist
+        mkdir -p public/uploads public/user-uploads
+        chmod -R 777 public/uploads/ public/user-uploads/
+        
+        # Keep sensitive files secure even during installation
+        chmod 600 "$SHARED_PATH/.env"
+        [ -f "config/database.php" ] && chmod 600 config/database.php
+        
+        # Preserve installer directories
+        if [ -d "install" ]; then
+          chmod -R 755 install/
+          echo "✅ Preserved /install directory for web installation"
+        fi
+        if [ -d "installer" ]; then
+          chmod -R 755 installer/
+          echo "✅ Preserved /installer directory for web installation"  
+        fi
+        
+        # Laravel optimizations
+        echo "⚡ Running Laravel optimizations"
+        php artisan config:clear 2>/dev/null || true
+        php artisan route:clear 2>/dev/null || true  
+        php artisan view:clear 2>/dev/null || true
+        
+        # Update symlink atomically
+        echo "🔗 Updating public symlink"
+        if [ -L "$PUBLIC_PATH" ] || [ -f "$PUBLIC_PATH" ]; then
+          rm -f "$PUBLIC_PATH"
+        fi
+        ln -s "$RELEASE_PATH/public" "$PUBLIC_PATH"
+        
+        # Create completion tracking
+        echo "first-install-$(date +%s)" > "$SHARED_PATH/.codecanyon-stage1-complete"
+        
+        echo ""
+        echo "✅ STAGE 1 COMPLETE - Ready for Installation"
+        echo "🎯 Next Steps:"
+        echo "   1. Open: ${{ env.INSTALL_URL }}"
+        echo "   2. Complete the web installation process"
+        echo "   3. Run: 'CodeCanyon Complete Installation' workflow"
+        echo ""
+        echo "⚠️ SECURITY WARNING:"
+        echo "   - Temporary 777 permissions are active"
+        echo "   - Run Stage 2 immediately after installation"
+        echo "   - Do not leave in this state"
+        
+        ENDSSH
+
+    - name: 📊 Deployment Summary
+      run: |
+        echo "## 🎯 CodeCanyon Stage 1 Deployment Complete" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Environment**: ${{ env.ENV_NAME }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Release**: ${{ env.TIMESTAMP }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Install URL**: ${{ env.INSTALL_URL }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 🚨 CRITICAL NEXT STEPS" >> $GITHUB_STEP_SUMMARY
+        echo "1. **Complete Installation**: Open ${{ env.INSTALL_URL }} and finish the setup" >> $GITHUB_STEP_SUMMARY
+        echo "2. **Run Stage 2**: Immediately run 'CodeCanyon Complete Installation' workflow" >> $GITHUB_STEP_SUMMARY
+        echo "3. **Security**: Do not leave the application in Stage 1 state" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "⚠️ **Temporary 777 permissions are active and must be secured in Stage 2**" >> $GITHUB_STEP_SUMMARY
+
+  cleanup-failed:
+    name: 🧹 Cleanup on Failure  
+    runs-on: ubuntu-latest
+    needs: [check-codecanyon, first-install]
+    if: failure()
+    
+    steps:
+    - name: 🔐 Setup SSH Key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        ssh-keyscan -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+    - name: 🧹 Emergency Cleanup
+      run: |
+        ssh -p ${{ secrets.SERVER_PORT }} -i ~/.ssh/deploy_key \
+          ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'ENDSSH'
+        
+        echo "🚨 Emergency cleanup due to deployment failure"
+        
+        # Remove failed package from /tmp
+        rm -f /tmp/codecanyon-first-install-*.tar.gz
+        
+        # If there's a failed release directory, clean it up
+        FAILED_RELEASE=$(ls -t /home/${{ secrets.SERVER_USER }}/domains/*/releases/ 2>/dev/null | head -1)
+        if [ -n "$FAILED_RELEASE" ]; then
+          echo "🗑️ Cleaning up failed release: $FAILED_RELEASE"
+          rm -rf "/home/${{ secrets.SERVER_USER }}/domains/*/releases/$FAILED_RELEASE" 2>/dev/null || true
+        fi
+        
+        echo "✅ Emergency cleanup completed"
+        
+        ENDSSH

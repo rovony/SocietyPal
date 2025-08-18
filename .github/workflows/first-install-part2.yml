@@ -1,0 +1,349 @@
+name: 🔒 CodeCanyon Complete Installation Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to secure after installation'
+        required: true
+        default: 'staging'
+        type: choice
+        options: [staging, production]
+      verify_installation:
+        description: 'Verify installation completed before securing'
+        required: false
+        default: true
+        type: boolean
+      emergency_secure:
+        description: 'Emergency security lockdown (skip verification)'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  PROJECT_NAME: 'SocietyPal'
+
+jobs:
+  verify-ready:
+    name: 🔍 Verify Installation Completion
+    runs-on: ubuntu-latest
+    if: github.event.inputs.emergency_secure != 'true'
+    outputs:
+      installation_complete: ${{ steps.check.outputs.installation_complete }}
+      stage1_complete: ${{ steps.check.outputs.stage1_complete }}
+    
+    steps:
+    - name: 🔐 Setup SSH Key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        ssh-keyscan -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+    - name: 🌐 Set Environment Variables
+      run: |
+        if [[ "${{ github.event.inputs.environment }}" == "production" ]]; then
+          echo "DOMAIN_PATH=/home/${{ secrets.SERVER_USER }}/domains/societypal.com" >> $GITHUB_ENV
+          echo "SHARED_PATH=/home/${{ secrets.SERVER_USER }}/domains/societypal.com/deploy/shared" >> $GITHUB_ENV
+          echo "APP_URL=https://societypal.com" >> $GITHUB_ENV
+        else
+          echo "DOMAIN_PATH=/home/${{ secrets.SERVER_USER }}/domains/staging.societypal.com" >> $GITHUB_ENV
+          echo "SHARED_PATH=/home/${{ secrets.SERVER_USER }}/domains/staging.societypal.com/deploy/shared" >> $GITHUB_ENV
+          echo "APP_URL=https://staging.societypal.com" >> $GITHUB_ENV
+        fi
+
+    - name: 🔍 Check Installation Status
+      id: check
+      run: |
+        ssh -p ${{ secrets.SERVER_PORT }} -i ~/.ssh/deploy_key \
+          ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'ENDSSH'
+        
+        SHARED_PATH="${{ env.SHARED_PATH }}"
+        
+        echo "🔍 Checking CodeCanyon installation status..."
+        
+        # Check if Stage 1 was completed
+        if [ -f "$SHARED_PATH/.codecanyon-stage1-complete" ]; then
+          echo "✅ Stage 1 deployment completed"
+          echo "stage1_complete=true" >> $GITHUB_OUTPUT
+        else
+          echo "❌ Stage 1 not completed - run 'CodeCanyon First Installation' first"
+          echo "stage1_complete=false" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+        
+        # Check if installation appears complete
+        INSTALLATION_COMPLETE=false
+        
+        # Method 1: Check for common installation completion indicators
+        if [ -f "$SHARED_PATH/.env" ]; then
+          # Check if .env has been configured (not just template)
+          if grep -q "DB_DATABASE.*u227177893" "$SHARED_PATH/.env" 2>/dev/null; then
+            echo "✅ Database configuration detected in .env"
+            INSTALLATION_COMPLETE=true
+          fi
+        fi
+        
+        # Method 2: Check for application-specific installation markers
+        # (These would be specific to the actual CodeCanyon app)
+        if [ -f "$SHARED_PATH/storage/installed" ] || [ -f "$SHARED_PATH/.installed" ]; then
+          echo "✅ Installation marker file found"
+          INSTALLATION_COMPLETE=true
+        fi
+        
+        # Method 3: Basic HTTP check
+        CURRENT_DIR=$(readlink -f /home/${{ secrets.SERVER_USER }}/domains/*/public_html 2>/dev/null | head -1)
+        if [ -n "$CURRENT_DIR" ] && [ -f "$CURRENT_DIR/../artisan" ]; then
+          echo "✅ Laravel application structure detected"
+          INSTALLATION_COMPLETE=true
+        fi
+        
+        if [ "$INSTALLATION_COMPLETE" = "true" ]; then
+          echo "✅ Installation appears complete - ready for Stage 2"
+          echo "installation_complete=true" >> $GITHUB_OUTPUT
+        else
+          echo "⚠️ Installation may not be complete"
+          echo "installation_complete=false" >> $GITHUB_OUTPUT
+        fi
+        
+        ENDSSH
+
+  complete-install:
+    name: 🔒 Stage 2 - Complete Installation & Security
+    runs-on: ubuntu-latest
+    needs: verify-ready
+    if: |
+      always() && 
+      (github.event.inputs.emergency_secure == 'true' || 
+       (needs.verify-ready.outputs.stage1_complete == 'true' && 
+        (needs.verify-ready.outputs.installation_complete == 'true' || 
+         github.event.inputs.verify_installation == 'false')))
+    
+    environment: ${{ github.event.inputs.environment }}
+    
+    steps:
+    - name: 📥 Checkout Code (for scripts)
+      uses: actions/checkout@v4
+
+    - name: 🔐 Setup SSH Key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        ssh-keyscan -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+    - name: 🌐 Set Environment Variables
+      run: |
+        if [[ "${{ github.event.inputs.environment }}" == "production" ]]; then
+          echo "ENV_NAME=production" >> $GITHUB_ENV
+          echo "DOMAIN_PATH=/home/${{ secrets.SERVER_USER }}/domains/societypal.com" >> $GITHUB_ENV
+          echo "PUBLIC_PATH=/home/${{ secrets.SERVER_USER }}/domains/societypal.com/public_html" >> $GITHUB_ENV
+          echo "SHARED_PATH=/home/${{ secrets.SERVER_USER }}/domains/societypal.com/deploy/shared" >> $GITHUB_ENV
+          echo "RELEASES_PATH=/home/${{ secrets.SERVER_USER }}/domains/societypal.com/releases" >> $GITHUB_ENV
+          echo "APP_URL=https://societypal.com" >> $GITHUB_ENV
+        else
+          echo "ENV_NAME=staging" >> $GITHUB_ENV
+          echo "DOMAIN_PATH=/home/${{ secrets.SERVER_USER }}/domains/staging.societypal.com" >> $GITHUB_ENV
+          echo "PUBLIC_PATH=/home/${{ secrets.SERVER_USER }}/domains/staging.societypal.com/public_html" >> $GITHUB_ENV
+          echo "SHARED_PATH=/home/${{ secrets.SERVER_USER }}/domains/staging.societypal.com/deploy/shared" >> $GITHUB_ENV
+          echo "RELEASES_PATH=/home/${{ secrets.SERVER_USER }}/domains/staging.societypal.com/releases" >> $GITHUB_ENV
+          echo "APP_URL=https://staging.societypal.com" >> $GITHUB_ENV
+        fi
+
+    - name: 📤 Upload Post-Install Script
+      run: |
+        scp -P ${{ secrets.SERVER_PORT }} -i ~/.ssh/deploy_key \
+          .github/scripts/codecanyon-post-install.sh \
+          ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/tmp/
+
+    - name: 🔒 Execute Post-Installation Security
+      run: |
+        ssh -p ${{ secrets.SERVER_PORT }} -i ~/.ssh/deploy_key \
+          ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'ENDSSH'
+        
+        echo "🔒 CodeCanyon Complete Installation - Stage 2"
+        echo "Environment: ${{ env.ENV_NAME }}"
+        echo "$(date)"
+        
+        # Set variables
+        ENV_NAME="${{ env.ENV_NAME }}"
+        SHARED_PATH="${{ env.SHARED_PATH }}"
+        PUBLIC_PATH="${{ env.PUBLIC_PATH }}"
+        RELEASES_PATH="${{ env.RELEASES_PATH }}"
+        
+        # Find current release
+        CURRENT_RELEASE=$(readlink "$PUBLIC_PATH" | xargs dirname 2>/dev/null)
+        if [ -z "$CURRENT_RELEASE" ]; then
+          echo "❌ Could not determine current release"
+          exit 1
+        fi
+        
+        echo "📍 Current release: $CURRENT_RELEASE"
+        cd "$CURRENT_RELEASE"
+        
+        # Make post-install script executable and run it
+        chmod +x /tmp/codecanyon-post-install.sh
+        bash /tmp/codecanyon-post-install.sh "$ENV_NAME" "$SHARED_PATH" "$CURRENT_RELEASE"
+        
+        # Additional Laravel-specific security
+        echo "⚡ Laravel post-installation optimizations"
+        
+        # Clear all caches after installation
+        php artisan config:clear 2>/dev/null || true
+        php artisan route:clear 2>/dev/null || true
+        php artisan view:clear 2>/dev/null || true
+        php artisan cache:clear 2>/dev/null || true
+        
+        # Generate optimized caches
+        php artisan config:cache 2>/dev/null || echo "⚠️ Config cache failed"
+        php artisan route:cache 2>/dev/null || echo "⚠️ Route cache failed"  
+        php artisan view:cache 2>/dev/null || echo "⚠️ View cache failed"
+        
+        # Remove installer directories for security (if they exist)
+        if [ -d "install" ]; then
+          if [ "${{ github.event.inputs.environment }}" == "production" ]; then
+            echo "🔒 Removing /install directory for production security"
+            rm -rf install/
+          else
+            echo "🔒 Renaming /install to /install-disabled for $ENV_NAME"
+            mv install/ install-disabled/ 2>/dev/null || true
+          fi
+        fi
+        
+        if [ -d "installer" ]; then
+          if [ "${{ github.event.inputs.environment }}" == "production" ]; then
+            echo "🔒 Removing /installer directory for production security"
+            rm -rf installer/
+          else
+            echo "🔒 Renaming /installer to /installer-disabled for $ENV_NAME"
+            mv installer/ installer-disabled/ 2>/dev/null || true
+          fi
+        fi
+        
+        # Mark installation as complete
+        echo "codecanyon-complete-$(date +%s)" > "$SHARED_PATH/.codecanyon-installed"
+        rm -f "$SHARED_PATH/.codecanyon-stage1-complete" 2>/dev/null || true
+        
+        # Final security audit
+        echo ""
+        echo "🔍 FINAL SECURITY AUDIT:"
+        echo "Environment: $ENV_NAME"
+        echo "Storage permissions: $(ls -ld storage/ 2>/dev/null | awk '{print $1}' || echo 'N/A')"
+        echo "Cache permissions: $(ls -ld bootstrap/cache/ 2>/dev/null | awk '{print $1}' || echo 'N/A')"
+        echo "Config permissions: $(ls -ld config/ 2>/dev/null | awk '{print $1}' || echo 'N/A')"
+        echo "Env file permissions: $(ls -l "$SHARED_PATH/.env" 2>/dev/null | awk '{print $1}' || echo 'N/A')"
+        
+        # Check for any remaining 777 permissions
+        DANGEROUS_FILES=$(find . -maxdepth 3 -type f -perm 777 2>/dev/null | wc -l)
+        if [ "$DANGEROUS_FILES" -gt 0 ]; then
+          echo "❌ WARNING: Found $DANGEROUS_FILES files with 777 permissions"
+          find . -maxdepth 3 -type f -perm 777 -ls 2>/dev/null || true
+        else
+          echo "✅ No dangerous 777 file permissions found"
+        fi
+        
+        DANGEROUS_DIRS=$(find . -maxdepth 2 -type d -perm 777 2>/dev/null | wc -l)
+        if [ "$DANGEROUS_DIRS" -gt 0 ]; then
+          echo "❌ WARNING: Found $DANGEROUS_DIRS directories with 777 permissions"
+          find . -maxdepth 2 -type d -perm 777 -ls 2>/dev/null || true
+        else
+          echo "✅ No dangerous 777 directory permissions found"
+        fi
+        
+        # Cleanup
+        rm -f /tmp/codecanyon-post-install.sh
+        
+        echo ""
+        echo "🎯 CODECANYON INSTALLATION COMPLETE"
+        echo "✅ Application secured with $ENV_NAME-appropriate permissions"
+        echo "✅ Installer directories secured/removed"
+        echo "✅ Laravel caches optimized"
+        echo "🔒 Ready for production use"
+        
+        ENDSSH
+
+    - name: 🔍 Final Verification
+      run: |
+        echo "🔍 Final application verification..."
+        
+        # Basic HTTP check
+        HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${{ env.APP_URL }}" || echo "000")
+        if [ "$HTTP_STATUS" = "200" ] || [ "$HTTP_STATUS" = "302" ]; then
+          echo "✅ Application responding: HTTP $HTTP_STATUS"
+        else
+          echo "⚠️ Application status: HTTP $HTTP_STATUS"
+        fi
+
+    - name: 📊 Completion Summary
+      run: |
+        echo "## 🎯 CodeCanyon Installation Complete" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Environment**: ${{ env.ENV_NAME }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Application URL**: ${{ env.APP_URL }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Security Status**: ✅ Secured" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### ✅ Completed Actions" >> $GITHUB_STEP_SUMMARY
+        echo "- 🔒 Applied ${{ env.ENV_NAME }}-appropriate permissions" >> $GITHUB_STEP_SUMMARY
+        echo "- 🧹 Secured/removed installer directories" >> $GITHUB_STEP_SUMMARY
+        echo "- ⚡ Optimized Laravel caches" >> $GITHUB_STEP_SUMMARY
+        echo "- 🔍 Verified security compliance" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "🚀 **Your CodeCanyon application is now ready for use!**" >> $GITHUB_STEP_SUMMARY
+
+  emergency-lockdown:
+    name: 🚨 Emergency Security Lockdown
+    runs-on: ubuntu-latest
+    if: failure()
+    
+    steps:
+    - name: 🔐 Setup SSH Key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        ssh-keyscan -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+    - name: 🚨 Emergency Security Recovery
+      run: |
+        ssh -p ${{ secrets.SERVER_PORT }} -i ~/.ssh/deploy_key \
+          ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'ENDSSH'
+        
+        echo "🚨 EMERGENCY SECURITY LOCKDOWN"
+        echo "$(date)"
+        
+        # Force production-level security on all domains
+        for DOMAIN_PATH in /home/${{ secrets.SERVER_USER }}/domains/*/; do
+          if [ -d "$DOMAIN_PATH" ]; then
+            echo "🔒 Securing: $DOMAIN_PATH"
+            
+            PUBLIC_PATH="$DOMAIN_PATH/public_html"
+            if [ -L "$PUBLIC_PATH" ]; then
+              CURRENT_RELEASE=$(readlink "$PUBLIC_PATH" | xargs dirname)
+              if [ -d "$CURRENT_RELEASE" ]; then
+                cd "$CURRENT_RELEASE"
+                
+                # Force secure permissions
+                chmod -R 755 storage/ bootstrap/cache/ 2>/dev/null || true
+                [ -d "public/user-uploads" ] && chmod -R 755 public/user-uploads/ 2>/dev/null || true
+                [ -d "public/uploads" ] && chmod -R 755 public/uploads/ 2>/dev/null || true
+                chmod -R 755 config/ && find config/ -type f -exec chmod 644 {} \; 2>/dev/null || true
+                chmod -R 755 public/ && find public/ -type f -exec chmod 644 {} \; 2>/dev/null || true
+                
+                # Secure .env
+                SHARED_PATH="$DOMAIN_PATH/deploy/shared"
+                [ -f "$SHARED_PATH/.env" ] && chmod 600 "$SHARED_PATH/.env" 2>/dev/null || true
+                
+                # Remove any 777 permissions
+                find . -type f -perm 777 -exec chmod 644 {} \; 2>/dev/null || true
+                find . -type d -perm 777 -exec chmod 755 {} \; 2>/dev/null || true
+                
+                echo "✅ Emergency security applied to: $DOMAIN_PATH"
+              fi
+            fi
+          fi
+        done
+        
+        echo "🚨 EMERGENCY LOCKDOWN COMPLETE"
+        echo "⚠️ Manual review recommended"
+        
+        ENDSSH

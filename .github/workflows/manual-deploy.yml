@@ -1,0 +1,355 @@
+name: 🚨 Manual Emergency Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target Environment"
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+        default: "staging"
+
+      release_version:
+        description: "Specific Release Version (optional - uses latest if empty)"
+        required: false
+        type: string
+        default: ""
+
+      force_deploy:
+        description: "Force deployment (skip migration checks)"
+        required: false
+        type: boolean
+        default: false
+
+      rollback_mode:
+        description: "Rollback to previous release instead of deploying"
+        required: false
+        type: boolean
+        default: false
+
+      migration_strict:
+        description: "Enable strict migration checking (blocks destructive ops)"
+        required: false
+        type: boolean
+        default: true
+
+env:
+  PHP_VERSION: "8.2"
+  NODE_VERSION: "18"
+  PROJECT_NAME: "SocietyPal"
+
+jobs:
+  manual-deployment:
+    name: 🎯 Manual ${{ inputs.rollback_mode && 'Rollback' || 'Deploy' }} to ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - name: 📥 Checkout Code
+        if: ${{ !inputs.rollback_mode }}
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔍 Validate Inputs
+        run: |
+          echo "🔍 Validating deployment inputs..."
+          echo "Environment: ${{ inputs.environment }}"
+          echo "Release Version: ${{ inputs.release_version || 'Latest' }}"
+          echo "Force Deploy: ${{ inputs.force_deploy }}"
+          echo "Rollback Mode: ${{ inputs.rollback_mode }}"
+          echo "Migration Strict: ${{ inputs.migration_strict }}"
+
+          if [[ "${{ inputs.environment }}" == "production" ]] && [[ "${{ inputs.force_deploy }}" == "true" ]]; then
+            echo "⚠️  WARNING: Force deploy to production environment!"
+            echo "Please ensure this is intentional and necessary."
+          fi
+
+      # ROLLBACK JOB
+      - name: 🔄 Execute Rollback
+        if: ${{ inputs.rollback_mode }}
+        run: |
+          echo "🚨 EMERGENCY ROLLBACK INITIATED"
+          echo "Environment: ${{ inputs.environment }}"
+          echo "Target Release: ${{ inputs.release_version || 'Previous Release' }}"
+
+          # Setup SSH
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+          # Set environment-specific variables
+          if [[ "${{ inputs.environment }}" == "production" ]]; then
+            RELEASES_PATH="/home/${{ secrets.SERVER_USER }}/domains/societypal.com/releases"
+            PUBLIC_PATH="/home/${{ secrets.SERVER_USER }}/domains/societypal.com/public_html"
+            DOMAIN_URL="https://societypal.com"
+          else
+            RELEASES_PATH="/home/${{ secrets.SERVER_USER }}/domains/staging.societypal.com/releases"
+            PUBLIC_PATH="/home/${{ secrets.SERVER_USER }}/domains/staging.societypal.com/public_html"
+            DOMAIN_URL="https://staging.societypal.com"
+          fi
+
+          # Execute rollback
+          ssh -p ${{ secrets.SERVER_PORT }} -i ~/.ssh/deploy_key \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << ENDSSH
+
+          set -e
+
+          if [[ -n "${{ inputs.release_version }}" ]]; then
+            TARGET_RELEASE="${{ inputs.release_version }}"
+          else
+            # Find previous release
+            cd "$RELEASES_PATH"
+            TARGET_RELEASE=\$(ls -dt */ | head -n 2 | tail -n 1 | sed 's/\///')
+          fi
+
+          if [[ -z "\$TARGET_RELEASE" ]] || [[ ! -d "$RELEASES_PATH/\$TARGET_RELEASE" ]]; then
+            echo "❌ Target release '\$TARGET_RELEASE' not found"
+            echo "Available releases:"
+            ls -la "$RELEASES_PATH" || echo "No releases found"
+            exit 1
+          fi
+
+          echo "🎯 Rolling back to: \$TARGET_RELEASE"
+
+          # Get current release for logging
+          CURRENT_RELEASE=""
+          if [[ -L "$PUBLIC_PATH" ]]; then
+            CURRENT_RELEASE=\$(readlink "$PUBLIC_PATH" | xargs basename | xargs dirname | xargs basename)
+            echo "📍 Current release: \$CURRENT_RELEASE"
+          fi
+
+          # Perform atomic rollback
+          ln -nfs "$RELEASES_PATH/\$TARGET_RELEASE/public" "$PUBLIC_PATH"
+
+          # Clear caches in the rolled-back release
+          cd "$RELEASES_PATH/\$TARGET_RELEASE"
+          php artisan config:clear || true
+          php artisan cache:clear || true
+          php artisan view:clear || true
+          php artisan config:cache || true
+          php artisan route:cache || true
+          php artisan view:cache || true
+
+          echo "✅ Rollback completed successfully!"
+          echo "🔗 Application URL: $DOMAIN_URL"
+
+          # Log rollback event
+          echo "\$(date '+%Y-%m-%d %H:%M:%S') - MANUAL ROLLBACK: \$CURRENT_RELEASE → \$TARGET_RELEASE (User: \$GITHUB_ACTOR)" >> /tmp/rollback.log
+
+          ENDSSH
+
+          # Cleanup
+          rm -f ~/.ssh/deploy_key
+
+          echo "🏥 Performing post-rollback health check..."
+          sleep 10
+
+          if curl -f -s -o /dev/null "$DOMAIN_URL"; then
+            echo "✅ Health check passed - Application is responding"
+          else
+            echo "⚠️  Health check warning - Please verify manually: $DOMAIN_URL"
+          fi
+
+      # NORMAL DEPLOYMENT JOB
+      - name: 🔧 Setup PHP ${{ env.PHP_VERSION }}
+        if: ${{ !inputs.rollback_mode }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: mbstring, dom, fileinfo, mysql, gd, curl, zip, intl
+          coverage: none
+          tools: composer
+
+      - name: 🟢 Setup Node.js ${{ env.NODE_VERSION }}
+        if: ${{ !inputs.rollback_mode }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: 🔍 Check Migrations Safety
+        if: ${{ !inputs.rollback_mode && !inputs.force_deploy }}
+        run: |
+          echo "🔍 Checking migration safety..."
+          chmod +x .github/scripts/check-migrations.sh
+
+          if [[ "${{ inputs.migration_strict }}" == "true" ]]; then
+            export MIGRATION_STRICT_MODE=true
+          fi
+
+          ./.github/scripts/check-migrations.sh
+
+          MIGRATION_CHECK_RESULT=$?
+          if [[ $MIGRATION_CHECK_RESULT -eq 2 ]]; then
+            echo "🚨 CRITICAL: Destructive migrations detected!"
+            echo "To proceed, enable 'Force deployment' option or resolve migrations."
+            exit 1
+          elif [[ $MIGRATION_CHECK_RESULT -eq 1 ]]; then
+            echo "⚠️  WARNING: Potentially risky migrations detected."
+            echo "Proceeding with caution..."
+          fi
+
+      - name: 📦 Install Dependencies & Build
+        if: ${{ !inputs.rollback_mode }}
+        run: |
+          echo "📦 Installing PHP dependencies..."
+          composer install --optimize-autoloader --no-dev --prefer-dist --no-interaction
+
+          echo "📦 Installing Node dependencies..."
+          npm ci --prefer-offline --no-audit
+
+          echo "🏗️  Building frontend assets..."
+          npm run build
+
+      - name: 🚀 Execute Manual Deployment
+        if: ${{ !inputs.rollback_mode }}
+        run: |
+          echo "🚀 Starting manual deployment..."
+
+          # Create timestamped release
+          TIMESTAMP="${{ inputs.release_version }}"
+          if [[ -z "$TIMESTAMP" ]]; then
+            TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
+          fi
+
+          PACKAGE_NAME="societypal-manual-${TIMESTAMP}.tar.gz"
+          echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_ENV
+          echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_ENV
+
+          # Laravel optimizations
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+          php artisan event:cache
+
+          # Create package
+          tar -czf $PACKAGE_NAME \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='node_modules' \
+            --exclude='tests' \
+            --exclude='.env*' \
+            --exclude='*.log' \
+            --exclude='storage/logs/*' \
+            --exclude='storage/framework/cache/*' \
+            --exclude='storage/framework/sessions/*' \
+            --exclude='storage/framework/views/*' \
+            .
+
+          echo "📦 Package created: $PACKAGE_NAME ($(ls -lh $PACKAGE_NAME | awk '{print $5}'))"
+
+          # Setup SSH
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+          # Set environment variables
+          if [[ "${{ inputs.environment }}" == "production" ]]; then
+            echo "ENV_NAME=production" >> $GITHUB_ENV
+            echo "DOMAIN_PATH=/home/${{ secrets.SERVER_USER }}/domains/societypal.com" >> $GITHUB_ENV
+            echo "PUBLIC_PATH=/home/${{ secrets.SERVER_USER }}/domains/societypal.com/public_html" >> $GITHUB_ENV
+            echo "SHARED_PATH=/home/${{ secrets.SERVER_USER }}/domains/societypal.com/deploy/shared" >> $GITHUB_ENV
+            echo "RELEASES_PATH=/home/${{ secrets.SERVER_USER }}/domains/societypal.com/releases" >> $GITHUB_ENV
+            echo "DOMAIN_URL=https://societypal.com" >> $GITHUB_ENV
+          else
+            echo "ENV_NAME=staging" >> $GITHUB_ENV
+            echo "DOMAIN_PATH=/home/${{ secrets.SERVER_USER }}/domains/staging.societypal.com" >> $GITHUB_ENV
+            echo "PUBLIC_PATH=/home/${{ secrets.SERVER_USER }}/domains/staging.societypal.com/public_html" >> $GITHUB_ENV
+            echo "SHARED_PATH=/home/${{ secrets.SERVER_USER }}/domains/staging.societypal.com/deploy/shared" >> $GITHUB_ENV
+            echo "RELEASES_PATH=/home/${{ secrets.SERVER_USER }}/domains/staging.societypal.com/releases" >> $GITHUB_ENV
+            echo "DOMAIN_URL=https://staging.societypal.com" >> $GITHUB_ENV
+          fi
+
+          # Upload and deploy
+          scp -P ${{ secrets.SERVER_PORT }} -i ~/.ssh/deploy_key \
+            $PACKAGE_NAME ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/tmp/
+
+          # Deploy on server (same logic as main workflow)
+          ssh -p ${{ secrets.SERVER_PORT }} -i ~/.ssh/deploy_key \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'ENDSSH'
+
+          set -e
+
+          ENV_NAME="${{ env.ENV_NAME }}"
+          TIMESTAMP="${{ env.TIMESTAMP }}"
+          PACKAGE_NAME="${{ env.PACKAGE_NAME }}"
+          RELEASES_PATH="${{ env.RELEASES_PATH }}"
+          RELEASE_PATH="$RELEASES_PATH/$TIMESTAMP"
+          SHARED_PATH="${{ env.SHARED_PATH }}"
+          PUBLIC_PATH="${{ env.PUBLIC_PATH }}"
+
+          echo "📂 Creating directories..."
+          mkdir -p "$RELEASES_PATH" "$SHARED_PATH"/{storage,uploads,.env}
+
+          echo "📦 Extracting package..."
+          mkdir -p "$RELEASE_PATH"
+          cd "$RELEASE_PATH"
+          tar -xzf "/tmp/$PACKAGE_NAME"
+
+          echo "🔧 Setting up environment..."
+          # Environment setup logic here (same as main workflow)
+
+          echo "🔗 Linking shared directories..."
+          rm -rf "$RELEASE_PATH/storage"
+          ln -nfs "$SHARED_PATH/storage" "$RELEASE_PATH/storage"
+
+          echo "🔐 Setting permissions..."
+          find "$RELEASE_PATH" -type f -exec chmod 644 {} \;
+          find "$RELEASE_PATH" -type d -exec chmod 755 {} \;
+          chmod -R 775 "$RELEASE_PATH/bootstrap/cache"
+
+          echo "🗄️ Running migrations..."
+          cd "$RELEASE_PATH"
+          php artisan migrate --force --no-interaction
+
+          echo "⚡ Performing atomic switch..."
+          ln -nfs "$RELEASE_PATH/public" "$PUBLIC_PATH"
+
+          echo "✅ Manual deployment completed!"
+
+          ENDSSH
+
+          # Cleanup
+          rm -f $PACKAGE_NAME ~/.ssh/deploy_key
+
+      - name: 📊 Deployment Summary
+        run: |
+          echo "## 🎉 Manual Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Item | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Type** | ${{ inputs.rollback_mode && 'Emergency Rollback' || 'Manual Deploy' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Environment** | ${{ inputs.environment }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Initiated By** | ${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Timestamp** | $(date '+%Y-%m-%d %H:%M:%S UTC') |" >> $GITHUB_STEP_SUMMARY
+
+          if [[ "${{ inputs.rollback_mode }}" != "true" ]]; then
+            echo "| **Release** | ${{ env.TIMESTAMP }} |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Force Deploy** | ${{ inputs.force_deploy }} |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Migration Strict** | ${{ inputs.migration_strict }} |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [[ "${{ inputs.environment }}" == "production" ]]; then
+            echo "| **Domain** | https://societypal.com |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| **Domain** | https://staging.societypal.com |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### ⚡ Actions Taken" >> $GITHUB_STEP_SUMMARY
+
+          if [[ "${{ inputs.rollback_mode }}" == "true" ]]; then
+            echo "- 🔄 Emergency rollback executed" >> $GITHUB_STEP_SUMMARY
+            echo "- 🏥 Health check performed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- 🚀 Manual deployment executed" >> $GITHUB_STEP_SUMMARY
+            echo "- 🔍 Migration safety check: ${{ inputs.force_deploy && 'BYPASSED' || 'PERFORMED' }}" >> $GITHUB_STEP_SUMMARY
+            echo "- ⚡ Atomic deployment switch completed" >> $GITHUB_STEP_SUMMARY
+          fi
