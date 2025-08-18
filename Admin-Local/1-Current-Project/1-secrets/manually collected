@@ -1,0 +1,69 @@
+# Project Name \*
+
+SocietyPal
+
+Environments:
+staging, production
+
+Deployment Scenario \*
+Github Actipns
+
+Hosting
+IP 31.97.195.108
+Port 65002
+Username u227177893
+
+# Quick Server Info
+
+# Server Connection
+
+ssh u227177893@fr-int-web1426.main-hosting.eu
+
+# Quick Server Info
+
+OS: Linux 5.14.0-503.34.1.el9_5.x86_64
+PHP: 8.2.28
+Available PHP: 5.2, 5.3, 5.4, 5.5, 5.6, 7.0, 7.1, 7.2, 7.3, 7.4, 8.0, 8.1, 8.2, 8.3, 8.4
+Web Server: LiteSpeed
+Node.js: Not installed
+Git: 2.43.5
+Public IP: 2a02:4780:27:1526:0:d8a:75a5:1
+
+
+# domains
+Production
+https://societypal.com/
+
+
+@staging
+https://staging.societypal.com/
+
+
+
+#database
+# Database - Production MySQL 
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=u227177893_p_zaj_socpal_d
+DB_USERNAME=u227177893_p_zaj_socpal_u
+DB_PASSWORD="t5TmP9$[iG7hu2eYRWUIWH@IRF2"
+
+# Database - Staging MySQL 
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=u227177893_s_zaj_socpal_d
+DB_USERNAME=u227177893_s_zaj_socpal_u
+DB_PASSWORD="V0Z^G=I2:=r^f2"
+
+
+# Document Root * - Hostinger
+ /home/your_user/domains/subdomain.website.com/public_html
+  /home/your_user/domains/website.com/public_html
+in cpanel, addon domains are diff.
+note for hostinger, public_html to be deleted and symlinked as file.
+
+
+# Shared Storage Path
+/home/your_user/domains/website.com/deploy/shared

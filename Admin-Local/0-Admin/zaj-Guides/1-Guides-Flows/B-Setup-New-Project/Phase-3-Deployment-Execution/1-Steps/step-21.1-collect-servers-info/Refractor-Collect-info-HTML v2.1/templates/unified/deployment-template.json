@@ -1,0 +1,688 @@
+{
+  "templateVersion": "2.1.0",
+  "templateType": "deployment-strategies",
+  "lastUpdated": "2025-08-17T00:00:00Z",
+  "description": "Unified template for all deployment strategies with strategy-specific configurations",
+
+  "strategies": {
+    "github-actions": {
+      "displayName": "GitHub Actions CI/CD",
+      "category": "automated-ci-cd",
+      "icon": "🤖",
+      "complexity": "medium",
+      "automation": "high",
+      "active": true,
+      "documentation": "../deployment-strategies/github-actions/guide.md",
+      "stepsGuide": "../steps-22-24/github-actions/",
+      "features": ["Automated CI/CD", "Multi-environment", "Secret Management", "Workflow Templates"]
+    },
+    "deployhq": {
+      "displayName": "DeployHQ Professional",
+      "category": "third-party-service",
+      "icon": "🚀",
+      "complexity": "medium",
+      "automation": "high",
+      "active": true,
+      "documentation": "../deployment-strategies/deployhq/guide.md",
+      "stepsGuide": "../steps-22-24/deployhq/",
+      "features": ["Professional Service", "Build Pipelines", "Team Collaboration", "Deployment History"]
+    },
+    "local-ssh": {
+      "displayName": "Local Build + SSH Deploy",
+      "category": "manual-deployment",
+      "icon": "💻",
+      "complexity": "low",
+      "automation": "manual",
+      "active": true,
+      "documentation": "../deployment-strategies/local-ssh/guide.md",
+      "stepsGuide": "../steps-22-24/local-ssh/",
+      "features": ["Local Control", "Simple Setup", "Direct SSH", "Manual Process"]
+    },
+    "git-pull": {
+      "displayName": "Git Pull + Server Build",
+      "category": "server-side-build",
+      "icon": "📥",
+      "complexity": "low",
+      "automation": "partial",
+      "active": true,
+      "documentation": "../deployment-strategies/git-pull/guide.md",
+      "stepsGuide": "../steps-22-24/git-pull/",
+      "features": ["Server-side Build", "Git Integration", "Simple Process", "Hosting Compatible"]
+    },
+    "ftp-upload": {
+      "displayName": "FTP/SFTP Upload",
+      "category": "traditional-upload",
+      "icon": "📤",
+      "complexity": "low",
+      "automation": "manual",
+      "active": true,
+      "documentation": "../deployment-strategies/ftp-upload/guide.md",
+      "stepsGuide": "../steps-22-24/ftp-upload/",
+      "features": ["Traditional Method", "File Manager", "Simple Upload", "Legacy Support"]
+    }
+  },
+
+  "fields": {
+    "repository": {
+      "id": "repository",
+      "label": "Repository URL",
+      "type": "text",
+      "required": true,
+      "category": "source",
+      "order": 1,
+      "strategies": {
+        "github-actions": {
+          "pattern": "^https://github\\.com/.+\\.git$",
+          "placeholder": "https://github.com/user/repo.git",
+          "required": true,
+          "hint": "GitHub repository URL for Actions integration",
+          "validation": "github_url"
+        },
+        "deployhq": {
+          "pattern": "^https://.+\\.git$",
+          "placeholder": "https://github.com/user/repo.git",
+          "required": true,
+          "hint": "Git repository URL (GitHub, GitLab, Bitbucket)",
+          "validation": "git_url"
+        },
+        "local-ssh": {
+          "pattern": "^https://.+\\.git$",
+          "placeholder": "https://github.com/user/repo.git",
+          "required": false,
+          "hint": "Optional for local builds from existing code",
+          "validation": "git_url_optional"
+        },
+        "git-pull": {
+          "pattern": "^https://.+\\.git$",
+          "placeholder": "https://github.com/user/repo.git",
+          "required": true,
+          "hint": "Repository to pull on server",
+          "validation": "git_url"
+        },
+        "ftp-upload": {
+          "required": false,
+          "disabled": true,
+          "hint": "Not applicable for FTP uploads",
+          "value": "na"
+        }
+      }
+    },
+
+    "branch": {
+      "id": "branch",
+      "label": "Deployment Branch",
+      "type": "select",
+      "required": true,
+      "category": "source",
+      "order": 2,
+      "options": [
+        { "value": "main", "label": "main" },
+        { "value": "master", "label": "master" },
+        { "value": "production", "label": "production" },
+        { "value": "develop", "label": "develop" },
+        { "value": "staging", "label": "staging" },
+        { "value": "custom", "label": "Custom Branch" }
+      ],
+      "strategies": {
+        "github-actions": {
+          "default": "main",
+          "available": ["main", "master", "production", "develop", "staging", "custom"],
+          "hint": "Branch that triggers deployment workflow",
+          "validation": "git_branch"
+        },
+        "deployhq": {
+          "default": "main",
+          "available": ["main", "master", "production", "develop", "staging", "custom"],
+          "hint": "Branch to deploy via DeployHQ",
+          "validation": "git_branch"
+        },
+        "local-ssh": {
+          "default": "main",
+          "available": ["main", "master", "production", "develop", "staging", "custom"],
+          "hint": "Branch to build locally",
+          "validation": "git_branch"
+        },
+        "git-pull": {
+          "default": "main",
+          "available": ["main", "master", "production", "develop", "staging", "custom"],
+          "hint": "Branch to pull on server",
+          "validation": "git_branch"
+        },
+        "ftp-upload": {
+          "disabled": true,
+          "hint": "Not applicable for FTP uploads",
+          "value": "na"
+        }
+      }
+    },
+
+    "buildCommand": {
+      "id": "buildCommand",
+      "label": "Build Command",
+      "type": "textarea",
+      "required": false,
+      "category": "build",
+      "order": 3,
+      "strategies": {
+        "github-actions": {
+          "default": "composer install --no-dev --optimize-autoloader\nnpm ci\nnpm run build",
+          "placeholder": "composer install --no-dev\nnpm ci\nnpm run build",
+          "hint": "Commands executed in GitHub Actions workflow",
+          "customizable": true,
+          "validation": "build_commands"
+        },
+        "deployhq": {
+          "default": "composer install --no-dev --optimize-autoloader\nnpm ci\nnpm run build",
+          "placeholder": "composer install --no-dev\nnpm ci\nnpm run build",
+          "hint": "Build commands executed by DeployHQ",
+          "customizable": true,
+          "validation": "build_commands"
+        },
+        "local-ssh": {
+          "default": "composer install --no-dev --optimize-autoloader\nnpm ci\nnpm run build",
+          "placeholder": "composer install --no-dev\nnpm ci\nnpm run build",
+          "hint": "Commands to run locally before upload",
+          "customizable": true,
+          "validation": "build_commands"
+        },
+        "git-pull": {
+          "default": "composer install --no-dev --optimize-autoloader",
+          "placeholder": "composer install --no-dev",
+          "hint": "Commands executed on server after git pull",
+          "customizable": true,
+          "validation": "build_commands"
+        },
+        "ftp-upload": {
+          "default": "composer install --no-dev --optimize-autoloader\nnpm ci\nnpm run build",
+          "placeholder": "composer install --no-dev\nnpm ci\nnpm run build",
+          "hint": "Local build commands before FTP upload",
+          "customizable": true,
+          "validation": "build_commands"
+        }
+      }
+    },
+
+    "postDeployCommands": {
+      "id": "postDeployCommands",
+      "label": "Post-Deployment Commands",
+      "type": "textarea",
+      "required": false,
+      "category": "deployment",
+      "order": 4,
+      "strategies": {
+        "github-actions": {
+          "default": "php artisan migrate --force\nphp artisan cache:clear\nphp artisan config:cache\nphp artisan route:cache\nphp artisan view:cache",
+          "placeholder": "php artisan migrate --force\nphp artisan cache:clear",
+          "hint": "Commands executed on server after deployment",
+          "customizable": true,
+          "validation": "deploy_commands"
+        },
+        "deployhq": {
+          "default": "php artisan migrate --force\nphp artisan cache:clear\nphp artisan config:cache\nphp artisan route:cache",
+          "placeholder": "php artisan migrate --force\nphp artisan cache:clear",
+          "hint": "Commands executed after DeployHQ upload",
+          "customizable": true,
+          "validation": "deploy_commands"
+        },
+        "local-ssh": {
+          "default": "ssh {server} 'cd {path} && php artisan migrate --force'\nssh {server} 'cd {path} && php artisan cache:clear'",
+          "placeholder": "ssh {server} 'cd {path} && php artisan migrate'",
+          "hint": "SSH commands to execute on server after upload",
+          "customizable": true,
+          "validation": "ssh_commands"
+        },
+        "git-pull": {
+          "default": "php artisan migrate --force\nphp artisan cache:clear\nphp artisan config:cache",
+          "placeholder": "php artisan migrate --force\nphp artisan cache:clear",
+          "hint": "Commands executed on server after git pull",
+          "customizable": true,
+          "validation": "deploy_commands"
+        },
+        "ftp-upload": {
+          "default": "ssh {server} 'cd {path} && php artisan migrate --force'\nssh {server} 'cd {path} && php artisan cache:clear'",
+          "placeholder": "ssh {server} 'cd {path} && php artisan migrate'",
+          "hint": "Commands to run on server after FTP upload",
+          "customizable": true,
+          "validation": "ssh_commands"
+        }
+      }
+    },
+
+    "triggerType": {
+      "id": "triggerType",
+      "label": "Deployment Trigger",
+      "type": "select",
+      "required": true,
+      "category": "automation",
+      "order": 5,
+      "options": [
+        { "value": "push", "label": "On Git Push" },
+        { "value": "manual", "label": "Manual Trigger" },
+        { "value": "scheduled", "label": "Scheduled" },
+        { "value": "pull_request", "label": "Pull Request" },
+        { "value": "na", "label": "Not Applicable" }
+      ],
+      "strategies": {
+        "github-actions": {
+          "default": "push",
+          "available": ["push", "manual", "scheduled", "pull_request"],
+          "hint": "When to trigger the GitHub Actions workflow",
+          "validation": "trigger_type"
+        },
+        "deployhq": {
+          "default": "push",
+          "available": ["push", "manual", "scheduled"],
+          "hint": "When DeployHQ should start deployment",
+          "validation": "trigger_type"
+        },
+        "local-ssh": {
+          "default": "manual",
+          "available": ["manual"],
+          "hint": "Manual deployment from local machine",
+          "validation": "trigger_type"
+        },
+        "git-pull": {
+          "default": "manual",
+          "available": ["manual", "scheduled"],
+          "hint": "Manual or scheduled git pull on server",
+          "validation": "trigger_type"
+        },
+        "ftp-upload": {
+          "default": "manual",
+          "available": ["manual"],
+          "hint": "Manual FTP upload process",
+          "validation": "trigger_type"
+        }
+      }
+    },
+
+    "secretsRequired": {
+      "id": "secretsRequired",
+      "label": "Required Secrets/Environment Variables",
+      "type": "array",
+      "required": false,
+      "category": "security",
+      "order": 6,
+      "strategies": {
+        "github-actions": {
+          "default": [
+            "SSH_PRIVATE_KEY",
+            "SSH_HOST", 
+            "SSH_USER",
+            "SSH_PORT"
+          ],
+          "additional": [
+            "STAGING_SSH_HOST",
+            "PRODUCTION_SSH_HOST",
+            "DB_PASSWORD"
+          ],
+          "hint": "Secrets to configure in GitHub repository settings",
+          "validation": "github_secrets"
+        },
+        "deployhq": {
+          "default": [
+            "DEPLOYMENT_KEY",
+            "SERVER_SSH_KEY"
+          ],
+          "additional": [
+            "DB_PASSWORD",
+            "API_KEYS"
+          ],
+          "hint": "Secrets managed through DeployHQ interface",
+          "validation": "deployhq_secrets"
+        },
+        "local-ssh": {
+          "default": [
+            "SSH_CONFIG",
+            "SSH_KEY_PATH"
+          ],
+          "additional": [
+            "ENV_FILE"
+          ],
+          "hint": "Local SSH configuration and environment files",
+          "validation": "local_secrets"
+        },
+        "git-pull": {
+          "default": [
+            "GIT_TOKEN"
+          ],
+          "additional": [
+            "SSH_KEY",
+            "WEBHOOK_SECRET"
+          ],
+          "hint": "For private repositories and secure webhooks",
+          "validation": "git_secrets"
+        },
+        "ftp-upload": {
+          "default": [
+            "FTP_HOST",
+            "FTP_USERNAME", 
+            "FTP_PASSWORD"
+          ],
+          "additional": [
+            "SFTP_KEY"
+          ],
+          "hint": "FTP/SFTP credentials for file upload",
+          "validation": "ftp_secrets"
+        }
+      }
+    },
+
+    "environmentVariables": {
+      "id": "environmentVariables",
+      "label": "Environment-Specific Variables",
+      "type": "object",
+      "required": false,
+      "category": "configuration",
+      "order": 7,
+      "strategies": {
+        "github-actions": {
+          "default": {
+            "APP_ENV": "production",
+            "APP_DEBUG": "false",
+            "LOG_CHANNEL": "daily"
+          },
+          "hint": "Variables injected during deployment",
+          "validation": "env_variables"
+        },
+        "deployhq": {
+          "default": {
+            "APP_ENV": "production", 
+            "APP_DEBUG": "false"
+          },
+          "hint": "Environment variables for deployment",
+          "validation": "env_variables"
+        },
+        "local-ssh": {
+          "default": {
+            "APP_ENV": "production"
+          },
+          "hint": "Variables in .env file for deployment",
+          "validation": "env_variables"
+        },
+        "git-pull": {
+          "default": {
+            "APP_ENV": "production",
+            "APP_DEBUG": "false"
+          },
+          "hint": "Server environment variables",
+          "validation": "env_variables"
+        },
+        "ftp-upload": {
+          "default": {
+            "APP_ENV": "production"
+          },
+          "hint": "Environment variables in uploaded .env file",
+          "validation": "env_variables"
+        }
+      }
+    },
+
+    "excludeFiles": {
+      "id": "excludeFiles",
+      "label": "Files/Folders to Exclude",
+      "type": "array",
+      "required": false,
+      "category": "configuration",
+      "order": 8,
+      "strategies": {
+        "github-actions": {
+          "default": [
+            ".git",
+            "node_modules",
+            ".env",
+            "storage/logs/*",
+            "tests"
+          ],
+          "hint": "Files excluded from deployment package",
+          "validation": "exclude_patterns"
+        },
+        "deployhq": {
+          "default": [
+            ".git",
+            "node_modules",
+            ".env.example",
+            "tests",
+            "README.md"
+          ],
+          "hint": "Files excluded by DeployHQ",
+          "validation": "exclude_patterns"
+        },
+        "local-ssh": {
+          "default": [
+            ".git",
+            "node_modules",
+            ".env",
+            "storage/logs/*"
+          ],
+          "hint": "Files excluded from local build",
+          "validation": "exclude_patterns"
+        },
+        "git-pull": {
+          "default": [
+            "node_modules",
+            ".env",
+            "storage/logs/*"
+          ],
+          "hint": "Files ignored during server deployment",
+          "validation": "exclude_patterns"
+        },
+        "ftp-upload": {
+          "default": [
+            ".git",
+            "node_modules",
+            ".env",
+            "tests",
+            "storage/logs/*"
+          ],
+          "hint": "Files excluded from FTP upload",
+          "validation": "exclude_patterns"
+        }
+      }
+    },
+
+    "deploymentPath": {
+      "id": "deploymentPath",
+      "label": "Deployment Target Path",
+      "type": "text",
+      "required": true,
+      "category": "deployment",
+      "order": 9,
+      "strategies": {
+        "github-actions": {
+          "template": "{documentRoot}",
+          "placeholder": "/var/www/html",
+          "hint": "Server path where files will be deployed",
+          "validation": "absolute_path"
+        },
+        "deployhq": {
+          "template": "{documentRoot}",
+          "placeholder": "/var/www/html",
+          "hint": "Target directory for DeployHQ uploads",
+          "validation": "absolute_path"
+        },
+        "local-ssh": {
+          "template": "{documentRoot}",
+          "placeholder": "/var/www/html",
+          "hint": "Server path for SSH upload",
+          "validation": "absolute_path"
+        },
+        "git-pull": {
+          "template": "{deployPath}",
+          "placeholder": "/var/www/deploy",
+          "hint": "Directory where git repository is cloned",
+          "validation": "absolute_path"
+        },
+        "ftp-upload": {
+          "template": "{documentRoot}",
+          "placeholder": "/public_html",
+          "hint": "FTP target directory",
+          "validation": "ftp_path"
+        }
+      }
+    },
+
+    "backupStrategy": {
+      "id": "backupStrategy",
+      "label": "Backup Before Deploy",
+      "type": "select",
+      "required": false,
+      "category": "safety",
+      "order": 10,
+      "options": [
+        { "value": "full", "label": "Full Backup" },
+        { "value": "files", "label": "Files Only" },
+        { "value": "database", "label": "Database Only" },
+        { "value": "none", "label": "No Backup" },
+        { "value": "na", "label": "Not Applicable" }
+      ],
+      "strategies": {
+        "github-actions": {
+          "default": "full",
+          "available": ["full", "files", "database", "none"],
+          "hint": "Backup strategy before GitHub Actions deployment",
+          "validation": "backup_strategy"
+        },
+        "deployhq": {
+          "default": "files",
+          "available": ["full", "files", "database", "none"],
+          "hint": "DeployHQ backup configuration",
+          "validation": "backup_strategy"
+        },
+        "local-ssh": {
+          "default": "files",
+          "available": ["full", "files", "database", "none"],
+          "hint": "Manual backup before SSH deployment",
+          "validation": "backup_strategy"
+        },
+        "git-pull": {
+          "default": "none",
+          "available": ["files", "database", "none"],
+          "hint": "Backup strategy for git-pull deployment",
+          "validation": "backup_strategy"
+        },
+        "ftp-upload": {
+          "default": "none",
+          "available": ["files", "none"],
+          "hint": "Manual backup before FTP upload",
+          "validation": "backup_strategy"
+        }
+      }
+    }
+  },
+
+  "validation": {
+    "rules": {
+      "github_url": "^https://github\\.com/.+\\.git$",
+      "git_url": "^https://.+\\.git$",
+      "git_url_optional": "^(https://.+\\.git|)$",
+      "git_branch": "^[a-zA-Z0-9][a-zA-Z0-9/_.-]*[a-zA-Z0-9]$",
+      "absolute_path": "^/[a-zA-Z0-9/_.-]*$",
+      "ftp_path": "^/?[a-zA-Z0-9/_.-]*$"
+    },
+    "customValidations": {
+      "repository_access": "git ls-remote {repository} HEAD",
+      "branch_exists": "git ls-remote {repository} {branch}",
+      "ssh_deployment_test": "ssh {server} 'test -d {deploymentPath} && echo Success'"
+    }
+  },
+
+  "categories": {
+    "source": {
+      "title": "Source Repository",
+      "description": "Git repository and branch configuration",
+      "icon": "📋",
+      "order": 1
+    },
+    "build": {
+      "title": "Build Configuration",
+      "description": "Commands and processes for building the application",
+      "icon": "🔨",
+      "order": 2
+    },
+    "deployment": {
+      "title": "Deployment Process",
+      "description": "How and where the application is deployed",
+      "icon": "🚀",
+      "order": 3
+    },
+    "automation": {
+      "title": "Automation Settings",
+      "description": "Triggers and automation configuration",
+      "icon": "⚙️",
+      "order": 4
+    },
+    "security": {
+      "title": "Security & Secrets",
+      "description": "Authentication and secret management",
+      "icon": "🔐",
+      "order": 5
+    },
+    "configuration": {
+      "title": "Environment Configuration", 
+      "description": "Environment variables and file exclusions",
+      "icon": "🌍",
+      "order": 6
+    },
+    "safety": {
+      "title": "Safety & Backups",
+      "description": "Backup strategies and safety measures",
+      "icon": "🛡️",
+      "order": 7
+    }
+  },
+
+  "features": {
+    "templateVariables": {
+      "enabled": true,
+      "variables": [
+        "{documentRoot}",
+        "{deployPath}",
+        "{server}",
+        "{path}",
+        "{domain}",
+        "{repository}",
+        "{branch}"
+      ]
+    },
+    "conditionalFields": {
+      "enabled": true,
+      "rules": [
+        {
+          "condition": "strategy === 'ftp-upload'",
+          "hideFields": ["repository", "branch"],
+          "showFields": ["excludeFiles"]
+        },
+        {
+          "condition": "triggerType === 'scheduled'", 
+          "showFields": ["scheduleCron"],
+          "hideFields": []
+        }
+      ]
+    },
+    "strategySpecific": {
+      "enabled": true,
+      "loadGuides": true,
+      "generateWorkflows": true
+    }
+  },
+
+  "stepIntegration": {
+    "step22": {
+      "title": "Setup & Configuration",
+      "description": "Configure deployment strategy and build process"
+    },
+    "step23": {
+      "title": "Deployment Execution",
+      "description": "Execute deployment according to chosen strategy"
+    },
+    "step24": {
+      "title": "Post-Deployment Verification",
+      "description": "Verify deployment and setup monitoring"
+    },
+    "step24_1": {
+      "title": "Production Verification",
+      "description": "Final verification and documentation"
+    }
+  }
+}

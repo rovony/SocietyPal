@@ -1,0 +1,10 @@
+## Information Collection Checklist
+
+### 🖥️ Server Access Information
+
+#### SSH Connection Details
+- [ ] **Server Host/IP**: `_________________`
+- [ ] **SSH Username**: `_________________`
+- [ ] **SSH Port**: `________` (default: 22)
+- [ ] **SSH Private Key**: Secured and accessible
+- [ ] **SSH Public Key**: Added to server's authorized_keys

@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Deployment Configuration Wizard</title>
+        <link rel="stylesheet" href="assets/css/variables.css" />
+        <link rel="stylesheet" href="assets/css/components.css" />
+        <link rel="stylesheet" href="assets/css/main.css" />
+    </head>
+    <body>
+        <!-- Save Status Indicator -->
+        <div id="saveStatus" class="save-status saved">
+            ✅ Saved<br /><small
+                >📁 Admin-Local/1-Current-Project/1-secrets</small
+            >
+        </div>
+
+        <div class="container">
+            <!-- Header -->
+            <div class="header">
+                <h1>🚀 Deployment Configuration Wizard</h1>
+                <p>Step 21.1: Collect Server & Deployment Information</p>
+                <div class="header-actions">
+                    <button
+                        type="button"
+                        class="btn-header"
+                        onclick="importJSON()"
+                    >
+                        📥 Import JSON
+                    </button>
+                    <button
+                        type="button"
+                        class="btn-header"
+                        onclick="exportJSON()"
+                    >
+                        📤 Export JSON
+                    </button>
+                    <button
+                        type="button"
+                        class="btn-header"
+                        onclick="showBackupManager()"
+                    >
+                        🗂️ Backups
+                    </button>
+                    <button
+                        type="button"
+                        class="btn-header"
+                        onclick="clearAll()"
+                    >
+                        🗑️ Clear All
+                    </button>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-steps">
+                    <div class="progress-line">
+                        <div class="progress-line-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-step active" data-step="1">
+                        <div class="step-circle">1</div>
+                        <div class="step-label">Project Info</div>
+                    </div>
+                    <div class="progress-step" data-step="2">
+                        <div class="step-circle">2</div>
+                        <div class="step-label">Server Access</div>
+                    </div>
+                    <div class="progress-step" data-step="3">
+                        <div class="step-circle">3</div>
+                        <div class="step-label">Domain & SSL</div>
+                    </div>
+                    <div class="progress-step" data-step="4">
+                        <div class="step-circle">4</div>
+                        <div class="step-label">Database</div>
+                    </div>
+                    <div class="progress-step" data-step="5">
+                        <div class="step-circle">5</div>
+                        <div class="step-label">Directories</div>
+                    </div>
+                    <div class="progress-step" data-step="6">
+                        <div class="step-circle">6</div>
+                        <div class="step-label">Security</div>
+                    </div>
+                    <div class="progress-step" data-step="7">
+                        <div class="step-circle">7</div>
+                        <div class="step-label">Review</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Container -->
+            <div class="form-container">
+                <!-- Step 1: Project Information -->
+                <div class="form-step active" id="step1">
+                    <h2 class="step-title">📁 Project Information</h2>
+
+                    <div class="form-section">
+                        <div class="section-title">
+                            🏢 Basic Project Details
+                        </div>
+                        <div class="section-subtitle">
+                            Essential information about your project
+                        </div>
+
+                        <div class="form-group">
+                            <label
+                                >Project Name
+                                <span class="required">*</span></label
+                            >
+                            <input
+                                type="text"
+                                id="projectName"
+                                placeholder="e.g., SocietyPal, MyLaravelApp"
+                            />
+                            <div class="input-hint">
+                                A unique identifier for this deployment
+                            </div>
+                            <div class="error-message">
+                                Project name is required
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label
+                                >Environment
+                                <span class="required">*</span></label
+                            >
+                            <select id="environment">
+                                <option value="">Select Environment</option>
+                                <option value="production">Production</option>
+                                <option value="staging">Staging</option>
+                                <option value="development">Development</option>
+                            </select>
+                            <div class="error-message">
+                                Please select an environment
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label
+                                >Deployment Scenario
+                                <span class="required">*</span></label
+                            >
+                            <select
+                                id="deploymentScenario"
+                                onchange="updateScenarioHelp()"
+                            >
+                                <option value="">
+                                    Select Deployment Method
+                                </option>
+                                <option value="local-ssh">
+                                    Local Build + SSH
+                                </option>
+                                <option value="github-actions">
+                                    GitHub Actions
+                                </option>
+                                <option value="deployhq">DeployHQ</option>
+                                <option value="git-pull">
+                                    Git Pull + Manual
+                                </option>
+                            </select>
+                            <div class="error-message">
+                                Please select a deployment scenario
+                            </div>
+                        </div>
+
+                        <div
+                            id="scenarioHelp"
+                            class="help-box"
+                            style="display: none; margin-top: 16px"
+                        >
+                            <h4>📌 <span id="scenarioTitle"></span></h4>
+                            <p id="scenarioDescription"></p>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-title">💾 JSON Storage Path</div>
+                        <div class="section-subtitle">
+                            Where to save your configuration
+                        </div>
+
+                        <div class="form-group">
+                            <label>Save Path</label>
+                            <input
+                                type="text"
+                                id="savePath"
+                                value="Admin-Local/1-Current-Project/1-secrets"
+                                placeholder="Enter custom path or use default"
+                            />
+                            <div class="input-hint">
+                                Default: Admin-Local/1-Current-Project/1-secrets
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Server Access -->
+                <div class="form-step" id="step2">
+                    <h2 class="step-title">🖥️ Server Access Information</h2>
+
+                    <div class="help-box">
+                        <h4>💡 How to Get Server Information</h4>
+                        <p>
+                            Connect to your server using SSH or VS Code Remote
+                            Extension to gather this information.
+                        </p>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-title">
+                            🔐 SSH Connection Details
+                        </div>
+                        <div class="section-subtitle">
+                            Required for deployment access
+                        </div>
+
+                        <div class="form-group">
+                            <label
+                                >Server Host/IP
+                                <span class="required">*</span></label
+                            >
+                            <input
+                                type="text"
+                                id="serverHost"
+                                placeholder="e.g., 192.168.1.100 or server.example.com"
+                            />
+                            <div class="error-message">
+                                Server host is required
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <div class="form-group" style="flex: 2">
+                                <label
+                                    >SSH Username
+                                    <span class="required">*</span></label
+                                >
+                                <input
+                                    type="text"
+                                    id="sshUsername"
+                                    placeholder="e.g., root, ubuntu, deploy"
+                                />
+                                <div class="error-message">
+                                    SSH username is required
+                                </div>
+                            </div>
+                            <div class="form-group" style="flex: 1">
+                                <label>SSH Port</label>
+                                <input
+                                    type="number"
+                                    id="sshPort"
+                                    value="22"
+                                    placeholder="Default: 22"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="form-section collapsible-section">
+                            <div
+                                class="section-title collapsible"
+                                onclick="toggleCollapse(this)"
+                            >
+                                🔑 SSH Key Setup Guide
+                            </div>
+                            <div class="collapsible-content">
+                                <div class="command-box">
+                                    <button
+                                        class="copy-btn"
+                                        onclick="copyCommand(this)"
+                                    >
+                                        Copy
+                                    </button>
+                                    <pre>
+# 1. Generate SSH key pair (if not exists)
+ssh-keygen -t ed25519 -C "your_email@example.com" -f ~/.ssh/deployment_key
+
+# 2. View your public key
+cat ~/.ssh/deployment_key.pub
+
+# 3. Add to server's authorized_keys
+ssh-copy-id -i ~/.ssh/deployment_key.pub user@server
+
+# Or manually:
+ssh user@server "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < ~/.ssh/deployment_key.pub</pre
+                                    >
+                                </div>
+
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="sshKeySecured" />
+                                    <label for="sshKeySecured"
+                                        >SSH Private Key is secured and
+                                        accessible</label
+                                    >
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="sshKeyAdded" />
+                                    <label for="sshKeyAdded"
+                                        >SSH Public Key added to server's
+                                        authorized_keys</label
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-title">🌐 Server Environment</div>
+                        <div class="section-subtitle">
+                            System information needed for deployment
+                        </div>
+
+                        <div class="form-section collapsible-section">
+                            <div
+                                class="section-title collapsible"
+                                onclick="toggleCollapse(this)"
+                            >
+                                📋 Commands to Get Server Info
+                            </div>
+                            <div class="collapsible-content">
+                                <div class="command-box">
+                                    <button
+                                        class="copy-btn"
+                                        onclick="copyCommand(this)"
+                                    >
+                                        Copy
+                                    </button>
+                                    <pre>
+# Connect via SSH (using config)
+ssh hostinger-factolo
+
+# Or direct connection
+ssh username@server.com -p 22
+
+# Get OS information
+cat /etc/os-release | grep -E "^(NAME|VERSION)"
+# Or
+lsb_release -a
+
+# Check web server
+nginx -v 2>/dev/null || apache2 -v 2>/dev/null || httpd -v 2>/dev/null
+
+# Check PHP version
+php -v | head -1
+
+# Check Node.js version (if needed)
+node -v 2>/dev/null || echo "Node.js not installed"</pre
+                                    >
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Hosting Provider</label>
+                            <select id="hostingProvider">
+                                <option value="">Select Provider</option>
+                                <option value="digitalocean">
+                                    DigitalOcean
+                                </option>
+                                <option value="aws">AWS</option>
+                                <option value="hostinger">Hostinger</option>
+                                <option value="cpanel">cPanel Host</option>
+                                <option value="linode">Linode</option>
+                                <option value="vultr">Vultr</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <div class="form-group">
+                                <label
+                                    >Server OS
+                                    <span class="required">*</span></label
+                                >
+                                <input
+                                    type="text"
+                                    id="serverOS"
+                                    placeholder="e.g., Ubuntu 20.04, CentOS 7"
+                                />
+                                <div class="error-message">
+                                    Server OS is required
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label
+                                    >Web Server
+                                    <span class="required">*</span></label
+                                >
+                                <select id="webServer">
+                                    <option value="">Select</option>
+                                    <option value="apache">Apache</option>
+                                    <option value="nginx">Nginx</option>
+                                </select>
+                                <div class="error-message">
+                                    Web server is required
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <div class="form-group">
+                                <label
+                                    >PHP Version
+                                    <span class="required">*</span></label
+                                >
+                                <input
+                                    type="text"
+                                    id="phpVersion"
+                                    placeholder="e.g., 8.1, 8.2"
+                                />
+                                <div class="error-message">
+                                    PHP version is required
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Node.js Version</label>
+                                <input
+                                    type="text"
+                                    id="nodeVersion"
+                                    placeholder="e.g., 18.x, 20.x (if needed)"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Domain & SSL -->
+                <div class="form-step" id="step3">
+                    <h2 class="step-title">🌐 Domain & SSL Configuration</h2>
+
+                    <div class="form-section">
+                        <div class="section-title">🔗 Domain Settings</div>
+                        <div class="section-subtitle">
+                            Your application URLs
+                        </div>
+
+                        <div class="form-group">
+                            <label
+                                >Production Domain
+                                <span class="required">*</span></label
+                            >
+                            <input
+                                type="text"
+                                id="productionDomain"
+                                placeholder="https://yourdomain.com"
+                            />
+                            <div class="error-message">
+                                Production domain is required
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Staging Domain</label>
+                            <input
+                                type="text"
+                                id="stagingDomain"
+                                placeholder="https://staging.yourdomain.com (optional)"
+                            />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Development Domain</label>
+                            <input
+                                type="text"
+                                id="developmentDomain"
+                                placeholder="https://dev.yourdomain.com (optional)"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-title">🔒 SSL Certificate</div>
+                        <div class="section-subtitle">
+                            Security configuration
+                        </div>
+
+                        <div class="form-group">
+                            <label>SSL Provider</label>
+                            <select id="sslProvider">
+                                <option value="">Select Provider</option>
+                                <option value="letsencrypt">
+                                    Let's Encrypt
+                                </option>
+                                <option value="cloudflare">CloudFlare</option>
+                                <option value="custom">
+                                    Custom Certificate
+                                </option>
+                                <option value="none">
+                                    No SSL (Not Recommended)
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="sslAutoRenewal" />
+                            <label for="sslAutoRenewal"
+                                >SSL Auto-renewal Configured</label
+                            >
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="sslActive" />
+                            <label for="sslActive"
+                                >SSL Certificate Active</label
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Database -->
+                <div class="form-step" id="step4">
+                    <h2 class="step-title">🗄️ Database Information</h2>
+
+                    <div class="form-section">
+                        <div class="section-title">💾 Database Connection</div>
+                        <div class="section-subtitle">
+                            Required for application data storage
+                        </div>
+
+                        <div class="form-group">
+                            <label
+                                >Database Type
+                                <span class="required">*</span></label
+                            >
+                            <select id="dbType">
+                                <option value="">Select Database</option>
+                                <option value="mysql">MySQL</option>
+                                <option value="postgresql">PostgreSQL</option>
+                                <option value="mariadb">MariaDB</option>
+                                <option value="sqlite">SQLite</option>
+                            </select>
+                            <div class="error-message">
+                                Database type is required
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <div class="form-group" style="flex: 2">
+                                <label
+                                    >Database Host
+                                    <span class="required">*</span></label
+                                >
+                                <input
+                                    type="text"
+                                    id="dbHost"
+                                    placeholder="e.g., localhost, 127.0.0.1"
+                                />
+                                <div class="error-message">
+                                    Database host is required
+                                </div>
+                            </div>
+                            <div class="form-group" style="flex: 1">
+                                <label>Database Port</label>
+                                <input
+                                    type="number"
+                                    id="dbPort"
+                                    value="3306"
+                                    placeholder="Default: 3306"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label
+                                >Database Name
+                                <span class="required">*</span></label
+                            >
+                            <input
+                                type="text"
+                                id="dbName"
+                                placeholder="e.g., societypal_db"
+                            />
+                            <div class="error-message">
+                                Database name is required
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <div class="form-group">
+                                <label
+                                    >Database Username
+                                    <span class="required">*</span></label
+                                >
+                                <input
+                                    type="text"
+                                    id="dbUsername"
+                                    placeholder="e.g., db_user"
+                                />
+                                <div class="error-message">
+                                    Database username is required
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label
+                                    >Database Password
+                                    <span class="required">*</span></label
+                                >
+                                <input
+                                    type="password"
+                                    id="dbPassword"
+                                    placeholder="Secure password"
+                                />
+                                <div class="error-message">
+                                    Database password is required
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-title">🛠️ Database Management</div>
+                        <div class="section-subtitle">
+                            Tools and backup strategy
+                        </div>
+
+                        <div class="form-group">
+                            <label>Admin Access Method</label>
+                            <select id="dbAdminAccess">
+                                <option value="">Select Method</option>
+                                <option value="phpmyadmin">phpMyAdmin</option>
+                                <option value="adminer">Adminer</option>
+                                <option value="cli">Command Line</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Backup Strategy</label>
+                            <select id="dbBackupStrategy">
+                                <option value="">Select Strategy</option>
+                                <option value="automated">Automated</option>
+                                <option value="manual">Manual</option>
+                                <option value="provider">
+                                    Provider Managed
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5: Directory Structure -->
+                <div class="form-step" id="step5">
+                    <h2 class="step-title">📁 Server Directory Structure</h2>
+
+                    <div class="form-section">
+                        <div class="section-title">
+                            📂 Web Root Configuration
+                        </div>
+                        <div class="section-subtitle">
+                            Application file locations
+                        </div>
+
+                        <div class="form-group">
+                            <label
+                                >Document Root
+                                <span class="required">*</span></label
+                            >
+                            <input
+                                type="text"
+                                id="documentRoot"
+                                placeholder="e.g., /var/www/html, ~/public_html"
+                            />
+                            <div class="input-hint">
+                                The public-facing directory of your application
+                            </div>
+                            <div class="error-message">
+                                Document root is required
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label
+                                >Project Directory
+                                <span class="required">*</span></label
+                            >
+                            <input
+                                type="text"
+                                id="projectDirectory"
+                                placeholder="e.g., ~/domains/yoursite.com"
+                            />
+                            <div class="input-hint">
+                                Main application directory containing all files
+                            </div>
+                            <div class="error-message">
+                                Project directory is required
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Shared Storage Path</label>
+                            <input
+                                type="text"
+                                id="sharedStorage"
+                                placeholder="e.g., ~/storage/shared (for uploads, logs, cache)"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-title">👤 File Permissions</div>
+                        <div class="section-subtitle">
+                            User and group settings
+                        </div>
+
+                        <div class="input-group">
+                            <div class="form-group">
+                                <label>Web User</label>
+                                <input
+                                    type="text"
+                                    id="webUser"
+                                    placeholder="e.g., www-data, apache, nginx"
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label>File Owner</label>
+                                <input
+                                    type="text"
+                                    id="fileOwner"
+                                    placeholder="e.g., deploy, ubuntu"
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label>Group</label>
+                                <input
+                                    type="text"
+                                    id="fileGroup"
+                                    placeholder="e.g., www-data"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 6: Security -->
+                <div class="form-step" id="step6">
+                    <h2 class="step-title">🔑 Authentication & Security</h2>
+
+                    <div class="form-section">
+                        <div class="section-title">🔐 Application Secrets</div>
+                        <div class="section-subtitle">
+                            Security keys and tokens
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="appKeyGenerated" />
+                            <label for="appKeyGenerated"
+                                >App Key Generated and Secured</label
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label>JWT Secret (if applicable)</label>
+                            <input
+                                type="text"
+                                id="jwtSecret"
+                                placeholder="Leave empty if not using JWT"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-title">🌐 Third-Party Services</div>
+                        <div class="section-subtitle">
+                            External service integrations
+                        </div>
+
+                        <div class="form-group">
+                            <label>Email Service</label>
+                            <select id="emailService">
+                                <option value="">Select Service</option>
+                                <option value="smtp">SMTP</option>
+                                <option value="sendgrid">SendGrid</option>
+                                <option value="mailgun">Mailgun</option>
+                                <option value="ses">Amazon SES</option>
+                                <option value="none">None</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Payment Gateway</label>
+                            <select id="paymentGateway">
+                                <option value="">Select Gateway</option>
+                                <option value="stripe">Stripe</option>
+                                <option value="paypal">PayPal</option>
+                                <option value="razorpay">Razorpay</option>
+                                <option value="none">None</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Storage Service</label>
+                            <select id="storageService">
+                                <option value="">Select Service</option>
+                                <option value="s3">AWS S3</option>
+                                <option value="r2">CloudFlare R2</option>
+                                <option value="local">Local Storage</option>
+                                <option value="none">None</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>CDN Service</label>
+                            <select id="cdnService">
+                                <option value="">Select CDN</option>
+                                <option value="cloudflare">CloudFlare</option>
+                                <option value="cloudfront">
+                                    AWS CloudFront
+                                </option>
+                                <option value="none">None</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 7: Review -->
+                <div class="form-step" id="step7">
+                    <h2 class="step-title">✅ Review Configuration</h2>
+
+                    <div class="help-box">
+                        <h4>📋 Configuration Summary</h4>
+                        <p>
+                            Review your deployment configuration below. Click
+                            "Generate JSON" to create your configuration file.
+                        </p>
+                    </div>
+
+                    <div class="file-path-input">
+                        <input
+                            type="text"
+                            id="finalSavePath"
+                            placeholder="Admin-Local/1-Current-Project/1-secrets"
+                        />
+                        <button
+                            class="btn btn-primary"
+                            onclick="updateSavePath()"
+                        >
+                            Update Path
+                        </button>
+                    </div>
+
+                    <div class="json-output">
+                        <pre id="jsonPreview">
+{
+  "configuration": "Will be generated after validation..."
+}</pre
+                        >
+                    </div>
+
+                    <div class="review-actions">
+                        <button
+                            class="btn btn-primary"
+                            onclick="generateJSON()"
+                        >
+                            <span class="icon">💾</span> Generate JSON
+                        </button>
+                        <button class="btn btn-secondary" onclick="copyJSON()">
+                            <span class="icon">📋</span> Copy JSON
+                        </button>
+                        <button
+                            class="btn btn-secondary"
+                            onclick="downloadJSON()"
+                        >
+                            <span class="icon">⬇️</span> Download
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="button-group">
+                <button
+                    class="btn btn-secondary"
+                    id="prevBtn"
+                    onclick="changeStep(-1)"
+                    disabled
+                >
+                    ← Previous
+                </button>
+                <button
+                    class="btn btn-primary"
+                    id="nextBtn"
+                    onclick="changeStep(1)"
+                >
+                    Next →
+                </button>
+            </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="toast"></div>
+
+        <!-- Hidden file input for import -->
+        <input
+            type="file"
+            id="fileInput"
+            accept=".json"
+            style="display: none"
+            onchange="handleFileImport(event)"
+        />
+
+        <!-- JavaScript -->
+        <script src="assets/js/storage.js"></script>
+        <script src="assets/js/utils.js"></script>
+        <script src="assets/js/validation.js"></script>
+        <script src="assets/js/wizard.js"></script>
+        <script src="assets/js/app.js"></script>
+    </body>
+</html>

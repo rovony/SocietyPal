@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deployment Wizard v2.1 - Project & Site Management</title>
+    <link href="assets/css/wizard.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Step 0 - Project & Site Management Styles */
+        .step-0-container {
+            display: none;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .project-management {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .project-header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .project-header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .project-header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .project-content {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            min-height: 600px;
+        }
+
+        .project-sidebar {
+            background: #f8fafc;
+            border-right: 1px solid #e2e8f0;
+            padding: 30px 20px;
+        }
+
+        .project-main {
+            padding: 30px;
+        }
+
+        /* Project Info Section */
+        .project-info {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .project-info h3 {
+            margin: 0 0 15px 0;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .project-form {
+            display: grid;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            padding: 10px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Sites Management */
+        .sites-section {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .sites-header {
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 20px;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+
+        .sites-header h3 {
+            margin: 0;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .add-site-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .add-site-btn:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .sites-list {
+            padding: 20px;
+        }
+
+        .site-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .site-card:hover {
+            border-color: #4f46e5;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .site-card.active {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .site-card-header {
+            background: #f8fafc;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .site-card.active .site-card-header {
+            background: #ecfdf5;
+        }
+
+        .site-info h4 {
+            margin: 0 0 5px 0;
+            color: #1e293b;
+            font-size: 1.1rem;
+        }
+
+        .site-info p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .site-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .site-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .site-btn.edit {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .site-btn.delete {
+            background: #ef4444;
+            color: white;
+        }
+
+        .site-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Deployments Section */
+        .deployments-section {
+            padding: 20px;
+            border-top: 1px solid #e2e8f0;
+            background: #fafafa;
+        }
+
+        .deployments-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .deployments-header h4 {
+            margin: 0;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-deployment-btn {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .add-deployment-btn:hover {
+            background: #4f46e5;
+        }
+
+        .deployment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .deployment-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .deployment-card:hover {
+            border-color: #4f46e5;
+            transform: translateY(-2px);
+        }
+
+        .deployment-card.active {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .deployment-header {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .deployment-info h5 {
+            margin: 0 0 5px 0;
+            color: #1e293b;
+        }
+
+        .deployment-env {
+            background: #ddd6fe;
+            color: #5b21b6;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .deployment-details {
+            font-size: 0.9rem;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        .deployment-status {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .status-indicator {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-configured {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-deployed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        /* Navigation Section */
+        .navigation-section {
+            padding: 30px 20px 20px 20px;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .nav-btn.primary {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+        }
+
+        .nav-btn.primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+        }
+
+        .nav-btn.secondary {
+            background: #f1f5f9;
+            color: #475569;
+            border: 2px solid #e2e8f0;
+        }
+
+        .nav-btn.secondary:hover {
+            background: #e2e8f0;
+            border-color: #cbd5e1;
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal h3 {
+            margin: 0 0 20px 0;
+            color: #1e293b;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn.primary {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .modal-btn.secondary {
+            background: #f1f5f9;
+            color: #475569;
+            border: 2px solid #e2e8f0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .project-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .project-sidebar {
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+            }
+            
+            .deployment-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Indicator -->
+    <div class="progress-container" id="progressContainer">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-steps" id="progressSteps">
+            <div class="step active" data-step="0">
+                <div class="step-number">0</div>
+                <div class="step-label">Project Setup</div>
+            </div>
+            <!-- Other steps will be loaded dynamically -->
+        </div>
+    </div>
+
+    <!-- Step 0: Project & Site Management -->
+    <div id="step-0" class="step-0-container">
+        <div class="project-management">
+            <div class="project-header">
+                <h1><i class="fas fa-rocket"></i> Deployment Wizard v2.1</h1>
+                <p>Manage your projects, sites, and deployment environments</p>
+            </div>
+            
+            <div class="project-content">
+                <!-- Sidebar: Project Info -->
+                <div class="project-sidebar">
+                    <div class="project-info">
+                        <h3><i class="fas fa-folder-open"></i> Project Information</h3>
+                        <div class="project-form">
+                            <div class="form-group">
+                                <label for="projectName">Project Name</label>
+                                <input type="text" id="projectName" placeholder="Enter project name">
+                            </div>
+                            <div class="form-group">
+                                <label for="projectDescription">Description</label>
+                                <textarea id="projectDescription" placeholder="Brief project description"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="savePath">Save Location</label>
+                                <input type="text" id="savePath" readonly value="Admin-Local/1-Current-Project/1-secrets">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Navigation Controls -->
+                    <div class="navigation-section">
+                        <div class="nav-actions">
+                            <button class="nav-btn secondary" id="saveProjectBtn">
+                                <i class="fas fa-save"></i> Save Project
+                            </button>
+                            <button class="nav-btn primary" id="continueToWizardBtn" disabled>
+                                <i class="fas fa-arrow-right"></i> Start Wizard
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content: Sites Management -->
+                <div class="project-main">
+                    <div class="sites-section">
+                        <div class="sites-header">
+                            <h3><i class="fas fa-globe"></i> Sites & Applications</h3>
+                            <button class="add-site-btn" id="addSiteBtn">
+                                <i class="fas fa-plus"></i> Add Site
+                            </button>
+                        </div>
+                        
+                        <div class="sites-list" id="sitesList">
+                            <!-- Sites will be loaded dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Site Modal -->
+    <div class="modal-overlay" id="addSiteModal">
+        <div class="modal">
+            <h3><i class="fas fa-plus-circle"></i> Add New Site</h3>
+            <div class="project-form">
+                <div class="form-group">
+                    <label for="newSiteName">Site Name</label>
+                    <input type="text" id="newSiteName" placeholder="e.g., main-app, api, admin">
+                </div>
+                <div class="form-group">
+                    <label for="newSiteDisplayName">Display Name</label>
+                    <input type="text" id="newSiteDisplayName" placeholder="e.g., Main Application">
+                </div>
+                <div class="form-group">
+                    <label for="newSiteDescription">Description</label>
+                    <textarea id="newSiteDescription" placeholder="Brief description of this site"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="newSiteRepository">Repository URL (Optional)</label>
+                    <input type="text" id="newSiteRepository" placeholder="https://github.com/username/repo">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" id="cancelAddSiteBtn">Cancel</button>
+                <button class="modal-btn primary" id="confirmAddSiteBtn">Add Site</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Deployment Modal -->
+    <div class="modal-overlay" id="addDeploymentModal">
+        <div class="modal">
+            <h3><i class="fas fa-server"></i> Add New Deployment</h3>
+            <div class="project-form">
+                <div class="form-group">
+                    <label for="newDeploymentEnv">Environment</label>
+                    <select id="newDeploymentEnv">
+                        <option value="production">Production</option>
+                        <option value="staging">Staging</option>
+                        <option value="development">Development</option>
+                        <option value="testing">Testing</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="newDeploymentDisplayName">Display Name</label>
+                    <input type="text" id="newDeploymentDisplayName" placeholder="e.g., Production Environment">
+                </div>
+                <div class="form-group">
+                    <label for="newDeploymentDomain">Domain (Optional)</label>
+                    <input type="text" id="newDeploymentDomain" placeholder="e.g., example.com">
+                </div>
+                <div class="form-group">
+                    <label for="newDeploymentBranch">Git Branch</label>
+                    <input type="text" id="newDeploymentBranch" value="main" placeholder="main">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" id="cancelAddDeploymentBtn">Cancel</button>
+                <button class="modal-btn primary" id="confirmAddDeploymentBtn">Add Deployment</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include JavaScript Files -->
+    <script src="assets/js/storage.js"></script>
+    <script src="assets/js/template-engine.js"></script>
+    <script src="assets/js/site-centric-manager.js"></script>
+    <script src="assets/js/wizard.js"></script>
+    
+    <script>
+        // Step 0 - Project & Site Management Implementation
+        class Step0Manager {
+            constructor() {
+                this.currentSiteId = null;
+                this.currentDeploymentId = null;
+                this.initializeStep0();
+            }
+
+            initializeStep0() {
+                // Initialize site-centric manager first
+                if (window.siteCentricManager) {
+                    window.siteCentricManager.init();
+                }
+
+                this.setupEventListeners();
+                this.loadProjectData();
+                this.renderSites();
+                this.updateNavigationState();
+            }
+
+            setupEventListeners() {
+                // Project form listeners
+                document.getElementById('projectName').addEventListener('input', () => this.updateProjectInfo());
+                document.getElementById('projectDescription').addEventListener('input', () => this.updateProjectInfo());
+                
+                // Site management listeners
+                document.getElementById('addSiteBtn').addEventListener('click', () => this.showAddSiteModal());
+                document.getElementById('cancelAddSiteBtn').addEventListener('click', () => this.hideAddSiteModal());
+                document.getElementById('confirmAddSiteBtn').addEventListener('click', () => this.addNewSite());
+                
+                // Deployment management listeners
+                document.getElementById('cancelAddDeploymentBtn').addEventListener('click', () => this.hideAddDeploymentModal());
+                document.getElementById('confirmAddDeploymentBtn').addEventListener('click', () => this.addNewDeployment());
+                
+                // Navigation listeners
+                document.getElementById('saveProjectBtn').addEventListener('click', () => this.saveProject());
+                document.getElementById('continueToWizardBtn').addEventListener('click', () => this.continueToWizard());
+                
+                // Site context change listener
+                document.addEventListener('siteContextChanged', (e) => {
+                    this.handleSiteContextChange(e.detail);
+                });
+            }
+
+            loadProjectData() {
+                if (!window.siteCentricManager || !window.siteCentricManager.currentProject) return;
+                
+                const project = window.siteCentricManager.currentProject.project;
+                
+                document.getElementById('projectName').value = project.name || '';
+                document.getElementById('projectDescription').value = project.description || '';
+                document.getElementById('savePath').value = project.settings.savePath || 'Admin-Local/1-Current-Project/1-secrets';
+            }
+
+            updateProjectInfo() {
+                if (!window.siteCentricManager) return;
+                
+                const projectName = document.getElementById('projectName').value;
+                const projectDescription = document.getElementById('projectDescription').value;
+                
+                window.siteCentricManager.currentProject.project.name = projectName;
+                window.siteCentricManager.currentProject.project.description = projectDescription;
+                
+                window.siteCentricManager.updateProject();
+                this.updateNavigationState();
+            }
+
+            renderSites() {
+                const sitesList = document.getElementById('sitesList');
+                const sites = window.siteCentricManager ? window.siteCentricManager.getAllSites() : [];
+                
+                if (sites.length === 0) {
+                    sitesList.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #6b7280;">
+                            <i class="fas fa-globe" style="font-size: 3rem; margin-bottom: 20px; opacity: 0.3;"></i>
+                            <p style="font-size: 1.1rem; margin: 0;">No sites configured yet</p>
+                            <p style="margin: 5px 0 0 0;">Add your first site to get started</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const currentSiteId = window.siteCentricManager?.currentSiteId;
+                
+                sitesList.innerHTML = sites.map(site => `
+                    <div class="site-card ${site.id === currentSiteId ? 'active' : ''}" data-site-id="${site.id}">
+                        <div class="site-card-header" onclick="step0Manager.selectSite('${site.id}')">
+                            <div class="site-info">
+                                <h4>${site.displayName}</h4>
+                                <p>${site.description || 'No description provided'}</p>
+                                <small>${site.deploymentsCount} deployment(s): ${site.environments.join(', ')}</small>
+                            </div>
+                            <div class="site-actions" onclick="event.stopPropagation()">
+                                <button class="site-btn edit" onclick="step0Manager.editSite('${site.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="site-btn delete" onclick="step0Manager.deleteSite('${site.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="deployments-section" style="display: ${site.id === currentSiteId ? 'block' : 'none'}">
+                            <div class="deployments-header">
+                                <h4><i class="fas fa-server"></i> Deployments</h4>
+                                <button class="add-deployment-btn" onclick="step0Manager.showAddDeploymentModal('${site.id}')">
+                                    <i class="fas fa-plus"></i> Add Deployment
+                                </button>
+                            </div>
+                            <div class="deployment-grid">
+                                ${this.renderDeployments(site.id)}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            renderDeployments(siteId) {
+                const deployments = window.siteCentricManager ? window.siteCentricManager.getSiteDeployments(siteId) : [];
+                const currentDeploymentId = window.siteCentricManager?.currentDeploymentId;
+                
+                if (deployments.length === 0) {
+                    return `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 20px; color: #6b7280;">
+                            <i class="fas fa-server" style="font-size: 2rem; margin-bottom: 10px; opacity: 0.3;"></i>
+                            <p>No deployments configured</p>
+                        </div>
+                    `;
+                }
+                
+                return deployments.map(deployment => `
+                    <div class="deployment-card ${deployment.id === currentDeploymentId ? 'active' : ''}" 
+                         onclick="step0Manager.selectDeployment('${siteId}', '${deployment.id}')">
+                        <div class="deployment-header">
+                            <div class="deployment-info">
+                                <h5>${deployment.displayName || deployment.environment}</h5>
+                                <span class="deployment-env">${deployment.environment}</span>
+                            </div>
+                        </div>
+                        <div class="deployment-details">
+                            <div><strong>Domain:</strong> ${deployment.domain || 'Not configured'}</div>
+                            <div><strong>Branch:</strong> ${deployment.branch || 'main'}</div>
+                            <div><strong>Hosting:</strong> ${deployment.hostingProvider || 'Not selected'}</div>
+                            <div><strong>Strategy:</strong> ${deployment.deploymentStrategy || 'Not selected'}</div>
+                        </div>
+                        <div class="deployment-status">
+                            <span class="status-indicator status-${deployment.status}">${deployment.status}</span>
+                            <div>
+                                <button class="site-btn edit" onclick="event.stopPropagation(); step0Manager.editDeployment('${siteId}', '${deployment.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="site-btn delete" onclick="event.stopPropagation(); step0Manager.deleteDeployment('${siteId}', '${deployment.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            selectSite(siteId) {
+                this.currentSiteId = siteId;
+                
+                if (window.siteCentricManager) {
+                    // Get first deployment of this site
+                    const deployments = window.siteCentricManager.getSiteDeployments(siteId);
+                    const firstDeployment = deployments.length > 0 ? deployments[0].id : null;
+                    
+                    window.siteCentricManager.setCurrentContext(siteId, firstDeployment);
+                    this.currentDeploymentId = firstDeployment;
+                }
+                
+                this.renderSites();
+                this.updateNavigationState();
+            }
+
+            selectDeployment(siteId, deploymentId) {
+                this.currentSiteId = siteId;
+                this.currentDeploymentId = deploymentId;
+                
+                if (window.siteCentricManager) {
+                    window.siteCentricManager.setCurrentContext(siteId, deploymentId);
+                }
+                
+                this.renderSites();
+                this.updateNavigationState();
+            }
+
+            showAddSiteModal() {
+                document.getElementById('addSiteModal').classList.add('active');
+                // Clear form
+                document.getElementById('newSiteName').value = '';
+                document.getElementById('newSiteDisplayName').value = '';
+                document.getElementById('newSiteDescription').value = '';
+                document.getElementById('newSiteRepository').value = '';
+            }
+
+            hideAddSiteModal() {
+                document.getElementById('addSiteModal').classList.remove('active');
+            }
+
+            addNewSite() {
+                const name = document.getElementById('newSiteName').value.trim();
+                const displayName = document.getElementById('newSiteDisplayName').value.trim();
+                const description = document.getElementById('newSiteDescription').value.trim();
+                const repository = document.getElementById('newSiteRepository').value.trim();
+                
+                if (!name) {
+                    alert('Please enter a site name');
+                    return;
+                }
+                
+                if (window.siteCentricManager) {
+                    const siteId = window.siteCentricManager.addSite(name, displayName, description);
+                    
+                    // Update repository if provided
+                    if (repository) {
+                        window.siteCentricManager.currentProject.sites[siteId].repository = repository;
+                        window.siteCentricManager.updateProject();
+                    }
+                    
+                    this.selectSite(siteId);
+                }
+                
+                this.hideAddSiteModal();
+                this.renderSites();
+            }
+
+            showAddDeploymentModal(siteId) {
+                this.modalTargetSiteId = siteId;
+                document.getElementById('addDeploymentModal').classList.add('active');
+                
+                // Clear form
+                document.getElementById('newDeploymentEnv').value = 'production';
+                document.getElementById('newDeploymentDisplayName').value = '';
+                document.getElementById('newDeploymentDomain').value = '';
+                document.getElementById('newDeploymentBranch').value = 'main';
+            }
+
+            hideAddDeploymentModal() {
+                document.getElementById('addDeploymentModal').classList.remove('active');
+                this.modalTargetSiteId = null;
+            }
+
+            addNewDeployment() {
+                if (!this.modalTargetSiteId) return;
+                
+                const environment = document.getElementById('newDeploymentEnv').value;
+                const displayName = document.getElementById('newDeploymentDisplayName').value.trim();
+                const domain = document.getElementById('newDeploymentDomain').value.trim();
+                const branch = document.getElementById('newDeploymentBranch').value.trim();
+                
+                if (window.siteCentricManager) {
+                    const deploymentId = window.siteCentricManager.addDeployment(
+                        this.modalTargetSiteId, 
+                        environment, 
+                        displayName || environment
+                    );
+                    
+                    // Update additional properties
+                    const deployment = window.siteCentricManager.currentProject.sites[this.modalTargetSiteId].deployments[deploymentId];
+                    if (domain) deployment.domain = domain;
+                    if (branch) deployment.branch = branch;
+                    
+                    window.siteCentricManager.updateProject();
+                    this.selectDeployment(this.modalTargetSiteId, deploymentId);
+                }
+                
+                this.hideAddDeploymentModal();
+                this.renderSites();
+            }
+
+            editSite(siteId) {
+                // TODO: Implement site editing modal
+                console.log('Edit site:', siteId);
+            }
+
+            deleteSite(siteId) {
+                if (confirm('Are you sure you want to delete this site and all its deployments?')) {
+                    if (window.siteCentricManager) {
+                        window.siteCentricManager.removeSite(siteId);
+                        this.renderSites();
+                        this.updateNavigationState();
+                    }
+                }
+            }
+
+            editDeployment(siteId, deploymentId) {
+                // TODO: Implement deployment editing modal
+                console.log('Edit deployment:', siteId, deploymentId);
+            }
+
+            deleteDeployment(siteId, deploymentId) {
+                if (confirm('Are you sure you want to delete this deployment?')) {
+                    if (window.siteCentricManager) {
+                        window.siteCentricManager.removeDeployment(siteId, deploymentId);
+                        this.renderSites();
+                        this.updateNavigationState();
+                    }
+                }
+            }
+
+            saveProject() {
+                if (window.siteCentricManager) {
+                    const projectData = window.siteCentricManager.getProjectForExport();
+                    window.storageManager?.performAutoSave(projectData, 0);
+                    
+                    if (window.showToast) {
+                        showToast('Project saved successfully!', 'success');
+                    }
+                }
+            }
+
+            updateNavigationState() {
+                const hasProject = window.siteCentricManager?.currentProject?.project?.name;
+                const hasSites = window.siteCentricManager?.getAllSites()?.length > 0;
+                const hasDeployment = this.currentDeploymentId;
+                
+                const continueBtn = document.getElementById('continueToWizardBtn');
+                continueBtn.disabled = !(hasProject && hasSites && hasDeployment);
+            }
+
+            continueToWizard() {
+                if (!this.currentDeploymentId) {
+                    alert('Please select a deployment to configure');
+                    return;
+                }
+                
+                // Hide step 0 and show step 1
+                document.getElementById('step-0').style.display = 'none';
+                
+                // Initialize the main wizard with the selected deployment context
+                if (window.wizard) {
+                    window.wizard.currentStep = 1;
+                    window.wizard.goToStep(1);
+                } else {
+                    // Load the main wizard
+                    window.location.href = '#step-1';
+                    // This would trigger loading the regular wizard steps
+                }
+            }
+
+            handleSiteContextChange(detail) {
+                this.currentSiteId = detail.siteId;
+                this.currentDeploymentId = detail.deploymentId;
+                this.updateNavigationState();
+            }
+        }
+
+        // Initialize Step 0 Manager
+        document.addEventListener('DOMContentLoaded', () => {
+            window.step0Manager = new Step0Manager();
+            
+            // Show step 0 initially
+            document.getElementById('step-0').style.display = 'block';
+        });
+    </script>
+</body>
+</html>

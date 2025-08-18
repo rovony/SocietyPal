@@ -1,0 +1,358 @@
+name: Build and Deploy {{PROJECT_NAME}}
+
+on:
+  push:
+    branches: [main, staging, production]
+  workflow_dispatch: # Allow manual triggers
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+      force_fresh_install:
+        description: 'Force fresh install mode (skip migration check)'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  PHP_VERSION: '{{PHP_VERSION|default:8.2}}'
+  NODE_VERSION: '{{NODE_VERSION|default:18}}'
+  PROJECT_NAME: '{{PROJECT_NAME}}'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name == 'production' && 'production' || 'staging' }}
+
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: 🐘 Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ env.PHP_VERSION }}
+        extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, zip, curl, gd, imagick
+        coverage: none
+        tools: composer:v2
+        ini-values: memory_limit=512M, max_execution_time=120
+
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: 🔍 Validate Dependencies
+      run: |
+        echo "🔍 Checking dependency files..."
+        if [ ! -f "composer.json" ]; then
+          echo "❌ composer.json not found"
+          exit 1
+        fi
+
+        if [ -f "package.json" ]; then
+          echo "✅ Frontend build files detected"
+          HAS_FRONTEND=true
+        else
+          echo "ℹ️ No frontend build required"
+          HAS_FRONTEND=false
+        fi
+
+        echo "HAS_FRONTEND=$HAS_FRONTEND" >> $GITHUB_ENV
+
+    - name: 🔨 Build PHP Dependencies
+      run: |
+        echo "🔨 Installing PHP dependencies..."
+        composer validate --no-check-publish
+        composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction --no-progress --audit
+
+        echo "📊 Dependency information:"
+        composer show --installed | grep -E "laravel|symfony" | head -10
+
+    - name: 📦 Build Frontend Assets
+      if: env.HAS_FRONTEND == 'true'
+      run: |
+        echo "📦 Installing Node dependencies..."
+        npm ci --only=production --no-audit --no-fund
+
+        echo "🎨 Building frontend assets..."
+        npm run build
+
+        echo "🧹 Cleaning up node_modules..."
+        rm -rf node_modules
+
+        echo "📊 Built assets summary:"
+        du -sh public/build/* 2>/dev/null || echo "No built assets found"
+
+    - name: ⚡ Optimize Laravel Application
+      run: |
+        echo "⚡ Optimizing Laravel application..."
+
+        # Create temporary environment file for caching
+        cp .env.example .env
+        php artisan key:generate --ansi
+
+        # Cache configurations
+        php artisan config:cache
+        php artisan route:cache
+        php artisan view:cache
+
+        # Verify optimizations
+        echo "📋 Optimization verification:"
+        ls -la bootstrap/cache/
+
+        # Remove temporary .env (server will have its own)
+        rm .env
+
+    - name: 📦 Create Deployment Artifact
+      run: |
+        echo "📦 Creating deployment package..."
+
+        # Create deployment manifest
+        cat > deployment-manifest.json << MANIFEST
+        {
+          "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+          "commit": "${{ github.sha }}",
+          "branch": "${{ github.ref_name }}",
+          "workflow": "${{ github.run_id }}",
+          "environment": "${{ github.ref_name == 'production' && 'production' || 'staging' }}",
+          "project": "${{ env.PROJECT_NAME }}"
+        }
+        MANIFEST
+
+        # Create deployment package
+        tar -czf deploy.tar.gz \
+          --exclude='.git' \
+          --exclude='.github' \
+          --exclude='tests' \
+          --exclude='.env*' \
+          --exclude='storage/logs/*' \
+          --exclude='storage/framework/cache/*' \
+          --exclude='storage/framework/sessions/*' \
+          --exclude='storage/framework/views/*' \
+          --exclude='storage/app/public/*' \
+          --exclude='node_modules' \
+          --exclude='*.log' \
+          --exclude='.DS_Store' \
+          --exclude='Thumbs.db' \
+          .
+
+        echo "📊 Package information:"
+        ls -lh deploy.tar.gz
+
+    - name: 🎯 Determine Deployment Target
+      id: deployment
+      run: |
+        DEPLOY_BRANCH="${{ github.ref_name }}"
+
+        if [ "$DEPLOY_BRANCH" = "production" ]; then
+          DOMAIN="{{DOMAIN}}"
+          ENV_TYPE="production"
+        elif [ "$DEPLOY_BRANCH" = "staging" ]; then
+          DOMAIN="staging.{{DOMAIN}}"
+          ENV_TYPE="staging"
+        else
+          DOMAIN="staging.{{DOMAIN}}"  # Default fallback
+          ENV_TYPE="staging"
+        fi
+
+        echo "🎯 Deployment target: $DOMAIN ($ENV_TYPE)"
+        echo "domain=$DOMAIN" >> $GITHUB_OUTPUT
+        echo "env_type=$ENV_TYPE" >> $GITHUB_OUTPUT
+
+    - name: 🚀 Deploy to Server
+      env:
+        SERVER_HOST: ${{ secrets.SERVER_HOST }}
+        SERVER_USER: ${{ secrets.SERVER_USER }}
+        SERVER_PORT: ${{ secrets.SERVER_PORT }}
+        SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
+        DEPLOY_DOMAIN: ${{ steps.deployment.outputs.domain }}
+        ENV_TYPE: ${{ steps.deployment.outputs.env_type }}
+        FORCE_FRESH: ${{ github.event.inputs.force_fresh_install }}
+      run: |
+        echo "🔑 Setting up SSH connection..."
+        mkdir -p ~/.ssh
+        echo "$SERVER_SSH_KEY" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        ssh-keyscan -p $SERVER_PORT $SERVER_HOST >> ~/.ssh/known_hosts
+
+        echo "📤 Uploading deployment package to $DEPLOY_DOMAIN..."
+        scp -P $SERVER_PORT -i ~/.ssh/deploy_key deploy.tar.gz $SERVER_USER@$SERVER_HOST:~/domains/$DEPLOY_DOMAIN/releases/
+
+        echo "🚀 Executing deployment on $DEPLOY_DOMAIN..."
+        ssh -p $SERVER_PORT -i ~/.ssh/deploy_key $SERVER_USER@$SERVER_HOST << ENDSSH
+          set -e  # Exit on any error
+
+          cd ~/domains/$DEPLOY_DOMAIN/
+
+          # Create timestamped release directory
+          TIMESTAMP=\$(date +%Y%m%d-%H%M%S)
+          RELEASE_DIR="releases/\$TIMESTAMP"
+
+          echo "📁 Creating release directory: \$RELEASE_DIR"
+          mkdir -p \$RELEASE_DIR
+
+          # Extract deployment package
+          echo "📦 Extracting deployment..."
+          tar -xzf releases/deploy.tar.gz -C \$RELEASE_DIR/
+          rm releases/deploy.tar.gz
+
+          # Navigate to release directory
+          cd \$RELEASE_DIR
+
+          # Link shared resources using our script
+          echo "🔗 Linking shared resources..."
+          if [ -f "scripts/link_persistent_dirs.sh" ]; then
+            bash scripts/link_persistent_dirs.sh "\$(pwd)" "../../shared"
+          else
+            # Fallback manual linking
+            echo "📁 Creating shared resource links..."
+            ln -nfs ../../shared/.env .env
+            rm -rf storage
+            ln -nfs ../../shared/storage storage
+
+            # Link public uploads if they exist
+            if [ -d "../../shared/public" ]; then
+              rm -rf public/uploads public/storage
+              ln -nfs ../../../shared/public/uploads public/uploads 2>/dev/null || true
+              ln -nfs ../storage/app/public public/storage 2>/dev/null || true
+            fi
+          fi
+
+          # Set proper permissions
+          echo "🔒 Setting permissions..."
+          find . -type f -exec chmod 644 {} \\;
+          find . -type d -exec chmod 755 {} \\;
+          chmod -R 775 storage bootstrap/cache 2>/dev/null || true
+
+          # Smart database management for CodeCanyon apps
+          echo "🗃️ Smart database management..."
+
+          # Check installation type
+          if [ -f "../../shared/storage/app/installed.flag" ] && [ "$FORCE_FRESH" != "true" ]; then
+            echo "✅ UPDATE DEPLOYMENT detected"
+            echo "🔄 Running database migrations..."
+
+            # Check for destructive migrations
+            PENDING_MIGRATIONS=\$(php artisan migrate:status --pending 2>/dev/null || echo "")
+
+            if echo "\$PENDING_MIGRATIONS" | grep -E "(drop|rename|modify)" >/dev/null 2>&1; then
+              echo "⚠️ DESTRUCTIVE MIGRATIONS DETECTED"
+              echo "🛑 Manual review required - deployment paused"
+              echo "📋 Pending migrations:"
+              echo "\$PENDING_MIGRATIONS"
+              exit 1
+            else
+              echo "✅ Safe migrations detected - proceeding"
+              php artisan migrate --force --no-interaction
+            fi
+          else
+            echo "🎯 FRESH INSTALLATION detected"
+            echo "⚠️ CodeCanyon web installation required"
+            echo "📝 Creating installation flag for future deployments"
+            touch ../../shared/storage/app/installed.flag
+            echo "🏷️ Manual CodeCanyon installation required via web interface"
+          fi
+
+          # Clear and rebuild cache
+          echo "♻️ Rebuilding cache..."
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+
+          # Atomic symlink switch
+          echo "🔄 Switching to new release..."
+          cd ~/domains/$DEPLOY_DOMAIN/
+          ln -nfs \$RELEASE_DIR current
+
+          # Setup public_html symlink if first deployment
+          if [ ! -L public_html ]; then
+            echo "🌐 Setting up public_html symlink..."
+            rm -rf public_html
+            ln -s current/public public_html
+          fi
+
+          # Cleanup old releases (keep last 3)
+          echo "🧹 Cleaning up old releases..."
+          cd releases/
+          ls -t | tail -n +4 | xargs rm -rf 2>/dev/null || true
+
+          echo "✅ Deployment completed successfully: \$TIMESTAMP"
+          echo "🌐 Site should be available at: https://$DEPLOY_DOMAIN"
+        ENDSSH
+
+    - name: ✅ Verify Deployment
+      env:
+        DEPLOY_DOMAIN: ${{ steps.deployment.outputs.domain }}
+        ENV_TYPE: ${{ steps.deployment.outputs.env_type }}
+      run: |
+        SITE_URL="https://$DEPLOY_DOMAIN"
+        echo "🔍 Verifying deployment at $SITE_URL..."
+
+        # Wait for services to fully restart
+        sleep 15
+
+        # Test site accessibility
+        for i in {1..5}; do
+          echo "🌐 Testing connectivity (attempt $i/5)..."
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 $SITE_URL)
+
+          if [ "$HTTP_STATUS" -eq 200 ]; then
+            echo "✅ Deployment verification successful - Site responding with HTTP 200"
+
+            # Additional verification
+            echo "🔍 Performing additional checks..."
+            RESPONSE_TIME=$(curl -w "%{time_total}" -s -o /dev/null $SITE_URL)
+            echo "⏱️ Response time: ${RESPONSE_TIME}s"
+
+            # Check for Laravel-specific indicators
+            if curl -s $SITE_URL | grep -q "csrf-token\|Laravel"; then
+              echo "✅ Laravel application detected"
+            fi
+
+            echo "🎉 Deployment to $ENV_TYPE environment completed successfully!"
+            exit 0
+          else
+            echo "⏳ Site not ready yet (HTTP $HTTP_STATUS), waiting..."
+            sleep 10
+          fi
+        done
+
+        echo "❌ Deployment verification failed - Site not responding properly"
+        echo "🔍 Manual verification required at: $SITE_URL"
+        exit 1
+
+    - name: 📋 Post-Deployment Summary
+      if: always()
+      env:
+        DEPLOY_DOMAIN: ${{ steps.deployment.outputs.domain }}
+        ENV_TYPE: ${{ steps.deployment.outputs.env_type }}
+      run: |
+        echo "📋 DEPLOYMENT SUMMARY"
+        echo "===================="
+        echo "🎯 Target: $ENV_TYPE environment"
+        echo "🌐 URL: https://$DEPLOY_DOMAIN"
+        echo "📅 Timestamp: $(date -u)"
+        echo "🔗 Commit: ${{ github.sha }}"
+        echo "🌿 Branch: ${{ github.ref_name }}"
+        echo ""
+
+        if [ "$ENV_TYPE" = "staging" ]; then
+          echo "📋 NEXT STEPS FOR STAGING:"
+          echo "1. 🏷️ Tag Instruct-User 👤 Test application at https://$DEPLOY_DOMAIN"
+          echo "2. Verify all features work correctly"
+          echo "3. If tests pass, promote to production via production branch"
+          echo "4. If fresh install, complete CodeCanyon installation via web interface"
+        else
+          echo "📋 PRODUCTION DEPLOYMENT COMPLETE:"
+          echo "✅ Live site available at: https://$DEPLOY_DOMAIN"
+          echo "🏷️ Tag Instruct-User 👤 Verify production functionality"
+        fi

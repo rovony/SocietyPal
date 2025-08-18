@@ -1,0 +1,68 @@
+{
+    "project": {
+        "name": "SocietyPal",
+        "environment": "production",
+        "deploymentScenario": "github-actions",
+        "savePath": "Admin-Local/1-Current-Project/1-secrets"
+    },
+    "server": {
+        "access": {
+            "host": "31.97.195.108",
+            "username": "u227177893",
+            "port": 65002,
+            "keySecured": true,
+            "keyAdded": true
+        },
+        "environment": {
+            "provider": "hostinger",
+            "os": "Linux 5.14.0-503.34.1.el9_5.x86_64",
+            "webServer": "",
+            "phpVersion": "5.2, 5.3, 5.4, 5.5, 5.6, 7.0, 7.1, 7.2, 7.3, 7.4, 8.0, 8.1, 8.2, 8.3, 8.4",
+            "nodeVersion": "Not installed"
+        }
+    },
+    "domain": {
+        "production": "https://societypal.com/",
+        "staging": "https://staging.societypal.com/",
+        "development": "https://dev.societypal.com",
+        "ssl": {
+            "provider": "letsencrypt",
+            "autoRenewal": true,
+            "active": true
+        }
+    },
+    "database": {
+        "type": "mysql",
+        "host": "dsada",
+        "port": 3306,
+        "name": "dasdas",
+        "username": "dasdsa",
+        "password": "dasdas",
+        "adminAccess": "phpmyadmin",
+        "backupStrategy": "manual"
+    },
+    "directories": {
+        "documentRoot": " /home/your_user/domains/subdomain.website.com/public_html",
+        "projectDirectory": " /home/your_user/domains/subdomain.website.com",
+        "sharedStorage": "/home/your_user/domains/website.com/deploy/shared",
+        "permissions": {
+            "webUser": "",
+            "fileOwner": "",
+            "group": ""
+        }
+    },
+    "security": {
+        "appKeyGenerated": false,
+        "jwtSecret": "",
+        "services": {
+            "email": "",
+            "payment": "",
+            "storage": "",
+            "cdn": ""
+        }
+    },
+    "metadata": {
+        "createdAt": "2025-08-18T02:07:52.547Z",
+        "version": "1.0.0"
+    }
+}

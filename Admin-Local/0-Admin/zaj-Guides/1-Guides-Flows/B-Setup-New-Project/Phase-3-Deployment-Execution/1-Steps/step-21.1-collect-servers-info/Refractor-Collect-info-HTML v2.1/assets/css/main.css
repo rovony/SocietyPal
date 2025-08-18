@@ -1,0 +1,181 @@
+/* main.css - Layout and page-specific styles */
+
+/* Base Layout */
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2xl);
+}
+
+.container {
+    width: 100%;
+    max-width: 900px;
+    background: white;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    overflow: hidden;
+    position: relative;
+}
+
+/* Header */
+.header {
+    padding: var(--space-3xl) var(--space-4xl);
+    background: linear-gradient(135deg, var(--primary) 0%, #0051D5 100%);
+    color: white;
+    position: relative;
+}
+
+.header h1 {
+    font-size: var(--font-2xl);
+    font-weight: 600;
+    margin-bottom: var(--space-xs);
+    letter-spacing: -0.5px;
+}
+
+.header p {
+    font-size: var(--font-md);
+    opacity: 0.9;
+}
+
+.header-actions {
+    position: absolute;
+    top: var(--space-3xl);
+    right: var(--space-4xl);
+    display: flex;
+    gap: var(--space-md);
+}
+
+/* Progress Container */
+.progress-container {
+    padding: var(--space-2xl) var(--space-4xl);
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-200);
+}
+
+/* Form Container */
+.form-container {
+    padding: var(--space-4xl);
+    min-height: 500px;
+    position: relative;
+}
+
+.form-step {
+    display: none;
+    animation: fadeIn var(--transition-normal) ease;
+}
+
+.form-step.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.step-title {
+    font-size: var(--font-xl);
+    margin-bottom: var(--space-2xl);
+}
+
+/* Review Actions */
+.review-actions {
+    margin-top: var(--space-2xl);
+    display: flex;
+    gap: var(--space-lg);
+}
+
+.review-actions .btn:first-child {
+    flex: 1;
+}
+
+/* Navigation Buttons */
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-3xl) var(--space-4xl);
+    background: var(--gray-50);
+    border-top: 1px solid var(--gray-200);
+}
+
+/* Hidden Elements */
+#fileInput {
+    display: none;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+    body {
+        padding: 0;
+    }
+    
+    .container {
+        border-radius: 0;
+        max-width: 100%;
+        min-height: 100vh;
+    }
+
+    .form-container,
+    .button-group {
+        padding: var(--space-2xl);
+    }
+
+    .header {
+        padding: var(--space-2xl);
+    }
+
+    .header-actions {
+        position: static;
+        margin-top: var(--space-lg);
+        flex-wrap: wrap;
+    }
+
+    .progress-container {
+        padding: var(--space-xl) var(--space-2xl);
+    }
+
+    .input-group {
+        flex-direction: column;
+    }
+
+    .review-actions {
+        flex-direction: column;
+    }
+
+    .review-actions .btn {
+        flex: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .header h1 {
+        font-size: var(--font-xl);
+    }
+
+    .step-title {
+        font-size: var(--font-lg);
+    }
+
+    .progress-steps {
+        flex-wrap: wrap;
+        gap: var(--space-md);
+    }
+
+    .progress-step {
+        flex: none;
+        min-width: 80px;
+    }
+
+    .progress-line {
+        display: none;
+    }
+}

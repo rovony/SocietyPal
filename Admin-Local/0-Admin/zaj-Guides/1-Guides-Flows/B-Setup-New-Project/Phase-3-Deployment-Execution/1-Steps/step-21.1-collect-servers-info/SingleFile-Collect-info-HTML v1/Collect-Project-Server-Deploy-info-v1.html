@@ -1,0 +1,2109 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Deployment Configuration Wizard</title>
+        <style>
+            /* Apple-inspired design system */
+            :root {
+                --primary: #007aff;
+                --primary-hover: #0051d5;
+                --success: #34c759;
+                --warning: #ff9500;
+                --danger: #ff3b30;
+                --gray-50: #f9fafb;
+                --gray-100: #f2f2f7;
+                --gray-200: #e5e5ea;
+                --gray-300: #d1d1d6;
+                --gray-400: #c7c7cc;
+                --gray-500: #8e8e93;
+                --gray-600: #636366;
+                --gray-700: #48484a;
+                --gray-800: #3a3a3c;
+                --gray-900: #1c1c1e;
+                --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+                --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+                --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+                --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+                --radius-sm: 6px;
+                --radius-md: 10px;
+                --radius-lg: 14px;
+                --radius-xl: 20px;
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+                    "Segoe UI", system-ui, sans-serif;
+                font-size: 13px;
+                line-height: 1.5;
+                color: var(--gray-900);
+                background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+            }
+
+            .container {
+                width: 100%;
+                max-width: 900px;
+                background: white;
+                border-radius: var(--radius-xl);
+                box-shadow: var(--shadow-xl);
+                overflow: hidden;
+                position: relative;
+            }
+
+            /* Header */
+            .header {
+                padding: 24px 32px;
+                background: linear-gradient(
+                    135deg,
+                    var(--primary) 0%,
+                    #0051d5 100%
+                );
+                color: white;
+                position: relative;
+            }
+
+            .header h1 {
+                font-size: 24px;
+                font-weight: 600;
+                margin-bottom: 4px;
+                letter-spacing: -0.5px;
+            }
+
+            .header p {
+                font-size: 13px;
+                opacity: 0.9;
+            }
+
+            .header-actions {
+                position: absolute;
+                top: 24px;
+                right: 32px;
+                display: flex;
+                gap: 8px;
+            }
+
+            .btn-header {
+                padding: 6px 12px;
+                background: rgba(255, 255, 255, 0.2);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                border-radius: var(--radius-sm);
+                color: white;
+                font-size: 11px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s;
+                backdrop-filter: blur(10px);
+            }
+
+            .btn-header:hover {
+                background: rgba(255, 255, 255, 0.3);
+            }
+
+            /* Progress Bar */
+            .progress-container {
+                padding: 20px 32px;
+                background: var(--gray-50);
+                border-bottom: 1px solid var(--gray-200);
+            }
+
+            .progress-steps {
+                display: flex;
+                justify-content: space-between;
+                position: relative;
+            }
+
+            .progress-line {
+                position: absolute;
+                top: 12px;
+                left: 0;
+                right: 0;
+                height: 2px;
+                background: var(--gray-200);
+                z-index: 0;
+            }
+
+            .progress-line-fill {
+                height: 100%;
+                background: var(--primary);
+                transition: width 0.3s ease;
+                width: 0%;
+            }
+
+            .progress-step {
+                position: relative;
+                z-index: 1;
+                text-align: center;
+                flex: 1;
+            }
+
+            .step-circle {
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                background: white;
+                border: 2px solid var(--gray-200);
+                margin: 0 auto 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 10px;
+                font-weight: 600;
+                transition: all 0.3s;
+            }
+
+            .progress-step.active .step-circle {
+                background: var(--primary);
+                border-color: var(--primary);
+                color: white;
+            }
+
+            .progress-step.completed .step-circle {
+                background: var(--success);
+                border-color: var(--success);
+                color: white;
+            }
+
+            .step-label {
+                font-size: 11px;
+                color: var(--gray-500);
+                font-weight: 500;
+            }
+
+            .progress-step.active .step-label,
+            .progress-step.completed .step-label {
+                color: var(--gray-900);
+            }
+
+            /* Form Container */
+            .form-container {
+                padding: 32px;
+                min-height: 500px;
+                position: relative;
+            }
+
+            .form-step {
+                display: none;
+                animation: fadeIn 0.3s ease;
+            }
+
+            .form-step.active {
+                display: block;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            /* Form Elements */
+            .form-section {
+                margin-bottom: 24px;
+                padding: 20px;
+                background: var(--gray-50);
+                border-radius: var(--radius-lg);
+                border: 1px solid var(--gray-200);
+            }
+
+            .section-title {
+                font-size: 14px;
+                font-weight: 600;
+                color: var(--gray-900);
+                margin-bottom: 4px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .section-subtitle {
+                font-size: 11px;
+                color: var(--gray-600);
+                margin-bottom: 16px;
+            }
+
+            .form-group {
+                margin-bottom: 16px;
+            }
+
+            .form-group:last-child {
+                margin-bottom: 0;
+            }
+
+            label {
+                display: block;
+                font-size: 11px;
+                font-weight: 500;
+                color: var(--gray-700);
+                margin-bottom: 6px;
+            }
+
+            .required {
+                color: var(--danger);
+            }
+
+            input[type="text"],
+            input[type="password"],
+            input[type="number"],
+            select,
+            textarea {
+                width: 100%;
+                padding: 8px 12px;
+                font-size: 12px;
+                border: 1px solid var(--gray-300);
+                border-radius: var(--radius-sm);
+                background: white;
+                transition: all 0.2s;
+                font-family: inherit;
+            }
+
+            input:focus,
+            select:focus,
+            textarea:focus {
+                outline: none;
+                border-color: var(--primary);
+                box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+            }
+
+            textarea {
+                resize: vertical;
+                min-height: 60px;
+            }
+
+            .input-group {
+                display: flex;
+                gap: 8px;
+            }
+
+            .input-group input {
+                flex: 1;
+            }
+
+            .input-hint {
+                font-size: 10px;
+                color: var(--gray-500);
+                margin-top: 4px;
+            }
+
+            /* Help Box */
+            .help-box {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-radius: var(--radius-md);
+                padding: 12px 16px;
+                margin-bottom: 20px;
+                color: white;
+            }
+
+            .help-box h4 {
+                font-size: 12px;
+                font-weight: 600;
+                margin-bottom: 6px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .help-box p {
+                font-size: 11px;
+                opacity: 0.95;
+                line-height: 1.5;
+            }
+
+            .help-box code {
+                background: rgba(255, 255, 255, 0.2);
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-family: "SF Mono", Monaco, monospace;
+                font-size: 10px;
+            }
+
+            /* Command Box */
+            .command-box {
+                background: #1e1e1e;
+                border-radius: var(--radius-md);
+                padding: 12px;
+                margin: 12px 0;
+                position: relative;
+            }
+
+            .command-box pre {
+                color: #d4d4d4;
+                font-family: "SF Mono", Monaco, monospace;
+                font-size: 11px;
+                line-height: 1.5;
+                margin: 0;
+                overflow-x: auto;
+            }
+
+            .copy-btn {
+                position: absolute;
+                top: 8px;
+                right: 8px;
+                padding: 4px 8px;
+                background: var(--primary);
+                color: white;
+                border: none;
+                border-radius: var(--radius-sm);
+                font-size: 10px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .copy-btn:hover {
+                background: var(--primary-hover);
+            }
+
+            /* Checkbox */
+            .checkbox-group {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin: 8px 0;
+            }
+
+            .checkbox-group input[type="checkbox"] {
+                width: 16px;
+                height: 16px;
+                cursor: pointer;
+            }
+
+            .checkbox-group label {
+                margin: 0;
+                cursor: pointer;
+                font-size: 11px;
+            }
+
+            /* Buttons */
+            .button-group {
+                display: flex;
+                justify-content: space-between;
+                padding: 24px 32px;
+                background: var(--gray-50);
+                border-top: 1px solid var(--gray-200);
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 12px;
+                font-weight: 500;
+                border-radius: var(--radius-md);
+                border: none;
+                cursor: pointer;
+                transition: all 0.2s;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .btn-primary {
+                background: var(--primary);
+                color: white;
+            }
+
+            .btn-primary:hover {
+                background: var(--primary-hover);
+                transform: translateY(-1px);
+                box-shadow: var(--shadow-md);
+            }
+
+            .btn-secondary {
+                background: white;
+                color: var(--gray-700);
+                border: 1px solid var(--gray-300);
+            }
+
+            .btn-secondary:hover {
+                background: var(--gray-50);
+            }
+
+            .btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+            /* JSON Output */
+            .json-output {
+                background: #1e1e1e;
+                border-radius: var(--radius-md);
+                padding: 16px;
+                margin-top: 20px;
+                max-height: 400px;
+                overflow-y: auto;
+            }
+
+            .json-output pre {
+                color: #d4d4d4;
+                font-family: "SF Mono", Monaco, monospace;
+                font-size: 11px;
+                margin: 0;
+            }
+
+            /* File Path Input */
+            .file-path-input {
+                display: flex;
+                gap: 8px;
+                margin-bottom: 16px;
+            }
+
+            .file-path-input input {
+                flex: 1;
+                font-family: "SF Mono", Monaco, monospace;
+                font-size: 11px;
+            }
+
+            /* Toast Notification */
+            .toast {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                padding: 12px 16px;
+                background: var(--gray-900);
+                color: white;
+                border-radius: var(--radius-md);
+                font-size: 12px;
+                transform: translateY(100px);
+                opacity: 0;
+                transition: all 0.3s;
+                z-index: 1000;
+            }
+
+            .toast.show {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            .toast.success {
+                background: var(--success);
+            }
+
+            .toast.error {
+                background: var(--danger);
+            }
+
+            /* Icons */
+            .icon {
+                width: 16px;
+                height: 16px;
+                display: inline-block;
+                vertical-align: middle;
+            }
+
+            /* Validation */
+            .form-group.error input,
+            .form-group.error select,
+            .form-group.error textarea {
+                border-color: var(--danger);
+            }
+
+            .error-message {
+                color: var(--danger);
+                font-size: 10px;
+                margin-top: 4px;
+                display: none;
+            }
+
+            .form-group.error .error-message {
+                display: block;
+            }
+
+            /* Loading Spinner */
+            .spinner {
+                display: inline-block;
+                width: 14px;
+                height: 14px;
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                border-radius: 50%;
+                border-top-color: white;
+                animation: spin 0.6s linear infinite;
+            }
+
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            /* Responsive */
+            @media (max-width: 640px) {
+                .container {
+                    border-radius: 0;
+                    max-width: 100%;
+                }
+
+                .form-container,
+                .button-group {
+                    padding: 20px;
+                }
+
+                .header {
+                    padding: 20px;
+                }
+
+                .header-actions {
+                    position: static;
+                    margin-top: 12px;
+                }
+            }
+
+            /* Collapsible Sections */
+            .collapsible {
+                cursor: pointer;
+                user-select: none;
+            }
+
+            .collapsible:after {
+                content: "▼";
+                font-size: 10px;
+                float: right;
+                transition: transform 0.2s;
+            }
+
+            .collapsible.collapsed:after {
+                transform: rotate(-90deg);
+            }
+
+            .collapsible-content {
+                max-height: 1000px;
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+            }
+
+            .collapsible-content.collapsed {
+                max-height: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <!-- Header -->
+            <div class="header">
+                <h1>🚀 Deployment Configuration Wizard</h1>
+                <p>Step 21.1: Collect Server & Deployment Information</p>
+                <div class="header-actions">
+                    <button class="btn-header" onclick="importJSON()">
+                        📥 Import JSON
+                    </button>
+                    <button class="btn-header" onclick="exportJSON()">
+                        📤 Export JSON
+                    </button>
+                    <button class="btn-header" onclick="clearAll()">
+                        🗑️ Clear All
+                    </button>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-steps">
+                    <div class="progress-line">
+                        <div class="progress-line-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-step active" data-step="1">
+                        <div class="step-circle">1</div>
+                        <div class="step-label">Project Info</div>
+                    </div>
+                    <div class="progress-step" data-step="2">
+                        <div class="step-circle">2</div>
+                        <div class="step-label">Server Access</div>
+                    </div>
+                    <div class="progress-step" data-step="3">
+                        <div class="step-circle">3</div>
+                        <div class="step-label">Domain & SSL</div>
+                    </div>
+                    <div class="progress-step" data-step="4">
+                        <div class="step-circle">4</div>
+                        <div class="step-label">Database</div>
+                    </div>
+                    <div class="progress-step" data-step="5">
+                        <div class="step-circle">5</div>
+                        <div class="step-label">Directories</div>
+                    </div>
+                    <div class="progress-step" data-step="6">
+                        <div class="step-circle">6</div>
+                        <div class="step-label">Security</div>
+                    </div>
+                    <div class="progress-step" data-step="7">
+                        <div class="step-circle">7</div>
+                        <div class="step-label">Review</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Container -->
+            <div class="form-container">
+                <!-- Step 1: Project Information -->
+                <div class="form-step active" id="step1">
+                    <h2 style="font-size: 18px; margin-bottom: 20px">
+                        📁 Project Information
+                    </h2>
+
+                    <div class="form-section">
+                        <div class="section-title">
+                            🏢 Basic Project Details
+                        </div>
+                        <div class="section-subtitle">
+                            Essential information about your project
+                        </div>
+
+                        <div class="form-group">
+                            <label
+                                >Project Name
+                                <span class="required">*</span></label
+                            >
+                            <input
+                                type="text"
+                                id="projectName"
+                                placeholder="e.g., SocietyPal, MyLaravelApp"
+                            />
+                            <div class="input-hint">
+                                A unique identifier for this deployment
+                            </div>
+                            <div class="error-message">
+                                Project name is required
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label
+                                >Environment
+                                <span class="required">*</span></label
+                            >
+                            <select id="environment">
+                                <option value="">Select Environment</option>
+                                <option value="production">Production</option>
+                                <option value="staging">Staging</option>
+                                <option value="development">Development</option>
+                            </select>
+                            <div class="error-message">
+                                Please select an environment
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label
+                                >Deployment Scenario
+                                <span class="required">*</span></label
+                            >
+                            <select
+                                id="deploymentScenario"
+                                onchange="updateScenarioHelp()"
+                            >
+                                <option value="">
+                                    Select Deployment Method
+                                </option>
+                                <option value="local-ssh">
+                                    Local Build + SSH
+                                </option>
+                                <option value="github-actions">
+                                    GitHub Actions
+                                </option>
+                                <option value="deployhq">DeployHQ</option>
+                                <option value="git-pull">
+                                    Git Pull + Manual
+                                </option>
+                            </select>
+                            <div class="error-message">
+                                Please select a deployment scenario
+                            </div>
+                        </div>
+
+                        <div
+                            id="scenarioHelp"
+                            class="help-box"
+                            style="display: none; margin-top: 16px"
+                        >
+                            <h4>📌 <span id="scenarioTitle"></span></h4>
+                            <p id="scenarioDescription"></p>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-title">💾 JSON Storage Path</div>
+                        <div class="section-subtitle">
+                            Where to save your configuration
+                        </div>
+
+                        <div class="form-group">
+                            <label>Save Path</label>
+                            <input
+                                type="text"
+                                id="savePath"
+                                value="Admin-Local/1-Current-Project/1-secrets"
+                                placeholder="Enter custom path or use default"
+                            />
+                            <div class="input-hint">
+                                Default: Admin-Local/1-Current-Project/1-secrets
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Server Access -->
+                <div class="form-step" id="step2">
+                    <h2 style="font-size: 18px; margin-bottom: 20px">
+                        🖥️ Server Access Information
+                    </h2>
+
+                    <div class="help-box">
+                        <h4>💡 How to Get Server Information</h4>
+                        <p>
+                            Connect to your server using SSH or VS Code Remote
+                            Extension to gather this information.
+                        </p>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-title">
+                            🔐 SSH Connection Details
+                        </div>
+                        <div class="section-subtitle">
+                            Required for deployment access
+                        </div>
+
+                        <div class="form-group">
+                            <label
+                                >Server Host/IP
+                                <span class="required">*</span></label
+                            >
+                            <input
+                                type="text"
+                                id="serverHost"
+                                placeholder="e.g., 192.168.1.100 or server.example.com"
+                            />
+                            <div class="error-message">
+                                Server host is required
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <div class="form-group" style="flex: 2">
+                                <label
+                                    >SSH Username
+                                    <span class="required">*</span></label
+                                >
+                                <input
+                                    type="text"
+                                    id="sshUsername"
+                                    placeholder="e.g., root, ubuntu, deploy"
+                                />
+                                <div class="error-message">
+                                    SSH username is required
+                                </div>
+                            </div>
+                            <div class="form-group" style="flex: 1">
+                                <label>SSH Port</label>
+                                <input
+                                    type="number"
+                                    id="sshPort"
+                                    value="22"
+                                    placeholder="Default: 22"
+                                />
+                            </div>
+                        </div>
+
+                        <div
+                            class="form-section"
+                            style="
+                                background: white;
+                                border: 2px dashed var(--gray-300);
+                            "
+                        >
+                            <div
+                                class="section-title collapsible"
+                                onclick="toggleCollapse(this)"
+                            >
+                                🔑 SSH Key Setup Guide
+                            </div>
+                            <div class="collapsible-content">
+                                <div class="command-box">
+                                    <button
+                                        class="copy-btn"
+                                        onclick="copyCommand(this)"
+                                    >
+                                        Copy
+                                    </button>
+                                    <pre>
+# 1. Generate SSH key pair (if not exists)
+ssh-keygen -t ed25519 -C "your_email@example.com" -f ~/.ssh/deployment_key
+
+# 2. View your public key
+cat ~/.ssh/deployment_key.pub
+
+# 3. Add to server's authorized_keys
+ssh-copy-id -i ~/.ssh/deployment_key.pub user@server
+
+# Or manually:
+ssh user@server "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < ~/.ssh/deployment_key.pub</pre
+                                    >
+                                </div>
+
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="sshKeySecured" />
+                                    <label for="sshKeySecured"
+                                        >SSH Private Key is secured and
+                                        accessible</label
+                                    >
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="sshKeyAdded" />
+                                    <label for="sshKeyAdded"
+                                        >SSH Public Key added to server's
+                                        authorized_keys</label
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-title">🌐 Server Environment</div>
+                        <div class="section-subtitle">
+                            System information needed for deployment
+                        </div>
+
+                        <div
+                            class="form-section"
+                            style="
+                                background: white;
+                                border: 2px dashed var(--gray-300);
+                            "
+                        >
+                            <div
+                                class="section-title collapsible"
+                                onclick="toggleCollapse(this)"
+                            >
+                                📋 Commands to Get Server Info
+                            </div>
+                            <div class="collapsible-content">
+                                <div class="command-box">
+                                    <button
+                                        class="copy-btn"
+                                        onclick="copyCommand(this)"
+                                    >
+                                        Copy
+                                    </button>
+                                    <pre>
+# Connect via SSH (using config)
+ssh hostinger-factolo
+
+# Or direct connection
+ssh username@server.com -p 22
+
+# Get OS information
+cat /etc/os-release | grep -E "^(NAME|VERSION)"
+# Or
+lsb_release -a
+
+# Check web server
+nginx -v 2>/dev/null || apache2 -v 2>/dev/null || httpd -v 2>/dev/null
+
+# Check PHP version
+php -v | head -1
+
+# Check Node.js version (if needed)
+node -v 2>/dev/null || echo "Node.js not installed"</pre
+                                    >
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Hosting Provider</label>
+                            <select id="hostingProvider">
+                                <option value="">Select Provider</option>
+                                <option value="digitalocean">
+                                    DigitalOcean
+                                </option>
+                                <option value="aws">AWS</option>
+                                <option value="hostinger">Hostinger</option>
+                                <option value="cpanel">cPanel Host</option>
+                                <option value="linode">Linode</option>
+                                <option value="vultr">Vultr</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <div class="form-group">
+                                <label
+                                    >Server OS
+                                    <span class="required">*</span></label
+                                >
+                                <input
+                                    type="text"
+                                    id="serverOS"
+                                    placeholder="e.g., Ubuntu 20.04, CentOS 7"
+                                />
+                                <div class="error-message">
+                                    Server OS is required
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label
+                                    >Web Server
+                                    <span class="required">*</span></label
+                                >
+                                <select id="webServer">
+                                    <option value="">Select</option>
+                                    <option value="apache">Apache</option>
+                                    <option value="nginx">Nginx</option>
+                                </select>
+                                <div class="error-message">
+                                    Web server is required
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <div class="form-group">
+                                <label
+                                    >PHP Version
+                                    <span class="required">*</span></label
+                                >
+                                <input
+                                    type="text"
+                                    id="phpVersion"
+                                    placeholder="e.g., 8.1, 8.2"
+                                />
+                                <div class="error-message">
+                                    PHP version is required
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Node.js Version</label>
+                                <input
+                                    type="text"
+                                    id="nodeVersion"
+                                    placeholder="e.g., 18.x, 20.x (if needed)"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Domain & SSL -->
+                <div class="form-step" id="step3">
+                    <h2 style="font-size: 18px; margin-bottom: 20px">
+                        🌐 Domain & SSL Configuration
+                    </h2>
+
+                    <div class="form-section">
+                        <div class="section-title">🔗 Domain Settings</div>
+                        <div class="section-subtitle">
+                            Your application URLs
+                        </div>
+
+                        <div class="form-group">
+                            <label
+                                >Production Domain
+                                <span class="required">*</span></label
+                            >
+                            <input
+                                type="text"
+                                id="productionDomain"
+                                placeholder="https://yourdomain.com"
+                            />
+                            <div class="error-message">
+                                Production domain is required
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Staging Domain</label>
+                            <input
+                                type="text"
+                                id="stagingDomain"
+                                placeholder="https://staging.yourdomain.com (optional)"
+                            />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Development Domain</label>
+                            <input
+                                type="text"
+                                id="developmentDomain"
+                                placeholder="https://dev.yourdomain.com (optional)"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-title">🔒 SSL Certificate</div>
+                        <div class="section-subtitle">
+                            Security configuration
+                        </div>
+
+                        <div class="form-group">
+                            <label>SSL Provider</label>
+                            <select id="sslProvider">
+                                <option value="">Select Provider</option>
+                                <option value="letsencrypt">
+                                    Let's Encrypt
+                                </option>
+                                <option value="cloudflare">CloudFlare</option>
+                                <option value="custom">
+                                    Custom Certificate
+                                </option>
+                                <option value="none">
+                                    No SSL (Not Recommended)
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="sslAutoRenewal" />
+                            <label for="sslAutoRenewal"
+                                >SSL Auto-renewal Configured</label
+                            >
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="sslActive" />
+                            <label for="sslActive"
+                                >SSL Certificate Active</label
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Database -->
+                <div class="form-step" id="step4">
+                    <h2 style="font-size: 18px; margin-bottom: 20px">
+                        🗄️ Database Information
+                    </h2>
+
+                    <div class="form-section">
+                        <div class="section-title">💾 Database Connection</div>
+                        <div class="section-subtitle">
+                            Required for application data storage
+                        </div>
+
+                        <div class="form-group">
+                            <label
+                                >Database Type
+                                <span class="required">*</span></label
+                            >
+                            <select id="dbType">
+                                <option value="">Select Database</option>
+                                <option value="mysql">MySQL</option>
+                                <option value="postgresql">PostgreSQL</option>
+                                <option value="mariadb">MariaDB</option>
+                                <option value="sqlite">SQLite</option>
+                            </select>
+                            <div class="error-message">
+                                Database type is required
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <div class="form-group" style="flex: 2">
+                                <label
+                                    >Database Host
+                                    <span class="required">*</span></label
+                                >
+                                <input
+                                    type="text"
+                                    id="dbHost"
+                                    placeholder="e.g., localhost, 127.0.0.1"
+                                />
+                                <div class="error-message">
+                                    Database host is required
+                                </div>
+                            </div>
+                            <div class="form-group" style="flex: 1">
+                                <label>Database Port</label>
+                                <input
+                                    type="number"
+                                    id="dbPort"
+                                    value="3306"
+                                    placeholder="Default: 3306"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label
+                                >Database Name
+                                <span class="required">*</span></label
+                            >
+                            <input
+                                type="text"
+                                id="dbName"
+                                placeholder="e.g., societypal_db"
+                            />
+                            <div class="error-message">
+                                Database name is required
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <div class="form-group">
+                                <label
+                                    >Database Username
+                                    <span class="required">*</span></label
+                                >
+                                <input
+                                    type="text"
+                                    id="dbUsername"
+                                    placeholder="e.g., db_user"
+                                />
+                                <div class="error-message">
+                                    Database username is required
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label
+                                    >Database Password
+                                    <span class="required">*</span></label
+                                >
+                                <input
+                                    type="password"
+                                    id="dbPassword"
+                                    placeholder="Secure password"
+                                />
+                                <div class="error-message">
+                                    Database password is required
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-title">🛠️ Database Management</div>
+                        <div class="section-subtitle">
+                            Tools and backup strategy
+                        </div>
+
+                        <div class="form-group">
+                            <label>Admin Access Method</label>
+                            <select id="dbAdminAccess">
+                                <option value="">Select Method</option>
+                                <option value="phpmyadmin">phpMyAdmin</option>
+                                <option value="adminer">Adminer</option>
+                                <option value="cli">Command Line</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Backup Strategy</label>
+                            <select id="dbBackupStrategy">
+                                <option value="">Select Strategy</option>
+                                <option value="automated">Automated</option>
+                                <option value="manual">Manual</option>
+                                <option value="provider">
+                                    Provider Managed
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5: Directory Structure -->
+                <div class="form-step" id="step5">
+                    <h2 style="font-size: 18px; margin-bottom: 20px">
+                        📁 Server Directory Structure
+                    </h2>
+
+                    <div class="form-section">
+                        <div class="section-title">
+                            📂 Web Root Configuration
+                        </div>
+                        <div class="section-subtitle">
+                            Application file locations
+                        </div>
+
+                        <div class="form-group">
+                            <label
+                                >Document Root
+                                <span class="required">*</span></label
+                            >
+                            <input
+                                type="text"
+                                id="documentRoot"
+                                placeholder="e.g., /var/www/html, ~/public_html"
+                            />
+                            <div class="input-hint">
+                                The public-facing directory of your application
+                            </div>
+                            <div class="error-message">
+                                Document root is required
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label
+                                >Project Directory
+                                <span class="required">*</span></label
+                            >
+                            <input
+                                type="text"
+                                id="projectDirectory"
+                                placeholder="e.g., ~/domains/yoursite.com"
+                            />
+                            <div class="input-hint">
+                                Main application directory containing all files
+                            </div>
+                            <div class="error-message">
+                                Project directory is required
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Shared Storage Path</label>
+                            <input
+                                type="text"
+                                id="sharedStorage"
+                                placeholder="e.g., ~/storage/shared (for uploads, logs, cache)"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-title">👤 File Permissions</div>
+                        <div class="section-subtitle">
+                            User and group settings
+                        </div>
+
+                        <div class="input-group">
+                            <div class="form-group">
+                                <label>Web User</label>
+                                <input
+                                    type="text"
+                                    id="webUser"
+                                    placeholder="e.g., www-data, apache, nginx"
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label>File Owner</label>
+                                <input
+                                    type="text"
+                                    id="fileOwner"
+                                    placeholder="e.g., deploy, ubuntu"
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label>Group</label>
+                                <input
+                                    type="text"
+                                    id="fileGroup"
+                                    placeholder="e.g., www-data"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 6: Security -->
+                <div class="form-step" id="step6">
+                    <h2 style="font-size: 18px; margin-bottom: 20px">
+                        🔑 Authentication & Security
+                    </h2>
+
+                    <div class="form-section">
+                        <div class="section-title">🔐 Application Secrets</div>
+                        <div class="section-subtitle">
+                            Security keys and tokens
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="appKeyGenerated" />
+                            <label for="appKeyGenerated"
+                                >App Key Generated and Secured</label
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label>JWT Secret (if applicable)</label>
+                            <input
+                                type="text"
+                                id="jwtSecret"
+                                placeholder="Leave empty if not using JWT"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-title">🌐 Third-Party Services</div>
+                        <div class="section-subtitle">
+                            External service integrations
+                        </div>
+
+                        <div class="form-group">
+                            <label>Email Service</label>
+                            <select id="emailService">
+                                <option value="">Select Service</option>
+                                <option value="smtp">SMTP</option>
+                                <option value="sendgrid">SendGrid</option>
+                                <option value="mailgun">Mailgun</option>
+                                <option value="ses">Amazon SES</option>
+                                <option value="none">None</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Payment Gateway</label>
+                            <select id="paymentGateway">
+                                <option value="">Select Gateway</option>
+                                <option value="stripe">Stripe</option>
+                                <option value="paypal">PayPal</option>
+                                <option value="razorpay">Razorpay</option>
+                                <option value="none">None</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Storage Service</label>
+                            <select id="storageService">
+                                <option value="">Select Service</option>
+                                <option value="s3">AWS S3</option>
+                                <option value="r2">CloudFlare R2</option>
+                                <option value="local">Local Storage</option>
+                                <option value="none">None</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>CDN Service</label>
+                            <select id="cdnService">
+                                <option value="">Select CDN</option>
+                                <option value="cloudflare">CloudFlare</option>
+                                <option value="cloudfront">
+                                    AWS CloudFront
+                                </option>
+                                <option value="none">None</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 7: Review -->
+                <div class="form-step" id="step7">
+                    <h2 style="font-size: 18px; margin-bottom: 20px">
+                        ✅ Review Configuration
+                    </h2>
+
+                    <div class="help-box">
+                        <h4>📋 Configuration Summary</h4>
+                        <p>
+                            Review your deployment configuration below. Click
+                            "Generate JSON" to create your configuration file.
+                        </p>
+                    </div>
+
+                    <div class="file-path-input">
+                        <input
+                            type="text"
+                            id="finalSavePath"
+                            placeholder="Admin-Local/1-Current-Project/1-secrets"
+                        />
+                        <button
+                            class="btn btn-primary"
+                            onclick="updateSavePath()"
+                        >
+                            Update Path
+                        </button>
+                    </div>
+
+                    <div class="json-output">
+                        <pre id="jsonPreview">
+{
+  "configuration": "Will be generated after validation..."
+}</pre
+                        >
+                    </div>
+
+                    <div style="margin-top: 20px; display: flex; gap: 12px">
+                        <button
+                            class="btn btn-primary"
+                            onclick="generateJSON()"
+                            style="flex: 1"
+                        >
+                            <span class="icon">💾</span> Generate JSON
+                        </button>
+                        <button class="btn btn-secondary" onclick="copyJSON()">
+                            <span class="icon">📋</span> Copy JSON
+                        </button>
+                        <button
+                            class="btn btn-secondary"
+                            onclick="downloadJSON()"
+                        >
+                            <span class="icon">⬇️</span> Download
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="button-group">
+                <button
+                    class="btn btn-secondary"
+                    id="prevBtn"
+                    onclick="changeStep(-1)"
+                    disabled
+                >
+                    ← Previous
+                </button>
+                <button
+                    class="btn btn-primary"
+                    id="nextBtn"
+                    onclick="changeStep(1)"
+                >
+                    Next →
+                </button>
+            </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="toast"></div>
+
+        <!-- Hidden file input for import -->
+        <input
+            type="file"
+            id="fileInput"
+            accept=".json"
+            style="display: none"
+            onchange="handleFileImport(event)"
+        />
+
+        <script>
+            // State management
+            let currentStep = 1;
+            const totalSteps = 7;
+            let configuration = {};
+
+            // Initialize
+            document.addEventListener("DOMContentLoaded", function () {
+                loadFromLocalStorage();
+                updateProgressBar();
+                updateButtons();
+
+                // Set default save path
+                const savePath = document.getElementById("savePath");
+                const finalSavePath = document.getElementById("finalSavePath");
+                if (savePath && !savePath.value) {
+                    savePath.value = "Admin-Local/1-Current-Project/1-secrets";
+                }
+                if (finalSavePath && !finalSavePath.value) {
+                    finalSavePath.value = savePath.value;
+                }
+            });
+
+            // Step navigation
+            function changeStep(direction) {
+                if (direction === 1 && !validateCurrentStep()) {
+                    showToast("Please fill in all required fields", "error");
+                    return;
+                }
+
+                // Save current step data
+                saveStepData();
+
+                // Update step
+                document
+                    .getElementById(`step${currentStep}`)
+                    .classList.remove("active");
+                currentStep += direction;
+                document
+                    .getElementById(`step${currentStep}`)
+                    .classList.add("active");
+
+                // Update UI
+                updateProgressBar();
+                updateButtons();
+                updateStepIndicators();
+
+                // If final step, generate preview
+                if (currentStep === totalSteps) {
+                    generatePreview();
+                }
+            }
+
+            function updateProgressBar() {
+                const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+                document.getElementById(
+                    "progressFill"
+                ).style.width = `${progress}%`;
+            }
+
+            function updateButtons() {
+                const prevBtn = document.getElementById("prevBtn");
+                const nextBtn = document.getElementById("nextBtn");
+
+                prevBtn.disabled = currentStep === 1;
+
+                if (currentStep === totalSteps) {
+                    nextBtn.style.display = "none";
+                } else {
+                    nextBtn.style.display = "block";
+                    nextBtn.innerHTML =
+                        currentStep === totalSteps - 1 ? "Review →" : "Next →";
+                }
+            }
+
+            function updateStepIndicators() {
+                document
+                    .querySelectorAll(".progress-step")
+                    .forEach((step, index) => {
+                        const stepNum = index + 1;
+                        if (stepNum < currentStep) {
+                            step.classList.add("completed");
+                            step.classList.remove("active");
+                        } else if (stepNum === currentStep) {
+                            step.classList.add("active");
+                            step.classList.remove("completed");
+                        } else {
+                            step.classList.remove("active", "completed");
+                        }
+                    });
+            }
+
+            // Validation
+            function validateCurrentStep() {
+                const step = document.getElementById(`step${currentStep}`);
+                const requiredFields = step.querySelectorAll(
+                    '[required], input[id*="Name"]:not([id*="staging"]):not([id*="development"]), select[id*="Type"], input[id*="Host"]:not([id*="staging"]):not([id*="development"])'
+                );
+                let isValid = true;
+
+                requiredFields.forEach((field) => {
+                    const formGroup = field.closest(".form-group");
+                    if (!field.value.trim()) {
+                        formGroup.classList.add("error");
+                        isValid = false;
+                    } else {
+                        formGroup.classList.remove("error");
+                    }
+                });
+
+                // Special validation for step 1
+                if (currentStep === 1) {
+                    const projectName = document.getElementById("projectName");
+                    const environment = document.getElementById("environment");
+                    const deploymentScenario =
+                        document.getElementById("deploymentScenario");
+
+                    if (!projectName.value.trim()) {
+                        projectName
+                            .closest(".form-group")
+                            .classList.add("error");
+                        isValid = false;
+                    }
+                    if (!environment.value) {
+                        environment
+                            .closest(".form-group")
+                            .classList.add("error");
+                        isValid = false;
+                    }
+                    if (!deploymentScenario.value) {
+                        deploymentScenario
+                            .closest(".form-group")
+                            .classList.add("error");
+                        isValid = false;
+                    }
+                }
+
+                return isValid;
+            }
+
+            // Save and load data
+            function saveStepData() {
+                const inputs = document.querySelectorAll(
+                    `#step${currentStep} input, #step${currentStep} select, #step${currentStep} textarea`
+                );
+                inputs.forEach((input) => {
+                    if (input.type === "checkbox") {
+                        configuration[input.id] = input.checked;
+                    } else {
+                        configuration[input.id] = input.value;
+                    }
+                });
+
+                // Save to localStorage
+                localStorage.setItem(
+                    "deploymentConfig",
+                    JSON.stringify(configuration)
+                );
+            }
+
+            function loadFromLocalStorage() {
+                const saved = localStorage.getItem("deploymentConfig");
+                if (saved) {
+                    configuration = JSON.parse(saved);
+                    Object.keys(configuration).forEach((key) => {
+                        const element = document.getElementById(key);
+                        if (element) {
+                            if (element.type === "checkbox") {
+                                element.checked = configuration[key];
+                            } else {
+                                element.value = configuration[key];
+                            }
+                        }
+                    });
+                }
+            }
+
+            // Generate JSON
+            function generateJSON() {
+                saveStepData();
+
+                const config = {
+                    project: {
+                        name: configuration.projectName || "",
+                        environment: configuration.environment || "",
+                        deploymentScenario:
+                            configuration.deploymentScenario || "",
+                        savePath:
+                            configuration.finalSavePath ||
+                            configuration.savePath ||
+                            "Admin-Local/1-Current-Project/1-secrets",
+                    },
+                    server: {
+                        access: {
+                            host: configuration.serverHost || "",
+                            username: configuration.sshUsername || "",
+                            port: parseInt(configuration.sshPort) || 22,
+                            keySecured: configuration.sshKeySecured || false,
+                            keyAdded: configuration.sshKeyAdded || false,
+                        },
+                        environment: {
+                            provider: configuration.hostingProvider || "",
+                            os: configuration.serverOS || "",
+                            webServer: configuration.webServer || "",
+                            phpVersion: configuration.phpVersion || "",
+                            nodeVersion: configuration.nodeVersion || "",
+                        },
+                    },
+                    domain: {
+                        production: configuration.productionDomain || "",
+                        staging: configuration.stagingDomain || "",
+                        development: configuration.developmentDomain || "",
+                        ssl: {
+                            provider: configuration.sslProvider || "",
+                            autoRenewal: configuration.sslAutoRenewal || false,
+                            active: configuration.sslActive || false,
+                        },
+                    },
+                    database: {
+                        type: configuration.dbType || "",
+                        host: configuration.dbHost || "",
+                        port: parseInt(configuration.dbPort) || 3306,
+                        name: configuration.dbName || "",
+                        username: configuration.dbUsername || "",
+                        password: configuration.dbPassword || "",
+                        adminAccess: configuration.dbAdminAccess || "",
+                        backupStrategy: configuration.dbBackupStrategy || "",
+                    },
+                    directories: {
+                        documentRoot: configuration.documentRoot || "",
+                        projectDirectory: configuration.projectDirectory || "",
+                        sharedStorage: configuration.sharedStorage || "",
+                        permissions: {
+                            webUser: configuration.webUser || "",
+                            fileOwner: configuration.fileOwner || "",
+                            group: configuration.fileGroup || "",
+                        },
+                    },
+                    security: {
+                        appKeyGenerated: configuration.appKeyGenerated || false,
+                        jwtSecret: configuration.jwtSecret || "",
+                        services: {
+                            email: configuration.emailService || "",
+                            payment: configuration.paymentGateway || "",
+                            storage: configuration.storageService || "",
+                            cdn: configuration.cdnService || "",
+                        },
+                    },
+                    metadata: {
+                        createdAt: new Date().toISOString(),
+                        version: "1.0.0",
+                    },
+                };
+
+                const jsonString = JSON.stringify(config, null, 2);
+                document.getElementById("jsonPreview").textContent = jsonString;
+
+                showToast("Configuration generated successfully!", "success");
+                return config;
+            }
+
+            function generatePreview() {
+                generateJSON();
+            }
+
+            // Import/Export functions
+            function importJSON() {
+                document.getElementById("fileInput").click();
+            }
+
+            function handleFileImport(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    try {
+                        const imported = JSON.parse(e.target.result);
+
+                        // Map imported data to form fields
+                        if (imported.project) {
+                            setFieldValue("projectName", imported.project.name);
+                            setFieldValue(
+                                "environment",
+                                imported.project.environment
+                            );
+                            setFieldValue(
+                                "deploymentScenario",
+                                imported.project.deploymentScenario
+                            );
+                            setFieldValue(
+                                "savePath",
+                                imported.project.savePath
+                            );
+                        }
+
+                        if (imported.server) {
+                            setFieldValue(
+                                "serverHost",
+                                imported.server.access.host
+                            );
+                            setFieldValue(
+                                "sshUsername",
+                                imported.server.access.username
+                            );
+                            setFieldValue(
+                                "sshPort",
+                                imported.server.access.port
+                            );
+                            setFieldValue(
+                                "sshKeySecured",
+                                imported.server.access.keySecured,
+                                true
+                            );
+                            setFieldValue(
+                                "sshKeyAdded",
+                                imported.server.access.keyAdded,
+                                true
+                            );
+                            setFieldValue(
+                                "hostingProvider",
+                                imported.server.environment.provider
+                            );
+                            setFieldValue(
+                                "serverOS",
+                                imported.server.environment.os
+                            );
+                            setFieldValue(
+                                "webServer",
+                                imported.server.environment.webServer
+                            );
+                            setFieldValue(
+                                "phpVersion",
+                                imported.server.environment.phpVersion
+                            );
+                            setFieldValue(
+                                "nodeVersion",
+                                imported.server.environment.nodeVersion
+                            );
+                        }
+
+                        if (imported.domain) {
+                            setFieldValue(
+                                "productionDomain",
+                                imported.domain.production
+                            );
+                            setFieldValue(
+                                "stagingDomain",
+                                imported.domain.staging
+                            );
+                            setFieldValue(
+                                "developmentDomain",
+                                imported.domain.development
+                            );
+                            setFieldValue(
+                                "sslProvider",
+                                imported.domain.ssl.provider
+                            );
+                            setFieldValue(
+                                "sslAutoRenewal",
+                                imported.domain.ssl.autoRenewal,
+                                true
+                            );
+                            setFieldValue(
+                                "sslActive",
+                                imported.domain.ssl.active,
+                                true
+                            );
+                        }
+
+                        if (imported.database) {
+                            setFieldValue("dbType", imported.database.type);
+                            setFieldValue("dbHost", imported.database.host);
+                            setFieldValue("dbPort", imported.database.port);
+                            setFieldValue("dbName", imported.database.name);
+                            setFieldValue(
+                                "dbUsername",
+                                imported.database.username
+                            );
+                            setFieldValue(
+                                "dbPassword",
+                                imported.database.password
+                            );
+                            setFieldValue(
+                                "dbAdminAccess",
+                                imported.database.adminAccess
+                            );
+                            setFieldValue(
+                                "dbBackupStrategy",
+                                imported.database.backupStrategy
+                            );
+                        }
+
+                        if (imported.directories) {
+                            setFieldValue(
+                                "documentRoot",
+                                imported.directories.documentRoot
+                            );
+                            setFieldValue(
+                                "projectDirectory",
+                                imported.directories.projectDirectory
+                            );
+                            setFieldValue(
+                                "sharedStorage",
+                                imported.directories.sharedStorage
+                            );
+                            setFieldValue(
+                                "webUser",
+                                imported.directories.permissions.webUser
+                            );
+                            setFieldValue(
+                                "fileOwner",
+                                imported.directories.permissions.fileOwner
+                            );
+                            setFieldValue(
+                                "fileGroup",
+                                imported.directories.permissions.group
+                            );
+                        }
+
+                        if (imported.security) {
+                            setFieldValue(
+                                "appKeyGenerated",
+                                imported.security.appKeyGenerated,
+                                true
+                            );
+                            setFieldValue(
+                                "jwtSecret",
+                                imported.security.jwtSecret
+                            );
+                            setFieldValue(
+                                "emailService",
+                                imported.security.services.email
+                            );
+                            setFieldValue(
+                                "paymentGateway",
+                                imported.security.services.payment
+                            );
+                            setFieldValue(
+                                "storageService",
+                                imported.security.services.storage
+                            );
+                            setFieldValue(
+                                "cdnService",
+                                imported.security.services.cdn
+                            );
+                        }
+
+                        saveStepData();
+                        showToast(
+                            "Configuration imported successfully!",
+                            "success"
+                        );
+                    } catch (error) {
+                        showToast(
+                            "Failed to import configuration: " + error.message,
+                            "error"
+                        );
+                    }
+                };
+                reader.readAsText(file);
+            }
+
+            function setFieldValue(id, value, isCheckbox = false) {
+                const field = document.getElementById(id);
+                if (field) {
+                    if (isCheckbox) {
+                        field.checked = value;
+                    } else {
+                        field.value = value || "";
+                    }
+                    configuration[id] = value;
+                }
+            }
+
+            function exportJSON() {
+                const config = generateJSON();
+                downloadJSON();
+            }
+
+            function downloadJSON() {
+                const config = generateJSON();
+                const jsonString = JSON.stringify(config, null, 2);
+                const blob = new Blob([jsonString], {
+                    type: "application/json",
+                });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `deployment-config-${
+                    config.project.name || "unnamed"
+                }-${Date.now()}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast("Configuration downloaded!", "success");
+            }
+
+            function copyJSON() {
+                const preview = document.getElementById("jsonPreview");
+                navigator.clipboard
+                    .writeText(preview.textContent)
+                    .then(() => {
+                        showToast("JSON copied to clipboard!", "success");
+                    })
+                    .catch(() => {
+                        showToast("Failed to copy JSON", "error");
+                    });
+            }
+
+            function clearAll() {
+                if (
+                    confirm(
+                        "Are you sure you want to clear all data? This cannot be undone."
+                    )
+                ) {
+                    localStorage.removeItem("deploymentConfig");
+                    configuration = {};
+                    document
+                        .querySelectorAll("input, select, textarea")
+                        .forEach((input) => {
+                            if (input.type === "checkbox") {
+                                input.checked = false;
+                            } else if (
+                                input.id !== "savePath" &&
+                                input.id !== "finalSavePath"
+                            ) {
+                                input.value = "";
+                            }
+                        });
+                    showToast("All data cleared", "success");
+                }
+            }
+
+            function updateSavePath() {
+                const finalPath =
+                    document.getElementById("finalSavePath").value;
+                if (finalPath) {
+                    configuration.finalSavePath = finalPath;
+                    saveStepData();
+                    showToast("Save path updated", "success");
+                }
+            }
+
+            // Helper functions
+            function updateScenarioHelp() {
+                const scenario =
+                    document.getElementById("deploymentScenario").value;
+                const helpBox = document.getElementById("scenarioHelp");
+                const title = document.getElementById("scenarioTitle");
+                const description = document.getElementById(
+                    "scenarioDescription"
+                );
+
+                const scenarios = {
+                    "local-ssh": {
+                        title: "Local Build + SSH",
+                        description:
+                            "Build locally and deploy via SSH/SFTP. Best for simple projects with full control.",
+                    },
+                    "github-actions": {
+                        title: "GitHub Actions",
+                        description:
+                            "Automated CI/CD with GitHub. Best for team collaboration and automated testing.",
+                    },
+                    deployhq: {
+                        title: "DeployHQ Professional",
+                        description:
+                            "Professional deployment service with advanced features and monitoring.",
+                    },
+                    "git-pull": {
+                        title: "Git Pull + Manual",
+                        description:
+                            "Traditional approach using git on server. Best for shared hosting/cPanel.",
+                    },
+                };
+
+                if (scenario && scenarios[scenario]) {
+                    helpBox.style.display = "block";
+                    title.textContent = scenarios[scenario].title;
+                    description.textContent = scenarios[scenario].description;
+                } else {
+                    helpBox.style.display = "none";
+                }
+            }
+
+            function toggleCollapse(element) {
+                element.classList.toggle("collapsed");
+                const content = element.nextElementSibling;
+                content.classList.toggle("collapsed");
+            }
+
+            function copyCommand(button) {
+                const codeBlock = button.parentElement.querySelector("pre");
+                navigator.clipboard
+                    .writeText(codeBlock.textContent)
+                    .then(() => {
+                        const originalText = button.textContent;
+                        button.textContent = "✓ Copied";
+                        button.style.background = "var(--success)";
+                        setTimeout(() => {
+                            button.textContent = originalText;
+                            button.style.background = "var(--primary)";
+                        }, 2000);
+                    });
+            }
+
+            function showToast(message, type = "success") {
+                const toast = document.getElementById("toast");
+                toast.textContent = message;
+                toast.className = `toast ${type} show`;
+                setTimeout(() => {
+                    toast.classList.remove("show");
+                }, 3000);
+            }
+
+            // Auto-save
+            setInterval(() => {
+                saveStepData();
+            }, 30000); // Auto-save every 30 seconds
+        </script>
+    </body>
+</html>

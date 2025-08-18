@@ -1,0 +1,422 @@
+#!/bin/bash
+# =================================================================
+# GitHub Actions Server-Side Deployment Script Template
+# =================================================================
+# This script should be placed on your server for atomic deployments
+# Usage: ./deploy-server-script.sh [staging|production] [release-archive.tar.gz]
+#
+# Prerequisites:
+# - SSH access configured for GitHub Actions
+# - Proper directory structure on server
+# - Web server configuration (Apache/Nginx)
+# - Database access configured
+
+set -e  # Exit immediately if a command exits with a non-zero status
+set -u  # Exit if undefined variables are used
+
+# =================================================================
+# CONFIGURATION VARIABLES
+# =================================================================
+PROJECT_NAME="{{PROJECT_NAME}}"
+DOMAIN_STAGING="staging.{{DOMAIN}}"
+DOMAIN_PRODUCTION="{{DOMAIN}}"
+
+# Server paths (adjust based on your hosting provider)
+BASE_DIR="$HOME/domains"
+SHARED_DIR="shared"
+RELEASES_DIR="releases"
+CURRENT_DIR="current"
+
+# =================================================================
+# LOGGING FUNCTIONS
+# =================================================================
+log_info() {
+    echo "ℹ️  [$(date '+%Y-%m-%d %H:%M:%S')] $1"
+}
+
+log_success() {
+    echo "✅ [$(date '+%Y-%m-%d %H:%M:%S')] $1"
+}
+
+log_error() {
+    echo "❌ [$(date '+%Y-%m-%d %H:%M:%S')] ERROR: $1" >&2
+}
+
+log_warning() {
+    echo "⚠️  [$(date '+%Y-%m-%d %H:%M:%S')] WARNING: $1"
+}
+
+# =================================================================
+# UTILITY FUNCTIONS
+# =================================================================
+cleanup_on_error() {
+    local exit_code=$?
+    log_error "Deployment failed with exit code $exit_code"
+    
+    if [ -n "${RELEASE_DIR:-}" ] && [ -d "$RELEASE_DIR" ]; then
+        log_info "Cleaning up failed release: $RELEASE_DIR"
+        rm -rf "$RELEASE_DIR"
+    fi
+    
+    exit $exit_code
+}
+
+check_prerequisites() {
+    log_info "Checking deployment prerequisites..."
+    
+    # Check required commands
+    local required_commands=("php" "composer" "tar")
+    for cmd in "${required_commands[@]}"; do
+        if ! command -v "$cmd" &> /dev/null; then
+            log_error "Required command '$cmd' not found"
+            exit 1
+        fi
+    done
+    
+    # Check if we're in the correct directory structure
+    if [ ! -d "$BASE_DIR/$DOMAIN" ]; then
+        log_error "Project directory not found: $BASE_DIR/$DOMAIN"
+        exit 1
+    fi
+    
+    log_success "Prerequisites check passed"
+}
+
+create_directory_structure() {
+    log_info "Ensuring directory structure exists..."
+    
+    cd "$BASE_DIR/$DOMAIN"
+    
+    # Create required directories
+    mkdir -p "$RELEASES_DIR"
+    mkdir -p "$SHARED_DIR/storage/app/public"
+    mkdir -p "$SHARED_DIR/storage/framework/cache"
+    mkdir -p "$SHARED_DIR/storage/framework/sessions"
+    mkdir -p "$SHARED_DIR/storage/framework/views"
+    mkdir -p "$SHARED_DIR/storage/logs"
+    mkdir -p "$SHARED_DIR/public/uploads"
+    
+    # Create shared .env if it doesn't exist
+    if [ ! -f "$SHARED_DIR/.env" ]; then
+        log_info "Creating shared .env file template"
+        cat > "$SHARED_DIR/.env" << ENVFILE
+APP_NAME=${PROJECT_NAME}
+APP_ENV=${ENVIRONMENT}
+APP_KEY=
+APP_DEBUG=false
+APP_URL=https://${DOMAIN}
+
+LOG_CHANNEL=daily
+LOG_DEPRECATIONS_CHANNEL=null
+LOG_LEVEL=error
+
+DB_CONNECTION=mysql
+DB_HOST={{DB_HOST}}
+DB_PORT={{DB_PORT}}
+DB_DATABASE={{DB_DATABASE}}
+DB_USERNAME={{DB_USERNAME}}
+DB_PASSWORD={{DB_PASSWORD}}
+
+BROADCAST_DRIVER=log
+CACHE_DRIVER=file
+FILESYSTEM_DRIVER=local
+QUEUE_CONNECTION=sync
+SESSION_DRIVER=file
+SESSION_LIFETIME=120
+
+# Add your other environment variables here
+ENVFILE
+        log_warning ".env file created - please update with actual values"
+    fi
+    
+    log_success "Directory structure ready"
+}
+
+extract_release() {
+    local archive_path=$1
+    
+    log_info "Extracting release archive..."
+    
+    # Create timestamped release directory
+    TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+    RELEASE_DIR="$BASE_DIR/$DOMAIN/$RELEASES_DIR/$TIMESTAMP"
+    
+    mkdir -p "$RELEASE_DIR"
+    
+    # Extract archive to release directory
+    tar -xzf "$archive_path" -C "$RELEASE_DIR"
+    
+    log_success "Release extracted to: $RELEASE_DIR"
+}
+
+link_shared_resources() {
+    log_info "Linking shared resources..."
+    
+    cd "$RELEASE_DIR"
+    
+    # Remove directories that should be shared
+    rm -rf storage
+    rm -f .env
+    
+    # Link shared resources
+    ln -nfs "../../$SHARED_DIR/.env" .env
+    ln -nfs "../../$SHARED_DIR/storage" storage
+    
+    # Link public uploads if they exist
+    if [ -d "../../$SHARED_DIR/public/uploads" ]; then
+        rm -rf public/uploads
+        ln -nfs "../../../$SHARED_DIR/public/uploads" public/uploads
+    fi
+    
+    # Create storage link
+    if [ ! -L public/storage ]; then
+        ln -nfs ../storage/app/public public/storage
+    fi
+    
+    log_success "Shared resources linked"
+}
+
+set_permissions() {
+    log_info "Setting proper file permissions..."
+    
+    cd "$RELEASE_DIR"
+    
+    # Set general file permissions
+    find . -type f -exec chmod 644 {} \;
+    find . -type d -exec chmod 755 {} \;
+    
+    # Set executable permissions for scripts
+    find . -name "*.sh" -exec chmod +x {} \; 2>/dev/null || true
+    
+    # Set writable permissions for storage and cache
+    chmod -R 775 storage bootstrap/cache 2>/dev/null || true
+    
+    log_success "Permissions set"
+}
+
+handle_database() {
+    log_info "Handling database operations..."
+    
+    cd "$RELEASE_DIR"
+    
+    # Check if this is a fresh installation
+    if [ -f "../../$SHARED_DIR/storage/app/installed.flag" ] && [ "${FORCE_FRESH:-false}" != "true" ]; then
+        log_info "UPDATE DEPLOYMENT - Running database migrations..."
+        
+        # Check for pending migrations
+        PENDING_MIGRATIONS=$(php artisan migrate:status --pending 2>/dev/null | grep -v "Migration name" | wc -l)
+        
+        if [ "$PENDING_MIGRATIONS" -gt 0 ]; then
+            log_info "Found $PENDING_MIGRATIONS pending migration(s)"
+            
+            # Check for potentially destructive migrations
+            if php artisan migrate:status --pending 2>/dev/null | grep -E "(drop|rename|modify)" >/dev/null 2>&1; then
+                log_error "DESTRUCTIVE MIGRATIONS DETECTED - Manual review required"
+                log_error "Please review migrations before deployment"
+                php artisan migrate:status --pending
+                exit 1
+            fi
+            
+            # Run safe migrations
+            php artisan migrate --force --no-interaction
+            log_success "Database migrations completed"
+        else
+            log_info "No pending migrations found"
+        fi
+    else
+        log_info "FRESH INSTALLATION - CodeCanyon setup required"
+        touch "../../$SHARED_DIR/storage/app/installed.flag"
+        log_warning "Complete installation via web interface after deployment"
+    fi
+}
+
+optimize_application() {
+    log_info "Optimizing Laravel application..."
+    
+    cd "$RELEASE_DIR"
+    
+    # Clear any existing cache
+    php artisan config:clear 2>/dev/null || true
+    php artisan route:clear 2>/dev/null || true
+    php artisan view:clear 2>/dev/null || true
+    
+    # Build optimized caches
+    php artisan config:cache
+    php artisan route:cache
+    php artisan view:cache
+    
+    # Additional optimizations
+    if [ "$ENVIRONMENT" = "production" ]; then
+        php artisan optimize 2>/dev/null || true
+    fi
+    
+    log_success "Application optimized"
+}
+
+atomic_switch() {
+    log_info "Performing atomic switch to new release..."
+    
+    cd "$BASE_DIR/$DOMAIN"
+    
+    # Create backup of current symlink (for rollback)
+    if [ -L "$CURRENT_DIR" ]; then
+        BACKUP_TARGET=$(readlink "$CURRENT_DIR")
+        echo "$BACKUP_TARGET" > .last_release_backup
+        log_info "Backup reference saved: $BACKUP_TARGET"
+    fi
+    
+    # Atomic symlink switch
+    ln -nfs "$RELEASES_DIR/$TIMESTAMP" "$CURRENT_DIR"
+    
+    # Update public_html symlink if it doesn't exist
+    if [ ! -L public_html ]; then
+        log_info "Setting up public_html symlink..."
+        rm -rf public_html 2>/dev/null || true
+        ln -s "$CURRENT_DIR/public" public_html
+    fi
+    
+    log_success "Atomic switch completed - Release: $TIMESTAMP"
+}
+
+cleanup_old_releases() {
+    log_info "Cleaning up old releases..."
+    
+    cd "$BASE_DIR/$DOMAIN/$RELEASES_DIR"
+    
+    # Keep only the last 3 releases
+    ls -t | tail -n +4 | xargs rm -rf 2>/dev/null || true
+    
+    REMAINING_RELEASES=$(ls -1 | wc -l)
+    log_success "Cleanup completed - $REMAINING_RELEASES releases retained"
+}
+
+perform_health_check() {
+    local max_attempts=5
+    local attempt=1
+    local site_url="https://$DOMAIN"
+    
+    log_info "Performing health check on $site_url..."
+    
+    # Wait for web server to recognize changes
+    sleep 10
+    
+    while [ $attempt -le $max_attempts ]; do
+        log_info "Health check attempt $attempt/$max_attempts..."
+        
+        # Check if site responds
+        if curl -f -s --max-time 30 "$site_url" >/dev/null; then
+            log_success "Health check passed - Site is responding"
+            
+            # Additional checks
+            RESPONSE_TIME=$(curl -w "%{time_total}" -s -o /dev/null "$site_url")
+            log_info "Response time: ${RESPONSE_TIME}s"
+            
+            return 0
+        else
+            log_warning "Health check failed, waiting 10 seconds..."
+            sleep 10
+            ((attempt++))
+        fi
+    done
+    
+    log_error "Health check failed after $max_attempts attempts"
+    return 1
+}
+
+rollback() {
+    log_error "ROLLBACK INITIATED"
+    
+    cd "$BASE_DIR/$DOMAIN"
+    
+    if [ -f .last_release_backup ]; then
+        BACKUP_RELEASE=$(cat .last_release_backup)
+        if [ -d "$BACKUP_RELEASE" ]; then
+            log_info "Rolling back to: $BACKUP_RELEASE"
+            ln -nfs "$BACKUP_RELEASE" "$CURRENT_DIR"
+            log_success "Rollback completed"
+            return 0
+        fi
+    fi
+    
+    log_error "No valid backup found for rollback"
+    return 1
+}
+
+# =================================================================
+# MAIN DEPLOYMENT FUNCTION
+# =================================================================
+main() {
+    local environment=${1:-staging}
+    local archive_path=${2:-}
+    
+    # Set environment variables
+    case $environment in
+        production)
+            DOMAIN="$DOMAIN_PRODUCTION"
+            ENVIRONMENT="production"
+            ;;
+        staging)
+            DOMAIN="$DOMAIN_STAGING"
+            ENVIRONMENT="staging"
+            ;;
+        *)
+            log_error "Invalid environment: $environment (use 'staging' or 'production')"
+            exit 1
+            ;;
+    esac
+    
+    # Validate archive path
+    if [ -z "$archive_path" ] || [ ! -f "$archive_path" ]; then
+        log_error "Release archive not found: $archive_path"
+        exit 1
+    fi
+    
+    log_info "Starting deployment to $ENVIRONMENT environment ($DOMAIN)"
+    log_info "Release archive: $archive_path"
+    
+    # Set up error handling
+    trap cleanup_on_error ERR
+    
+    # Execute deployment steps
+    check_prerequisites
+    create_directory_structure
+    extract_release "$archive_path"
+    link_shared_resources
+    set_permissions
+    handle_database
+    optimize_application
+    atomic_switch
+    
+    # Verify deployment
+    if perform_health_check; then
+        cleanup_old_releases
+        log_success "🎉 DEPLOYMENT COMPLETED SUCCESSFULLY"
+        log_success "🌐 Site available at: https://$DOMAIN"
+        
+        # Clean up the release archive
+        rm -f "$archive_path"
+    else
+        log_error "Health check failed - initiating rollback"
+        if rollback; then
+            log_info "Rollback completed - check previous release"
+        else
+            log_error "Rollback failed - manual intervention required"
+        fi
+        exit 1
+    fi
+}
+
+# =================================================================
+# SCRIPT EXECUTION
+# =================================================================
+if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
+    # Script is being executed directly
+    if [ $# -lt 2 ]; then
+        echo "Usage: $0 <environment> <archive_path>"
+        echo "  environment: staging|production"
+        echo "  archive_path: path to release archive (.tar.gz)"
+        exit 1
+    fi
+    
+    main "$@"
+fi

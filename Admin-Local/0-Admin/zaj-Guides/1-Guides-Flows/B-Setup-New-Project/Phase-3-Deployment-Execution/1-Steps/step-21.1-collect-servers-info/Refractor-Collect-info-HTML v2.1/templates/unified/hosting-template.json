@@ -1,0 +1,572 @@
+{
+  "templateVersion": "2.1.0",
+  "templateType": "hosting-providers",
+  "lastUpdated": "2025-08-17T00:00:00Z",
+  "description": "Unified template for all hosting providers with provider-specific configurations",
+  
+  "providers": {
+    "hostinger": {
+      "displayName": "Hostinger (hPanel)",
+      "category": "managed-shared",
+      "icon": "🏠",
+      "active": true,
+      "complexity": "low",
+      "documentation": "../providers/hostinger/guide.md",
+      "features": ["SSH Access (Premium+)", "Multiple PHP Versions", "Let's Encrypt SSL", "Custom Deploy Paths"]
+    },
+    "digitalocean": {
+      "displayName": "DigitalOcean Droplets",
+      "category": "cloud-vps", 
+      "icon": "🌊",
+      "active": true,
+      "complexity": "medium",
+      "documentation": "../providers/digitalocean/guide.md",
+      "features": ["Full Root Access", "Flexible PHP/Node Versions", "Custom SSL", "Full Server Control"]
+    },
+    "aws-ec2": {
+      "displayName": "AWS EC2",
+      "category": "cloud-infrastructure",
+      "icon": "☁️",
+      "active": true,
+      "complexity": "high",
+      "documentation": "../providers/aws-ec2/guide.md",
+      "features": ["Enterprise Scale", "Advanced Security", "Load Balancing", "Auto Scaling"]
+    },
+    "cpanel": {
+      "displayName": "Generic cPanel Hosting",
+      "category": "shared-hosting",
+      "icon": "🔧",
+      "active": true,
+      "complexity": "low",
+      "documentation": "../providers/cpanel/guide.md",
+      "features": ["Traditional cPanel", "Addon Domains", "phpMyAdmin", "File Manager"]
+    },
+    "cloudways": {
+      "displayName": "Cloudways Managed Cloud",
+      "category": "managed-cloud",
+      "icon": "☁️",
+      "active": true,
+      "complexity": "medium",
+      "documentation": "../providers/cloudways/guide.md",
+      "features": ["Managed Cloud", "Built-in Staging", "Git Integration", "Performance Monitoring"]
+    }
+  },
+
+  "fields": {
+    "serverHost": {
+      "id": "serverHost",
+      "label": "Server IP/Host",
+      "type": "text",
+      "required": true,
+      "category": "connection",
+      "order": 1,
+      "providers": {
+        "hostinger": {
+          "pattern": "^\\d+\\.\\d+\\.\\d+\\.\\d+$",
+          "placeholder": "185.185.185.185",
+          "hint": "Get from hPanel → SSH Access section",
+          "validation": "ipv4"
+        },
+        "digitalocean": {
+          "pattern": "^\\d+\\.\\d+\\.\\d+\\.\\d+$",
+          "placeholder": "143.244.xx.xx",
+          "hint": "Droplet IP address from dashboard",
+          "validation": "ipv4"
+        },
+        "aws-ec2": {
+          "pattern": "^(\\d+\\.\\d+\\.\\d+\\.\\d+|ec2-.+\\.amazonaws\\.com)$",
+          "placeholder": "ec2-xx-xx-xx-xx.compute-1.amazonaws.com",
+          "hint": "Public IPv4 or Public DNS from EC2 console",
+          "validation": "ipv4_or_aws_dns"
+        },
+        "cpanel": {
+          "pattern": "^.+$",
+          "placeholder": "server.yourhost.com",
+          "hint": "Server hostname from hosting provider",
+          "validation": "hostname"
+        },
+        "cloudways": {
+          "pattern": "^\\d+\\.\\d+\\.\\d+\\.\\d+$",
+          "placeholder": "192.168.1.100",
+          "hint": "Server IP from Cloudways dashboard",
+          "validation": "ipv4"
+        }
+      }
+    },
+
+    "sshUsername": {
+      "id": "sshUsername",
+      "label": "SSH Username",
+      "type": "text",
+      "required": true,
+      "category": "connection",
+      "order": 2,
+      "providers": {
+        "hostinger": {
+          "pattern": "^u\\d+$",
+          "placeholder": "u123456789",
+          "hint": "Format: u[numbers] - shown in hPanel SSH section",
+          "validation": "hostinger_username"
+        },
+        "digitalocean": {
+          "default": "root",
+          "placeholder": "root",
+          "hint": "Default root user or custom user created",
+          "validation": "linux_username"
+        },
+        "aws-ec2": {
+          "default": "ubuntu",
+          "placeholder": "ubuntu",
+          "hint": "ubuntu for Ubuntu AMI, ec2-user for Amazon Linux",
+          "validation": "linux_username"
+        },
+        "cpanel": {
+          "placeholder": "cpaneluser",
+          "hint": "cPanel username provided by hosting provider",
+          "validation": "cpanel_username"
+        },
+        "cloudways": {
+          "pattern": "^master_.+$",
+          "placeholder": "master_abcdefgh",
+          "hint": "Master user from Cloudways SSH access",
+          "validation": "cloudways_username"
+        }
+      }
+    },
+
+    "sshPort": {
+      "id": "sshPort",
+      "label": "SSH Port",
+      "type": "number",
+      "required": true,
+      "category": "connection",
+      "order": 3,
+      "providers": {
+        "hostinger": {
+          "default": 65002,
+          "placeholder": "65002",
+          "hint": "Usually 65002, check SSH settings in hPanel",
+          "validation": "port_number"
+        },
+        "digitalocean": {
+          "default": 22,
+          "placeholder": "22",
+          "hint": "Default SSH port unless changed for security",
+          "validation": "port_number"
+        },
+        "aws-ec2": {
+          "default": 22,
+          "placeholder": "22",
+          "hint": "Default SSH port, ensure Security Group allows access",
+          "validation": "port_number"
+        },
+        "cpanel": {
+          "default": 22,
+          "placeholder": "22",
+          "hint": "May be custom port for security, check hosting provider",
+          "validation": "port_number"
+        },
+        "cloudways": {
+          "default": 22,
+          "placeholder": "22",
+          "hint": "Standard SSH port for Cloudways servers",
+          "validation": "port_number"
+        }
+      }
+    },
+
+    "documentRoot": {
+      "id": "documentRoot", 
+      "label": "Document Root (Web Accessible Directory)",
+      "type": "text",
+      "required": true,
+      "category": "paths",
+      "order": 4,
+      "providers": {
+        "hostinger": {
+          "template": "/home/{sshUsername}/domains/{domain}/public_html",
+          "placeholder": "/home/u123456789/domains/site.com/public_html",
+          "locked": true,
+          "hint": "Fixed structure in Hostinger - cannot be changed",
+          "validation": "absolute_path"
+        },
+        "digitalocean": {
+          "template": "/var/www/{domain}",
+          "placeholder": "/var/www/site.com",
+          "locked": false,
+          "hint": "Configurable via Nginx/Apache virtual hosts",
+          "validation": "absolute_path"
+        },
+        "aws-ec2": {
+          "template": "/var/www/html",
+          "placeholder": "/var/www/html",
+          "locked": false,
+          "hint": "Standard web directory, configurable via web server",
+          "validation": "absolute_path"
+        },
+        "cpanel": {
+          "template": "/home/{sshUsername}/public_html",
+          "placeholder": "/home/cpaneluser/public_html",
+          "locked": true,
+          "hint": "Standard cPanel structure for main domain",
+          "validation": "absolute_path"
+        },
+        "cloudways": {
+          "template": "/home/master_{id}/applications/{app}/public_html",
+          "placeholder": "/home/master_abc/applications/myapp/public_html",
+          "locked": false,
+          "hint": "Application-specific directory in Cloudways",
+          "validation": "absolute_path"
+        }
+      }
+    },
+
+    "deployPath": {
+      "id": "deployPath",
+      "label": "Custom Deployment Path",
+      "type": "text",
+      "required": false,
+      "category": "paths", 
+      "order": 5,
+      "providers": {
+        "hostinger": {
+          "template": "/home/{sshUsername}/domains/{domain}/deploy",
+          "placeholder": "/home/u123456789/domains/site.com/deploy",
+          "hint": "Custom path for deployment files (must create manually)",
+          "validation": "absolute_path"
+        },
+        "digitalocean": {
+          "template": "/var/www/deploy/{domain}",
+          "placeholder": "/var/www/deploy/site.com",
+          "hint": "Custom deployment staging area",
+          "validation": "absolute_path"
+        },
+        "aws-ec2": {
+          "template": "/opt/deployments/{domain}",
+          "placeholder": "/opt/deployments/site.com",
+          "hint": "Custom deployment directory with proper permissions",
+          "validation": "absolute_path"
+        },
+        "cpanel": {
+          "template": "/home/{sshUsername}/deploy",
+          "placeholder": "/home/cpaneluser/deploy",
+          "hint": "Custom deployment area outside public_html",
+          "validation": "absolute_path"
+        },
+        "cloudways": {
+          "template": "/home/master_{id}/deploy/{app}",
+          "placeholder": "/home/master_abc/deploy/myapp",
+          "hint": "Staging area for application deployment",
+          "validation": "absolute_path"
+        }
+      }
+    },
+
+    "webServer": {
+      "id": "webServer",
+      "label": "Web Server",
+      "type": "select",
+      "required": true,
+      "category": "environment",
+      "order": 6,
+      "options": [
+        { "value": "apache", "label": "Apache" },
+        { "value": "nginx", "label": "Nginx" },
+        { "value": "litespeed", "label": "LiteSpeed" }
+      ],
+      "providers": {
+        "hostinger": {
+          "default": "litespeed",
+          "available": ["apache", "litespeed"],
+          "hint": "Usually LiteSpeed on newer plans, Apache on older",
+          "locked": true
+        },
+        "digitalocean": {
+          "default": "nginx",
+          "available": ["apache", "nginx"],
+          "hint": "Configurable - choose based on your setup",
+          "locked": false
+        },
+        "aws-ec2": {
+          "default": "nginx",
+          "available": ["apache", "nginx"],
+          "hint": "Install and configure your preferred web server",
+          "locked": false
+        },
+        "cpanel": {
+          "default": "apache",
+          "available": ["apache"],
+          "hint": "cPanel typically uses Apache",
+          "locked": true
+        },
+        "cloudways": {
+          "default": "nginx",
+          "available": ["apache", "nginx"],
+          "hint": "Select during server creation in Cloudways",
+          "locked": false
+        }
+      }
+    },
+
+    "phpVersion": {
+      "id": "phpVersion",
+      "label": "PHP Version",
+      "type": "select",
+      "required": true,
+      "category": "environment",
+      "order": 7,
+      "options": [
+        { "value": "7.4", "label": "PHP 7.4" },
+        { "value": "8.0", "label": "PHP 8.0" },
+        { "value": "8.1", "label": "PHP 8.1" },
+        { "value": "8.2", "label": "PHP 8.2" },
+        { "value": "8.3", "label": "PHP 8.3" }
+      ],
+      "providers": {
+        "hostinger": {
+          "default": "8.2",
+          "available": ["7.4", "8.0", "8.1", "8.2", "8.3"],
+          "hint": "Select in hPanel → PHP Configuration",
+          "validation": "php_version"
+        },
+        "digitalocean": {
+          "default": "8.2", 
+          "available": ["7.4", "8.0", "8.1", "8.2", "8.3"],
+          "hint": "Install via package manager or use multiple versions",
+          "validation": "php_version"
+        },
+        "aws-ec2": {
+          "default": "8.2",
+          "available": ["7.4", "8.0", "8.1", "8.2", "8.3"],
+          "hint": "Install and configure your required PHP version",
+          "validation": "php_version"
+        },
+        "cpanel": {
+          "default": "8.1",
+          "available": ["7.4", "8.0", "8.1", "8.2"],
+          "hint": "Select in cPanel → PHP Selector",
+          "validation": "php_version"
+        },
+        "cloudways": {
+          "default": "8.2",
+          "available": ["7.4", "8.0", "8.1", "8.2", "8.3"],
+          "hint": "Configure in Cloudways application settings",
+          "validation": "php_version"
+        }
+      }
+    },
+
+    "sslProvider": {
+      "id": "sslProvider",
+      "label": "SSL Certificate Provider",
+      "type": "select",
+      "required": true,
+      "category": "security",
+      "order": 8,
+      "options": [
+        { "value": "letsencrypt", "label": "Let's Encrypt (Free)" },
+        { "value": "cloudflare", "label": "CloudFlare SSL" },
+        { "value": "custom", "label": "Custom Certificate" },
+        { "value": "na", "label": "Not Applicable" }
+      ],
+      "providers": {
+        "hostinger": {
+          "default": "letsencrypt",
+          "available": ["letsencrypt", "custom"],
+          "hint": "Configure in hPanel → Security → SSL",
+          "validation": "ssl_provider"
+        },
+        "digitalocean": {
+          "default": "letsencrypt",
+          "available": ["letsencrypt", "cloudflare", "custom"],
+          "hint": "Use Certbot for Let's Encrypt or upload custom",
+          "validation": "ssl_provider"
+        },
+        "aws-ec2": {
+          "default": "letsencrypt",
+          "available": ["letsencrypt", "cloudflare", "custom"],
+          "hint": "Install Certbot or use AWS Certificate Manager",
+          "validation": "ssl_provider"
+        },
+        "cpanel": {
+          "default": "letsencrypt",
+          "available": ["letsencrypt", "custom"],
+          "hint": "Enable in cPanel → SSL/TLS section",
+          "validation": "ssl_provider"
+        },
+        "cloudways": {
+          "default": "letsencrypt",
+          "available": ["letsencrypt", "cloudflare", "custom"],
+          "hint": "One-click SSL installation in Cloudways",
+          "validation": "ssl_provider"
+        }
+      }
+    },
+
+    "databaseHost": {
+      "id": "databaseHost",
+      "label": "Database Host",
+      "type": "text",
+      "required": true,
+      "category": "database",
+      "order": 9,
+      "providers": {
+        "hostinger": {
+          "default": "localhost",
+          "placeholder": "localhost",
+          "hint": "Usually localhost for shared hosting",
+          "validation": "hostname"
+        },
+        "digitalocean": {
+          "default": "localhost",
+          "placeholder": "localhost",
+          "hint": "localhost for same server, or managed database endpoint",
+          "validation": "hostname"
+        },
+        "aws-ec2": {
+          "default": "localhost",
+          "placeholder": "localhost or RDS endpoint",
+          "hint": "Use RDS for managed database or localhost for server DB",
+          "validation": "hostname"
+        },
+        "cpanel": {
+          "default": "localhost",
+          "placeholder": "localhost",
+          "hint": "Always localhost for cPanel hosting",
+          "validation": "hostname"
+        },
+        "cloudways": {
+          "default": "localhost",
+          "placeholder": "localhost",
+          "hint": "localhost for server database",
+          "validation": "hostname"
+        }
+      }
+    },
+
+    "databasePort": {
+      "id": "databasePort",
+      "label": "Database Port",
+      "type": "number",
+      "required": false,
+      "category": "database",
+      "order": 10,
+      "providers": {
+        "hostinger": {
+          "default": 3306,
+          "placeholder": "3306",
+          "hint": "Standard MySQL port",
+          "validation": "port_number"
+        },
+        "digitalocean": {
+          "default": 3306,
+          "placeholder": "3306",
+          "hint": "3306 for MySQL, 5432 for PostgreSQL",
+          "validation": "port_number"
+        },
+        "aws-ec2": {
+          "default": 3306,
+          "placeholder": "3306",
+          "hint": "Check RDS configuration or server setup",
+          "validation": "port_number"
+        },
+        "cpanel": {
+          "default": 3306,
+          "placeholder": "3306",
+          "hint": "Standard MySQL port for cPanel",
+          "validation": "port_number"
+        },
+        "cloudways": {
+          "default": 3306,
+          "placeholder": "3306",
+          "hint": "Standard port for MySQL on Cloudways",
+          "validation": "port_number"
+        }
+      }
+    }
+  },
+
+  "validation": {
+    "rules": {
+      "ipv4": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
+      "ipv4_or_aws_dns": "^((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)|ec2-.+\\.amazonaws\\.com)$",
+      "hostname": "^[a-zA-Z0-9][a-zA-Z0-9-_.]*[a-zA-Z0-9]$",
+      "port_number": "^[1-9][0-9]{0,4}$",
+      "absolute_path": "^/[a-zA-Z0-9/_.-]*$",
+      "hostinger_username": "^u\\d+$",
+      "cloudways_username": "^master_.+$",
+      "linux_username": "^[a-z_][a-z0-9_-]*$",
+      "cpanel_username": "^[a-zA-Z0-9_-]+$"
+    },
+    "customValidations": {
+      "ssh_connection": "ssh -p {sshPort} {sshUsername}@{serverHost} 'echo Connection successful'",
+      "document_root_check": "ssh -p {sshPort} {sshUsername}@{serverHost} 'test -d {documentRoot} && echo Directory exists'",
+      "php_version_check": "ssh -p {sshPort} {sshUsername}@{serverHost} 'php -v | head -1'"
+    }
+  },
+
+  "categories": {
+    "connection": {
+      "title": "SSH Connection Details",
+      "description": "Server access credentials and connection information",
+      "icon": "🔐",
+      "order": 1
+    },
+    "paths": {
+      "title": "Directory Structure",
+      "description": "Server paths and directory configuration",
+      "icon": "📁",
+      "order": 2
+    },
+    "environment": {
+      "title": "Server Environment",
+      "description": "Web server and runtime configuration",
+      "icon": "🌐",
+      "order": 3
+    },
+    "security": {
+      "title": "Security Configuration",
+      "description": "SSL certificates and security settings",
+      "icon": "🔒",
+      "order": 4
+    },
+    "database": {
+      "title": "Database Configuration",
+      "description": "Database connection and settings",
+      "icon": "🗄️",
+      "order": 5
+    }
+  },
+
+  "features": {
+    "templateVariables": {
+      "enabled": true,
+      "variables": [
+        "{sshUsername}",
+        "{domain}",
+        "{app}",
+        "{id}"
+      ]
+    },
+    "conditionalFields": {
+      "enabled": true,
+      "rules": [
+        {
+          "condition": "provider === 'hostinger'",
+          "showFields": ["deployPath"],
+          "hideFields": []
+        },
+        {
+          "condition": "provider === 'aws-ec2'",
+          "showFields": ["databaseHost", "databasePort"],
+          "hideFields": []
+        }
+      ]
+    },
+    "dynamicValidation": {
+      "enabled": true,
+      "validateOnChange": true,
+      "validateOnBlur": true
+    }
+  }
+}

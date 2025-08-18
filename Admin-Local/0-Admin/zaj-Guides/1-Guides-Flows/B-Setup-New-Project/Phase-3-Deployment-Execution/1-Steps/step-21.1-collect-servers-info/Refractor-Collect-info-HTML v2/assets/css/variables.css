@@ -1,0 +1,89 @@
+/* variables.css - Design tokens and CSS custom properties */
+
+:root {
+    /* Colors - Primary */
+    --primary: #007aff;
+    --primary-hover: #0051d5;
+    --success: #34c759;
+    --warning: #ff9500;
+    --danger: #ff3b30;
+
+    /* Colors - Grayscale */
+    --gray-50: #f9fafb;
+    --gray-100: #f2f2f7;
+    --gray-200: #e5e5ea;
+    --gray-300: #d1d1d6;
+    --gray-400: #c7c7cc;
+    --gray-500: #8e8e93;
+    --gray-600: #636366;
+    --gray-700: #48484a;
+    --gray-800: #3a3a3c;
+    --gray-900: #1c1c1e;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+
+    /* Border Radius */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+    --radius-full: 9999px;
+
+    /* Typography */
+    --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI",
+        system-ui, sans-serif;
+    --font-mono: "SF Mono", Monaco, monospace;
+
+    /* Font Sizes */
+    --font-xs: 10px;
+    --font-sm: 11px;
+    --font-base: 12px;
+    --font-md: 13px;
+    --font-lg: 14px;
+    --font-xl: 18px;
+    --font-2xl: 24px;
+
+    /* Spacing */
+    --space-xs: 4px;
+    --space-sm: 6px;
+    --space-md: 8px;
+    --space-lg: 12px;
+    --space-xl: 16px;
+    --space-2xl: 20px;
+    --space-3xl: 24px;
+    --space-4xl: 32px;
+
+    /* Transitions */
+    --transition-fast: 0.2s;
+    --transition-normal: 0.3s;
+    --transition-slow: 0.6s;
+
+    /* Z-Index Scale */
+    --z-dropdown: 1000;
+    --z-sticky: 1020;
+    --z-fixed: 1030;
+    --z-modal-backdrop: 1040;
+    --z-modal: 1050;
+    --z-popover: 1060;
+    --z-tooltip: 1070;
+    --z-toast: 1080;
+}
+
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Base Typography */
+body {
+    font-family: var(--font-family);
+    font-size: var(--font-md);
+    line-height: 1.5;
+    color: var(--gray-900);
+}
