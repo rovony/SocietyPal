@@ -629,27 +629,113 @@ This section provides the exact step-by-step process for pushing workflows to Gi
 
 ---
 
-### 🔐 Phase B: GitHub Secrets Configuration
+### 🔐 Phase B: GitHub Secrets and Environment Configuration
 
-#### Step B.1: Navigate to Repository Secrets
+#### Step B.1: Create GitHub Environments (RECOMMENDED)
+
+**IMPORTANT**: GitHub Environments provide better security and organization for secrets per deployment target.
 
 1. **Go to your GitHub repository**
 2. **Click the "Settings" tab** (top menu)
-3. **In left sidebar, navigate to "Secrets and variables" → "Actions"**
-4. **Click "New repository secret"** for each secret below
+3. **In left sidebar, navigate to "Environments"**
+4. **Click "New environment"** 
+5. **Create staging environment:**
+   - Name: `staging`
+   - Click "Configure environment"
+6. **Create production environment:**
+   - Name: `production`  
+   - Click "Configure environment"
+   - **Optional**: Add protection rules (require approvals, restrict branches)
 
-#### Step B.2: Configure Server Connection Secrets
+#### Step B.2: Navigate to Secrets and Variables
 
-**Add these secrets one by one:**
+1. **In left sidebar, navigate to "Secrets and variables" → "Actions"**
+2. **You'll see tabs for "Secrets" and "Variables"**
+3. **Each tab shows both "Environment secrets/variables" and "Repository secrets/variables"**
 
-| Order | Secret Name | Value | Notes |
-|-------|-------------|--------|-------|
+#### Step B.3: Choose Your Configuration Strategy
+
+**Strategy A: Environment-Specific Secrets (RECOMMENDED)**
+- ✅ **Better security**: Secrets are isolated per environment
+- ✅ **Better organization**: Clear separation of staging/production
+- ✅ **Protection rules**: Can require approvals for production
+- ✅ **Branch restrictions**: Can limit which branches deploy where
+
+**Strategy B: Repository-Level Secrets**
+- ⚠️ **Less secure**: All secrets available to all workflows
+- ⚠️ **Less organized**: Must differentiate secrets by naming
+- ✅ **Simpler setup**: One place for all secrets
+
+**We'll document both methods, but recommend Strategy A for production-grade security.**
+
+#### Step B.4A: Configure Environment-Specific Secrets (RECOMMENDED)
+
+**For STAGING Environment:**
+
+1. **Go to "Environments" → Click "staging"**
+2. **Scroll to "Environment secrets"**
+3. **Click "Add environment secret" for each:**
+
+| Secret Name | Value | Description |
+|-------------|--------|-------------|
+| `SERVER_HOST` | `31.97.195.108` | Hostinger server IP |
+| `SERVER_USER` | `u227177893` | SSH username |
+| `SERVER_PORT` | `65002` | SSH port |
+| `SERVER_SSH_KEY` | `[YOUR_PRIVATE_KEY]` | Private SSH key (see B.5) |
+| `DB_HOST` | `127.0.0.1` | Database host |
+| `DB_PORT` | `3306` | Database port |
+| `DB_DATABASE` | `u227177893_s_zaj_socpal_d` | Staging DB name |
+| `DB_USERNAME` | `u227177893_s_zaj_socpal_u` | Staging DB username |
+| `DB_PASSWORD` | `V0Z^G=I2:=r^f2` | Staging DB password |
+| `LICENSE_CONTENT` | `[Your License]` | CodeCanyon license (if applicable) |
+
+**For PRODUCTION Environment:**
+
+1. **Go to "Environments" → Click "production"**
+2. **Scroll to "Environment secrets"**
+3. **Click "Add environment secret" for each:**
+
+| Secret Name | Value | Description |
+|-------------|--------|-------------|
+| `SERVER_HOST` | `31.97.195.108` | Hostinger server IP |
+| `SERVER_USER` | `u227177893` | SSH username |
+| `SERVER_PORT` | `65002` | SSH port |
+| `SERVER_SSH_KEY` | `[YOUR_PRIVATE_KEY]` | Private SSH key (see B.5) |
+| `DB_HOST` | `127.0.0.1` | Database host |
+| `DB_PORT` | `3306` | Database port |
+| `DB_DATABASE` | `u227177893_p_zaj_socpal_d` | Production DB name |
+| `DB_USERNAME` | `u227177893_p_zaj_socpal_u` | Production DB username |
+| `DB_PASSWORD` | `t5TmP9$[iG7hu2eYRWUIWH@IRF2` | Production DB password |
+| `LICENSE_CONTENT` | `[Your License]` | CodeCanyon license (if applicable) |
+
+#### Step B.4B: Alternative Repository-Level Secrets (SIMPLER)
+
+**If you prefer simpler setup, use repository-level secrets:**
+
+1. **Go to "Secrets and variables" → "Actions"**
+2. **Click "Repository secrets" → "New repository secret"**
+3. **Add these secrets:**
+
+| Order | Secret Name | Value | Description |
+|-------|-------------|--------|-------------|
 | 1 | `SERVER_HOST` | `31.97.195.108` | Hostinger server IP |
 | 2 | `SERVER_USER` | `u227177893` | SSH username |
 | 3 | `SERVER_PORT` | `65002` | SSH port |
-| 4 | `SERVER_SSH_KEY` | `[YOUR_PRIVATE_KEY]` | See Step B.3 for SSH key setup |
+| 4 | `SERVER_SSH_KEY` | `[YOUR_PRIVATE_KEY]` | Private SSH key (see B.5) |
+| 5 | `DB_HOST_PROD` | `127.0.0.1` | Production DB host |
+| 6 | `DB_PORT_PROD` | `3306` | Production DB port |
+| 7 | `DB_DATABASE_PROD` | `u227177893_p_zaj_socpal_d` | Production DB name |
+| 8 | `DB_USERNAME_PROD` | `u227177893_p_zaj_socpal_u` | Production DB username |
+| 9 | `DB_PASSWORD_PROD` | `t5TmP9$[iG7hu2eYRWUIWH@IRF2` | Production DB password |
+| 10 | `DB_HOST_STAGING` | `127.0.0.1` | Staging DB host |
+| 11 | `DB_PORT_STAGING` | `3306` | Staging DB port |
+| 12 | `DB_DATABASE_STAGING` | `u227177893_s_zaj_socpal_d` | Staging DB name |
+| 13 | `DB_USERNAME_STAGING` | `u227177893_s_zaj_socpal_u` | Staging DB username |
+| 14 | `DB_PASSWORD_STAGING` | `V0Z^G=I2:=r^f2` | Staging DB password |
+| 15 | `PRODUCTION_LICENSE_CONTENT` | `[Your License]` | Production license (CodeCanyon) |
+| 16 | `STAGING_LICENSE_CONTENT` | `[Your License]` | Staging license (CodeCanyon) |
 
-#### Step B.3: SSH Key Setup (Critical Step)
+#### Step B.5: SSH Key Setup (Critical Step)
 
 **Option 1: If you already have an SSH key for the server:**
 ```bash
@@ -692,7 +778,37 @@ chmod 700 ~/.ssh
   ```
 - Add as `SERVER_SSH_KEY` secret in GitHub
 
-#### Step B.4: Configure Production Database Secrets
+#### Step B.6: Configure Repository Variables (Non-Sensitive Data)
+
+**Use Variables for non-sensitive configuration that might change:**
+
+1. **Click the "Variables" tab**
+2. **Choose "Repository variables" or "Environment variables"**
+3. **Add these variables:**
+
+| Variable Name | Value | Description |
+|---------------|--------|-------------|
+| `DEPLOYMENT_TIMEOUT` | `300` | Deployment timeout in seconds |
+| `HEALTH_CHECK_RETRIES` | `3` | Number of health check retries |
+| `KEEP_RELEASES` | `3` | Number of releases to keep |
+| `LARAVEL_ENV` | `production` / `staging` | Laravel environment |
+
+#### Step B.7: Deploy Keys (Alternative to SSH Key in Secrets)
+
+**GitHub recommends Deploy Keys for repository access. This is an alternative to storing SSH keys in secrets:**
+
+1. **Go to "Settings" → "Security" → "Deploy keys"**
+2. **Click "Add deploy key"**
+3. **Benefits:**
+   - ✅ Repository-specific access only
+   - ✅ Better security than broad SSH access
+   - ✅ Can be read-only or read-write
+   - ⚠️ More complex setup for server access
+
+**For this implementation, we use SSH keys in secrets for simplicity, but Deploy Keys are recommended for enterprise setups.**
+
+#### Step B.8: Legacy Database Configuration (DEPRECATED)</search>
+</search_and_replace>
 
 **Add these secrets in order:**
 

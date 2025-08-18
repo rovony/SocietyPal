@@ -1,4 +1,4 @@
-name: 🔒 CodeCanyon Complete Installation Pipeline
+name: 🔒 First Installation - Part 2
 
 on:
   workflow_dispatch:

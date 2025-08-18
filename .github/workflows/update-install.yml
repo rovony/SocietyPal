@@ -1,4 +1,4 @@
-name: 🚀 SocietyPal Deployment Pipeline
+p name: 🚀 SocietyPal Updates & Installation
 
 on:
   push:
