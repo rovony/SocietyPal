@@ -7,3 +7,6 @@ Admin-Local/
 
 # CI/CD & Build Tools
 .github/
+.deployHQ
+.github/
+.github
