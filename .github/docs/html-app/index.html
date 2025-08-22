@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 GitHub CI/CD Learning Hub - Complete Guide</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1><i class="fas fa-rocket"></i> GitHub CI/CD Learning Hub</h1>
+            <p>Master GitHub Actions for Laravel Applications - Complete Step-by-Step Guide</p>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav">
+            <button class="nav-btn active" data-section="learn">
+                <i class="fas fa-graduation-cap"></i> Learn
+            </button>
+            <button class="nav-btn" data-section="steps">
+                <i class="fas fa-list-ol"></i> Steps
+            </button>
+            <button class="nav-btn" data-section="commands">
+                <i class="fas fa-terminal"></i> Commands
+            </button>
+            <button class="nav-btn" data-section="checklists">
+                <i class="fas fa-tasks"></i> Checklists
+            </button>
+            <button class="nav-btn" data-section="structure">
+                <i class="fas fa-folder-tree"></i> Structure
+            </button>
+            <button class="nav-btn" data-section="resources">
+                <i class="fas fa-book"></i> Resources
+            </button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Learn Section -->
+            <section id="learn" class="content-section active">
+                <h2><i class="fas fa-graduation-cap"></i> Learning Modules</h2>
+
+                <div class="learning-modules">
+                    <div class="module-card" data-module="basics">
+                        <div class="module-header">
+                            <i class="fas fa-play-circle"></i>
+                            <h3>1️⃣ GitHub Actions Basics</h3>
+                        </div>
+                        <p>Learn the fundamentals of GitHub Actions and CI/CD</p>
+                        <div class="module-content">
+                            <h4>What You'll Learn:</h4>
+                            <ul>
+                                <li>1.1 GitHub Actions workflow structure</li>
+                                <li>1.2 Triggers and events</li>
+                                <li>1.3 Jobs and steps</li>
+                                <li>1.4 Environment variables and secrets</li>
+                                <li>1.5 Matrix builds and parallel jobs</li>
+                            </ul>
+                        </div>
+                        <div class="module-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                            <span class="progress-text">0% Complete</span>
+                        </div>
+                        <button class="start-btn">Start Learning</button>
+                    </div>
+
+                    <div class="module-card" data-module="laravel">
+                        <div class="module-header">
+                            <i class="fas fa-laravel"></i>
+                            <h3>2️⃣ Laravel Deployment</h3>
+                        </div>
+                        <p>Deploy Laravel applications with zero downtime</p>
+                        <div class="module-content">
+                            <h4>What You'll Learn:</h4>
+                            <ul>
+                                <li>2.1 Laravel-specific deployment strategies</li>
+                                <li>2.2 Database migration safety</li>
+                                <li>2.3 Asset building and optimization</li>
+                                <li>2.4 Environment configuration</li>
+                                <li>2.5 Health checks and monitoring</li>
+                            </ul>
+                        </div>
+                        <div class="module-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                            <span class="progress-text">0% Complete</span>
+                        </div>
+                        <button class="start-btn">Start Learning</button>
+                    </div>
+
+                    <div class="module-card" data-module="security">
+                        <div class="module-header">
+                            <i class="fas fa-shield-alt"></i>
+                            <h3>3️⃣ Security & Secrets</h3>
+                        </div>
+                        <p>Manage secrets and secure your deployments</p>
+                        <div class="module-content">
+                            <h4>What You'll Learn:</h4>
+                            <ul>
+                                <li>3.1 GitHub secrets management</li>
+                                <li>3.2 SSH key configuration</li>
+                                <li>3.3 Environment-specific security</li>
+                                <li>3.4 Access control and permissions</li>
+                                <li>3.5 Audit logging and monitoring</li>
+                            </ul>
+                        </div>
+                        <div class="module-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                            <span class="progress-text">0% Complete</span>
+                        </div>
+                        <button class="start-btn">Start Learning</button>
+                    </div>
+
+                    <div class="module-card" data-module="advanced">
+                        <div class="module-header">
+                            <i class="fas fa-cogs"></i>
+                            <h3>4️⃣ Advanced Workflows</h3>
+                        </div>
+                        <p>Create complex CI/CD pipelines and automation</p>
+                        <div class="module-content">
+                            <h4>What You'll Learn:</h4>
+                            <ul>
+                                <li>4.1 Multi-environment deployments</li>
+                                <li>4.2 Conditional workflows</li>
+                                <li>4.3 Custom actions and reusable workflows</li>
+                                <li>4.4 Performance optimization</li>
+                                <li>4.5 Monitoring and alerting</li>
+                            </ul>
+                        </div>
+                        <div class="module-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                            <span class="progress-text">0% Complete</span>
+                        </div>
+                        <button class="start-btn">Start Learning</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Steps Section -->
+            <section id="steps" class="content-section">
+                <h2><i class="fas fa-list-ol"></i> Complete Step-by-Step Guide</h2>
+
+                <div class="steps-container">
+                    <!-- Folder 1: Initial Setup -->
+                    <div class="step-folder">
+                        <div class="folder-header">
+                            <i class="fas fa-folder-open"></i>
+                            <h3>📁 1️⃣ Initial Setup & Preparation</h3>
+                            <span class="folder-count">3 steps</span>
+                        </div>
+                        <div class="step-list">
+                            <div class="step-item" data-step="1">
+                                <span class="step-number">1.1</span>
+                                <div class="step-content">
+                                    <span class="step-text">Install GitHub CLI</span>
+                                    <div class="step-details">
+                                        <p><strong>Purpose:</strong> Command-line interface for GitHub operations</p>
+                                        <div class="command-block">
+                                            <span class="command-label">macOS:</span>
+                                            <code>brew install gh</code>
+                                        </div>
+                                        <div class="command-block">
+                                            <span class="command-label">Ubuntu/Debian:</span>
+                                            <code>sudo apt install gh</code>
+                                        </div>
+                                        <div class="command-block">
+                                            <span class="command-label">Windows:</span>
+                                            <code>winget install GitHub.cli</code>
+                                        </div>
+                                        <p><strong>Verify:</strong> <code>gh --version</code></p>
+                                    </div>
+                                </div>
+                                <i class="fas fa-check-circle step-icon"></i>
+                            </div>
+                            <div class="step-item" data-step="2">
+                                <span class="step-number">1.2</span>
+                                <div class="step-content">
+                                    <span class="step-text">Authenticate with GitHub</span>
+                                    <div class="step-details">
+                                        <p><strong>Purpose:</strong> Establish secure connection to GitHub</p>
+                                        <div class="command-block">
+                                            <span class="command-label">Command:</span>
+                                            <code>gh auth login</code>
+                                        </div>
+                                        <p><strong>Choose:</strong></p>
+                                        <ul>
+                                            <li>GitHub.com</li>
+                                            <li>HTTPS</li>
+                                            <li>Yes (authenticate Git)</li>
+                                            <li>Login with web browser</li>
+                                        </ul>
+                                        <p><strong>Verify:</strong> <code>gh auth status</code></p>
+                                    </div>
+                                </div>
+                                <i class="fas fa-circle step-icon"></i>
+                            </div>
+                            <div class="step-item" data-step="3">
+                                <span class="step-number">1.3</span>
+                                <div class="step-content">
+                                    <span class="step-text">Configure Repository</span>
+                                    <div class="step-details">
+                                        <p><strong>Purpose:</strong> Set up project for GitHub Actions</p>
+                                        <div class="command-block">
+                                            <span class="command-label">Check remote:</span>
+                                            <code>git remote -v</code>
+                                        </div>
+                                        <div class="command-block">
+                                            <span class="command-label">Verify connection:</span>
+                                            <code>gh repo view</code>
+                                        </div>
+                                        <p><strong>Expected output:</strong> Should show your repository details</p>
+                                    </div>
+                                </div>
+                                <i class="fas fa-circle step-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Folder 2: Environment Configuration -->
+                    <div class="step-folder">
+                        <div class="folder-header">
+                            <i class="fas fa-folder-open"></i>
+                            <h3>📁 2️⃣ Environment Configuration</h3>
+                            <span class="folder-count">3 steps</span>
+                        </div>
+                        <div class="step-list">
+                            <div class="step-item" data-step="4">
+                                <span class="step-number">2.1</span>
+                                <div class="step-content">
+                                    <span class="step-text">Set up Staging Environment</span>
+                                    <div class="step-details">
+                                        <p><strong>Purpose:</strong> Create safe testing environment</p>
+                                        <div class="command-block">
+                                            <span class="command-label">Create staging branch:</span>
+                                            <code>git checkout -b staging</code>
+                                        </div>
+                                        <div class="command-block">
+                                            <span class="command-label">Push staging branch:</span>
+                                            <code>git push -u origin staging</code>
+                                        </div>
+                                        <p><strong>Configure:</strong> Set up staging server and database</p>
+                                    </div>
+                                </div>
+                                <i class="fas fa-circle step-icon"></i>
+                            </div>
+                            <div class="step-item" data-step="5">
+                                <span class="step-number">2.2</span>
+                                <div class="step-content">
+                                    <span class="step-text">Configure Production Environment</span>
+                                    <div class="step-details">
+                                        <p><strong>Purpose:</strong> Set up live production environment</p>
+                                        <div class="command-block">
+                                            <span class="command-label">Create production branch:</span>
+                                            <code>git checkout -b production</code>
+                                        </div>
+                                        <div class="command-block">
+                                            <span class="command-label">Push production branch:</span>
+                                            <code>git push -u origin production</code>
+                                        </div>
+                                        <p><strong>Configure:</strong> Set up production server and database</p>
+                                    </div>
+                                </div>
+                                <i class="fas fa-circle step-icon"></i>
+                            </div>
+                            <div class="step-item" data-step="6">
+                                <span class="step-number">2.3</span>
+                                <div class="step-content">
+                                    <span class="step-text">Set up SSH Keys</span>
+                                    <div class="step-details">
+                                        <p><strong>Purpose:</strong> Secure server access for deployment</p>
+                                        <div class="command-block">
+                                            <span class="command-label">Generate SSH key:</span>
+                                            <code>ssh-keygen -t ed25519 -C "github-actions-deploy"</code>
+                                        </div>
+                                        <div class="command-block">
+                                            <span class="command-label">Copy public key:</span>
+                                            <code>cat ~/.ssh/id_ed25519.pub</code>
+                                        </div>
+                                        <p><strong>Add to server:</strong> Copy public key to server's authorized_keys</p>
+                                    </div>
+                                </div>
+                                <i class="fas fa-circle step-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Folder 3: GitHub Secrets Configuration -->
+                    <div class="step-folder">
+                        <div class="folder-header">
+                            <i class="fas fa-folder-open"></i>
+                            <h3>📁 3️⃣ GitHub Secrets Configuration</h3>
+                            <span class="folder-count">2 steps</span>
+                        </div>
+                        <div class="step-list">
+                            <div class="step-item" data-step="7">
+                                <span class="step-number">3.1</span>
+                                <div class="step-content">
+                                    <span class="step-text">Configure Server Secrets</span>
+                                    <div class="step-details">
+                                        <p><strong>Purpose:</strong> Store server access credentials securely</p>
+                                        <div class="command-block">
+                                            <span class="command-label">Add SSH private key:</span>
+                                            <code>gh secret set SSH_PRIVATE_KEY --body-file ~/.ssh/id_ed25519</code>
+                                        </div>
+                                        <div class="command-block">
+                                            <span class="command-label">Add server host:</span>
+                                            <code>gh secret set SERVER_HOST --body "your-server.com"</code>
+                                        </div>
+                                        <div class="command-block">
+                                            <span class="command-label">Add server user:</span>
+                                            <code>gh secret set SERVER_USER --body "deploy"</code>
+                                        </div>
+                                        <p><strong>Verify:</strong> <code>gh secret list</code></p>
+                                    </div>
+                                </div>
+                                <i class="fas fa-circle step-icon"></i>
+                            </div>
+                            <div class="step-item" data-step="8">
+                                <span class="step-number">3.2</span>
+                                <div class="step-content">
+                                    <span class="step-text">Configure Database Secrets</span>
+                                    <div class="step-details">
+                                        <p><strong>Purpose:</strong> Store database connection credentials</p>
+                                        <div class="command-block">
+                                            <span class="command-label">Add database host:</span>
+                                            <code>gh secret set DB_HOST --body "localhost"</code>
+                                        </div>
+                                        <div class="command-block">
+                                            <span class="command-label">Add database name:</span>
+                                            <code>gh secret set DB_DATABASE --body "your_database"</code>
+                                        </div>
+                                        <div class="command-block">
+                                            <span class="command-label">Add database user:</span>
+                                            <code>gh secret set DB_USERNAME --body "db_user"</code>
+                                        </div>
+                                        <div class="command-block">
+                                            <span class="command-label">Add database password:</span>
+                                            <code>gh secret set DB_PASSWORD --body "your_password"</code>
+                                        </div>
+                                    </div>
+                                </div>
+                                <i class="fas fa-circle step-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Folder 4: First Deployment -->
+                    <div class="step-folder">
+                        <div class="folder-header">
+                            <i class="fas fa-folder-open"></i>
+                            <h3>📁 4️⃣ First Deployment</h3>
+                            <span class="folder-count">3 steps</span>
+                        </div>
+                        <div class="step-list">
+                            <div class="step-item" data-step="9">
+                                <span class="step-number">4.1</span>
+                                <div class="step-content">
+                                    <span class="step-text">Test Staging Deployment</span>
+                                    <div class="step-details">
+                                        <p><strong>Purpose:</strong> Verify deployment process works</p>
+                                        <div class="command-block">
+                                            <span class="command-label">Push to staging:</span>
+                                            <code>git push origin staging</code>
+                                        </div>
+                                        <p><strong>Monitor:</strong> Check GitHub Actions tab for deployment progress</p>
+                                        <p><strong>Verify:</strong> Visit staging URL to confirm deployment success</p>
+                                    </div>
+                                </div>
+                                <i class="fas fa-circle step-icon"></i>
+                            </div>
+                            <div class="step-item" data-step="10">
+                                <span class="step-number">4.2</span>
+                                <div class="step-content">
+                                    <span class="step-text">Deploy to Production</span>
+                                    <div class="step-details">
+                                        <p><strong>Purpose:</strong> Deploy to live production environment</p>
+                                        <div class="command-block">
+                                            <span class="command-label">Push to production:</span>
+                                            <code>git push origin production</code>
+                                        </div>
+                                        <p><strong>Monitor:</strong> Watch deployment progress in GitHub Actions</p>
+                                        <p><strong>Verify:</strong> Check production site functionality</p>
+                                    </div>
+                                </div>
+                                <i class="fas fa-circle step-icon"></i>
+                            </div>
+                            <div class="step-item" data-step="11">
+                                <span class="step-number">4.3</span>
+                                <div class="step-content">
+                                    <span class="step-text">Run Health Checks</span>
+                                    <div class="step-details">
+                                        <p><strong>Purpose:</strong> Verify deployment health and functionality</p>
+                                        <div class="command-block">
+                                            <span class="command-label">Check website:</span>
+                                            <code>curl -I https://yourdomain.com</code>
+                                        </div>
+                                        <div class="command-block">
+                                            <span class="command-label">Check database:</span>
+                                            <code>php artisan tinker --execute="DB::connection()->getPdo();"</code>
+                                        </div>
+                                        <p><strong>Verify:</strong> All critical functionality working correctly</p>
+                                    </div>
+                                </div>
+                                <i class="fas fa-circle step-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Commands Section -->
+            <section id="commands" class="content-section">
+                <h2><i class="fas fa-terminal"></i> Essential Commands & Scripts</h2>
+
+                <div class="commands-container">
+                    <div class="command-category">
+                        <h3>🔧 GitHub CLI Commands</h3>
+                        <div class="command-list">
+                            <div class="command-item">
+                                <h4>1️⃣ Authentication & Setup</h4>
+                                <div class="command-block">
+                                    <span class="command-label">Login:</span>
+                                    <code>gh auth login</code>
+                                </div>
+                                <div class="command-block">
+                                    <span class="command-label">Check status:</span>
+                                    <code>gh auth status</code>
+                                </div>
+                                <div class="command-block">
+                                    <span class="command-label">Logout:</span>
+                                    <code>gh auth logout</code>
+                                </div>
+                            </div>
+
+                            <div class="command-item">
+                                <h4>2️⃣ Repository Management</h4>
+                                <div class="command-block">
+                                    <span class="command-label">View repo:</span>
+                                    <code>gh repo view</code>
+                                </div>
+                                <div class="command-block">
+                                    <span class="command-label">Clone repo:</span>
+                                    <code>gh repo clone owner/repo</code>
+                                </div>
+                                <div class="command-block">
+                                    <span class="command-label">Create repo:</span>
+                                    <code>gh repo create repo-name --public</code>
+                                </div>
+                            </div>
+
+                            <div class="command-item">
+                                <h4>3️⃣ Secrets Management</h4>
+                                <div class="command-block">
+                                    <span class="command-label">List secrets:</span>
+                                    <code>gh secret list</code>
+                                </div>
+                                <div class="command-block">
+                                    <span class="command-label">Set secret:</span>
+                                    <code>gh secret set SECRET_NAME --body "value"</code>
+                                </div>
+                                <div class="command-block">
+                                    <span class="command-label">Delete secret:</span>
+                                    <code>gh secret delete SECRET_NAME</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="command-category">
+                        <h3>🚀 Deployment Commands</h3>
+                        <div class="command-list">
+                            <div class="command-item">
+                                <h4>1️⃣ Git Operations</h4>
+                                <div class="command-block">
+                                    <span class="command-label">Check status:</span>
+                                    <code>git status</code>
+                                </div>
+                                <div class="command-block">
+                                    <span class="command-label">Add changes:</span>
+                                    <code>git add .</code>
+                                </div>
+                                <div class="command-block">
+                                    <span class="command-label">Commit changes:</span>
+                                    <code>git commit -m "Deploy to production"</code>
+                                </div>
+                                <div class="command-block">
+                                    <span class="command-label">Push to branch:</span>
+                                    <code>git push origin production</code>
+                                </div>
+                            </div>
+
+                            <div class="command-item">
+                                <h4>2️⃣ Laravel Commands</h4>
+                                <div class="command-block">
+                                    <span class="command-label">Clear cache:</span>
+                                    <code>php artisan cache:clear</code>
+                                </div>
+                                <div class="command-block">
+                                    <span class="command-label">Config cache:</span>
+                                    <code>php artisan config:cache</code>
+                                </div>
+                                <div class="command-block">
+                                    <span class="command-label">Route cache:</span>
+                                    <code>php artisan route:cache</code>
+                                </div>
+                                <div class="command-block">
+                                    <span class="command-label">View cache:</span>
+                                    <code>php artisan view:cache</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="command-category">
+                        <h3>🛠️ Server Commands</h3>
+                        <div class="command-list">
+                            <div class="command-item">
+                                <h4>1️⃣ SSH & Server Access</h4>
+                                <div class="command-block">
+                                    <span class="command-label">Connect to server:</span>
+                                    <code>ssh user@your-server.com</code>
+                                </div>
+                                <div class="command-block">
+                                    <span class="command-label">Check server info:</span>
+                                    <code>uname -a</code>
+                                </div>
+                                <div class="command-block">
+                                    <span class="command-label">Check disk space:</span>
+                                    <code>df -h</code>
+                                </div>
+                                <div class="command-block">
+                                    <span class="command-label">Check memory:</span>
+                                    <code>free -h</code>
+                                </div>
+                            </div>
+
+                            <div class="command-item">
+                                <h4>2️⃣ Process Management</h4>
+                                <div class="command-block">
+                                    <span class="command-label">Check processes:</span>
+                                    <code>ps aux | grep php</code>
+                                </div>
+                                <div class="command-block">
+                                    <span class="command-label">Kill process:</span>
+                                    <code>kill -9 PID</code>
+                                </div>
+                                <div class="command-block">
+                                    <span class="command-label">Restart service:</span>
+                                    <code>sudo systemctl restart nginx</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Checklists Section -->
+            <section id="checklists" class="content-section">
+                <h2><i class="fas fa-tasks"></i> Deployment Checklists</h2>
+
+                <div class="checklist-container">
+                    <div class="checklist-card">
+                        <h3>✅ 1️⃣ Pre-Deployment Checklist</h3>
+                        <div class="checklist-items">
+                            <label class="checklist-item">
+                                <input type="checkbox" class="checklist-checkbox">
+                                <span class="checkmark"></span>
+                                <span class="checklist-text">1.1 All tests passing</span>
+                            </label>
+                            <label class="checklist-item">
+                                <input type="checkbox" class="checklist-checkbox">
+                                <span class="checkmark"></span>
+                                <span class="checklist-text">1.2 Database migrations safe</span>
+                            </label>
+                            <label class="checklist-item">
+                                <input type="checkbox" class="checklist-checkbox">
+                                <span class="checkmark"></span>
+                                <span class="checklist-text">1.3 Environment variables configured</span>
+                            </label>
+                            <label class="checklist-item">
+                                <input type="checkbox" class="checklist-checkbox">
+                                <span class="checkmark"></span>
+                                <span class="checklist-text">1.4 SSH keys working</span>
+                            </label>
+                            <label class="checklist-item">
+                                <input type="checkbox" class="checklist-checkbox">
+                                <span class="checkmark"></span>
+                                <span class="checklist-text">1.5 Backup created</span>
+                            </label>
+                            <label class="checklist-item">
+                                <input type="checkbox" class="checklist-checkbox">
+                                <span class="checkmark"></span>
+                                <span class="checklist-text">1.6 GitHub secrets configured</span>
+                            </label>
+                            <label class="checklist-item">
+                                <input type="checkbox" class="checklist-checkbox">
+                                <span class="checkmark"></span>
+                                <span class="checklist-text">1.7 Staging deployment tested</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="checklist-card">
+                        <h3>✅ 2️⃣ Post-Deployment Checklist</h3>
+                        <div class="checklist-items">
+                            <label class="checklist-item">
+                                <input type="checkbox" class="checklist-checkbox">
+                                <span class="checkmark"></span>
+                                <span class="checklist-text">2.1 Website loads correctly</span>
+                            </label>
+                            <label class="checklist-item">
+                                <input type="checkbox" class="checklist-checkbox">
+                                <span class="checkmark"></span>
+                                <span class="checklist-text">2.2 Database connections working</span>
+                            </label>
+                            <label class="checklist-item">
+                                <input type="checkbox" class="checklist-checkbox">
+                                <span class="checkmark"></span>
+                                <span class="checklist-text">2.3 Assets loading properly</span>
+                            </label>
+                            <label class="checklist-item">
+                                <input type="checkbox" class="checklist-checkbox">
+                                <span class="checkmark"></span>
+                                <span class="checklist-text">2.4 Health checks passing</span>
+                            </label>
+                            <label class="checklist-item">
+                                <input type="checkbox" class="checklist-checkbox">
+                                <span class="checkmark"></span>
+                                <span class="checklist-text">2.5 Performance acceptable</span>
+                            </label>
+                            <label class="checklist-item">
+                                <input type="checkbox" class="checklist-checkbox">
+                                <span class="checkmark"></span>
+                                <span class="checklist-text">2.6 Critical functionality tested</span>
+                            </label>
+                            <label class="checklist-item">
+                                <input type="checkbox" class="checklist-checkbox">
+                                <span class="checkmark"></span>
+                                <span class="checklist-text">2.7 Monitoring alerts configured</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="checklist-card">
+                        <h3>🚨 3️⃣ Emergency Rollback Checklist</h3>
+                        <div class="checklist-items">
+                            <label class="checklist-item">
+                                <input type="checkbox" class="checklist-checkbox">
+                                <span class="checkmark"></span>
+                                <span class="checklist-text">3.1 Identify issue</span>
+                            </label>
+                            <label class="checklist-item">
+                                <input type="checkbox" class="checklist-checkbox">
+                                <span class="checkmark"></span>
+                                <span class="checklist-text">3.2 Stop deployment</span>
+                            </label>
+                            <label class="checklist-item">
+                                <input type="checkbox" class="checklist-checkbox">
+                                <span class="checkmark"></span>
+                                <span class="checklist-text">3.3 Rollback to previous version</span>
+                            </label>
+                            <label class="checklist-item">
+                                <input type="checkbox" class="checklist-checkbox">
+                                <span class="checkmark"></span>
+                                <span class="checklist-text">3.4 Verify rollback success</span>
+                            </label>
+                            <label class="checklist-item">
+                                <input type="checkbox" class="checklist-checkbox">
+                                <span class="checkmark"></span>
+                                <span class="checklist-text">3.5 Document incident</span>
+                            </label>
+                            <label class="checklist-item">
+                                <input type="checkbox" class="checklist-checkbox">
+                                <span class="checkmark"></span>
+                                <span class="checklist-text">3.6 Investigate root cause</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Structure Section -->
+            <section id="structure" class="content-section">
+                <h2><i class="fas fa-folder-tree"></i> Folder Structure & Organization</h2>
+
+                <div class="structure-container">
+                    <div class="structure-card">
+                        <h3>📁 Complete Project Structure</h3>
+                        <div class="tree-structure">
+                            <div class="tree-item root">
+                                <i class="fas fa-folder-open"></i>
+                                <span>.github/</span>
+                            </div>
+
+                            <div class="tree-item level-1">
+                                <i class="fas fa-folder"></i>
+                                <span>1️⃣ docs/</span>
+                            </div>
+
+                            <div class="tree-item level-2">
+                                <i class="fas fa-folder"></i>
+                                <span>1.1️⃣ guides/</span>
+                            </div>
+                            <div class="tree-item level-3">
+                                <i class="fas fa-file-alt"></i>
+                                <span>1.1.1️⃣ Complete Setup Guide.md</span>
+                            </div>
+                            <div class="tree-item level-3">
+                                <i class="fas fa-file-alt"></i>
+                                <span>1.1.2️⃣ Secrets Management.md</span>
+                            </div>
+                            <div class="tree-item level-3">
+                                <i class="fas fa-file-alt"></i>
+                                <span>1.1.3️⃣ Deployment Secrets.md</span>
+                            </div>
+                            <div class="tree-item level-3">
+                                <i class="fas fa-file-alt"></i>
+                                <span>1.1.4️⃣ Copilot Instructions.md</span>
+                            </div>
+
+                            <div class="tree-item level-2">
+                                <i class="fas fa-folder"></i>
+                                <span>1.2️⃣ plans/</span>
+                            </div>
+                            <div class="tree-item level-3">
+                                <i class="fas fa-file-alt"></i>
+                                <span>1.2.1️⃣ Implementation Plan.md (Latest)</span>
+                            </div>
+                            <div class="tree-item level-3">
+                                <i class="fas fa-file-alt"></i>
+                                <span>1.2.2️⃣ Plan v2.md (Enhanced)</span>
+                            </div>
+                            <div class="tree-item level-3">
+                                <i class="fas fa-file-alt"></i>
+                                <span>1.2.3️⃣ plan-v1.md (Basic)</span>
+                            </div>
+                            <div class="tree-item level-3">
+                                <i class="fas fa-file-alt"></i>
+                                <span>1.2.4️⃣ Phase 1 Plan.md</span>
+                            </div>
+
+                            <div class="tree-item level-2">
+                                <i class="fas fa-folder"></i>
+                                <span>1.3️⃣ implementation/</span>
+                            </div>
+                            <div class="tree-item level-3">
+                                <i class="fas fa-file-alt"></i>
+                                <span>1.3.1️⃣ Laravel Implementation.md</span>
+                            </div>
+
+                            <div class="tree-item level-2">
+                                <i class="fas fa-folder"></i>
+                                <span>1.4️⃣ html-app/</span>
+                            </div>
+                            <div class="tree-item level-3">
+                                <i class="fas fa-file-alt"></i>
+                                <span>1.4.1️⃣ index.html</span>
+                            </div>
+                            <div class="tree-item level-3">
+                                <i class="fas fa-folder"></i>
+                                <span>1.4.2️⃣ css/</span>
+                            </div>
+                            <div class="tree-item level-3">
+                                <i class="fas fa-folder"></i>
+                                <span>1.4.3️⃣ js/</span>
+                            </div>
+
+                            <div class="tree-item level-1">
+                                <i class="fas fa-folder"></i>
+                                <span>2️⃣ workflows/</span>
+                            </div>
+                            <div class="tree-item level-2">
+                                <i class="fas fa-folder"></i>
+                                <span>2.1️⃣ deployment/</span>
+                            </div>
+                            <div class="tree-item level-3">
+                                <i class="fas fa-file-code"></i>
+                                <span>2.1.1️⃣ first-install-part1.yml</span>
+                            </div>
+                            <div class="tree-item level-3">
+                                <i class="fas fa-file-code"></i>
+                                <span>2.1.2️⃣ first-install-part2.yml</span>
+                            </div>
+                            <div class="tree-item level-3">
+                                <i class="fas fa-file-code"></i>
+                                <span>2.1.3️⃣ update-install.yml</span>
+                            </div>
+                            <div class="tree-item level-3">
+                                <i class="fas fa-file-code"></i>
+                                <span>2.1.4️⃣ manual-deploy.yml</span>
+                            </div>
+
+                            <div class="tree-item level-1">
+                                <i class="fas fa-folder"></i>
+                                <span>3️⃣ scripts/</span>
+                            </div>
+                            <div class="tree-item level-2">
+                                <i class="fas fa-folder"></i>
+                                <span>3.1️⃣ automation/</span>
+                            </div>
+                            <div class="tree-item level-3">
+                                <i class="fas fa-file-code"></i>
+                                <span>3.1.1️⃣ check-migrations.sh</span>
+                            </div>
+                            <div class="tree-item level-3">
+                                <i class="fas fa-file-code"></i>
+                                <span>3.1.2️⃣ rollback.sh</span>
+                            </div>
+                            <div class="tree-item level-3">
+                                <i class="fas fa-file-code"></i>
+                                <span>3.1.3️⃣ validate-setup.sh</span>
+                            </div>
+                            <div class="tree-item level-3">
+                                <i class="fas fa-file-code"></i>
+                                <span>3.1.4️⃣ verify-server-config.sh</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="structure-card">
+                        <h3>🎯 Quick Navigation by Number</h3>
+                        <div class="quick-nav">
+                            <div class="nav-group">
+                                <h4>1️⃣ Documentation</h4>
+                                <ul>
+                                    <li><strong>1.1</strong> - Setup & Configuration Guides</li>
+                                    <li><strong>1.2</strong> - Implementation Plans</li>
+                                    <li><strong>1.3</strong> - Technical Implementation</li>
+                                    <li><strong>1.4</strong> - Interactive Learning App</li>
+                                </ul>
+                            </div>
+                            <div class="nav-group">
+                                <h4>2️⃣ Workflows</h4>
+                                <ul>
+                                    <li><strong>2.1</strong> - Deployment Workflows</li>
+                                    <li><strong>2.2</strong> - CI/CD Workflows (Future)</li>
+                                </ul>
+                            </div>
+                            <div class="nav-group">
+                                <h4>3️⃣ Scripts</h4>
+                                <ul>
+                                    <li><strong>3.1</strong> - Automation Scripts</li>
+                                    <li><strong>3.2</strong> - Deployment Scripts (Future)</li>
+                                    <li><strong>3.3</strong> - Validation Scripts (Future)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Resources Section -->
+            <section id="resources" class="content-section">
+                <h2><i class="fas fa-book"></i> Resources & Documentation</h2>
+
+                <div class="resources-container">
+                    <div class="resource-card">
+                        <h3>📚 1️⃣ Essential Guides</h3>
+                        <ul class="resource-list">
+                            <li><a href="../guides/📝 Complete Setup and Configuration Guide.md">1.1 Complete Setup Guide</a></li>
+                            <li><a href="../guides/GitHub-Secrets-Variables-Management-Guide.md">1.2 Secrets Management</a></li>
+                            <li><a href="../plans/SocietyPal-GitHub-Actions-Implementation-Plan.md">1.3 Implementation Plan</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="resource-card">
+                        <h3>🔧 2️⃣ Technical Documentation</h3>
+                        <ul class="resource-list">
+                            <li><a href="../implementation/Laravel-GitHub-Actions-Implementation-Guide.md">2.1 Laravel Implementation</a></li>
+                            <li><a href="../guides/copilot-instructions.md">2.2 Copilot Instructions</a></li>
+                            <li><a href="../guides/DEPLOYMENT_SECRETS.md">2.3 Deployment Secrets</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="resource-card">
+                        <h3>🌐 3️⃣ External Resources</h3>
+                        <ul class="resource-list">
+                            <li><a href="https://docs.github.com/en/actions" target="_blank" rel="noopener">3.1 GitHub Actions Docs</a></li>
+                            <li><a href="https://laravel.com/docs/deployment" target="_blank" rel="noopener">3.2 Laravel Deployment</a></li>
+                            <li><a href="https://github.com/features/actions" target="_blank" rel="noopener">3.3 GitHub Actions Features</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="resource-card">
+                        <h3>📋 4️⃣ Version History</h3>
+                        <ul class="resource-list">
+                            <li><a href="../plans/Plan-v2.md">4.1 Plan v2 (Enhanced)</a></li>
+                            <li><a href="../plans/plan-v1.md">4.2 Plan v1 (Basic)</a></li>
+                            <li><a href="../plans/Phase-1-Create-V3-Implementation-Plan.md">4.3 Phase 1 Plan</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="overall-progress"></div>
+            </div>
+            <span class="progress-text">Overall Progress: 0%</span>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+Variables
+These variables refer to the project
+
+%startrev%
+Start revision ref
+%endrev%
+End revision ref
+%startrevmsg%
+Start revision commit message (available on deployment finish or failure)
+%endrevmsg%
+End revision commit message (available on deployment finish or failure)
+%tag%
+Tag related to end revision (if present)
+%branch%
+The branch of the deployment
+%count%
+This number of deployments in the project
+%servers%
+Names of the servers in this deployment
+%deployer%
+User who started the deployment (if manually deployed)
+%commitrange%
+The start and end commit, separated with a hyphen
+%project%
+The name of this project in deploy
+%projecturl%
+The address of this project in DeployHQ
+%projectperma%
+The permalink of this project in DeployHQ
+%deploymenturl%
+The address of this deployment in DeployHQ
+%status%
+The current status of this deployment
+%started_at%
+The iso8601 timestamp representing the start time of the deployment
+%completed_at%
+The iso8601 timestamp representing the completion time of the deployment
+%deployment_overview%
+The parsed and stripped deployment overview (if provided)
+These variables refer to a specific server or server group
+
+%environment%
+Server environment (development, production etc.)
+%username%
+Username used to login to the server
+%password%
+Password used to login to the server
+%groupindex%
+Server group only.The order within its group that this server is deployed (zero-indexed)
+%path%
+Base server path we’re deploying to
+These variables can be used on a server configured for zero-downtime deployments
+
+%release_path%
+Path that the release is being deployed to
+%shared_path%
+Path containing shared files that will be symlinked to release
+%current_path%
+Symlink pointing to the currently active release
+%previous_release_path%
+Path to the previous release
+These variables can be used on all servers
+
+%release_path%
+Path that the release is being deployed to

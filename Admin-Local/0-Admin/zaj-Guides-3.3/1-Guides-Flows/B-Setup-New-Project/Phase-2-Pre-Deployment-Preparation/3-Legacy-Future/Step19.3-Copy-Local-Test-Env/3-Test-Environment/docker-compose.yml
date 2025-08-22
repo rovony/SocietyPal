@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  test-env:
+    image: php:8.2-cli
+    container_name: laravel-build-test
+    working_dir: /workspace
+    volumes:
+      - ./test-workspace:/workspace
+      - ./scripts:/scripts
+    environment:
+      - COMPOSER_ALLOW_SUPERUSER=1
+      - COMPOSER_MEMORY_LIMIT=-1
+    command: tail -f /dev/null
+    depends_on:
+      - composer
+      - node
+
+  composer:
+    image: composer:2.6
+    container_name: composer-test
+    volumes:
+      - ./test-workspace:/workspace
+      - ./scripts:/scripts
+    working_dir: /workspace
+    command: tail -f /dev/null
+
+  node:
+    image: node:18-alpine
+    container_name: node-test
+    volumes:
+      - ./test-workspace:/workspace
+      - ./scripts:/scripts
+    working_dir: /workspace
+    command: tail -f /dev/null
+
+  # Optional: Add a simple web server for testing
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-test
+    ports:
+      - "8080:80"
+    volumes:
+      - ./test-workspace:/var/www/html
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - test-env

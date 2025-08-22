@@ -1,0 +1,66 @@
+{
+  "project": {
+    "name": "Plannn-Laravel-Project",
+    "type": "laravel",
+    "has_frontend": true,
+    "frontend_framework": "auto-detect",
+    "uses_queues": false,
+    "uses_horizon": false,
+    "uses_websockets": false
+  },
+  "paths": {
+    "local_machine": "/Users/malekokour/Zaj_Master/MyApps/MyLaravel_Apps/2_Apps/Plannn-Project/Plannn-App-Master/Plannn-com-AppRoot",
+    "server_deploy": "/path/on/server/deployment",
+    "server_domain": "your-domain.com",
+    "server_public": "/path/to/public_html",
+    "builder_vm": "/tmp/build"
+  },
+  "repository": {
+    "url": "https://github.com/yourusername/plannn-project.git",
+    "branch": "main",
+    "deploy_branch": "main",
+    "commit_start": "HEAD~5",
+    "commit_end": "HEAD"
+  },
+  "versions": {
+    "php": "8.2",
+    "php_exact": "8.2.10",
+    "composer": "2",
+    "composer_exact": "2.5.8",
+    "node": "18",
+    "node_exact": "18.17.0",
+    "npm": "9",
+    "npm_exact": "9.8.1"
+  },
+  "deployment": {
+    "strategy": "manual",
+    "build_location": "local",
+    "keep_releases": 5,
+    "maintenance_mode": true,
+    "health_check_url": "/health",
+    "opcache_clear_method": "cachetool"
+  },
+  "shared_directories": [
+    "storage/app/public",
+    "storage/logs",
+    "storage/framework/cache",
+    "storage/framework/sessions",
+    "storage/framework/views",
+    "public/uploads",
+    "public/avatars",
+    "public/documents",
+    "public/media"
+  ],
+  "shared_files": [
+    ".env",
+    "auth.json"
+  ],
+  "hosting": {
+    "type": "shared",
+    "has_root_access": false,
+    "public_html_exists": true,
+    "exec_enabled": true,
+    "symlink_enabled": true,
+    "composer_per_domain": false
+  }
+}

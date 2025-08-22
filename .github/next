@@ -1,0 +1,23 @@
+1- QC .github as this will be my source of truth for anything github cicd.
+2- Organize it well into standard github actions but also create folders for our docs, review documentations i have there to ensure 1- completeness, etc..
+
+3- Create in docs an html-js-css folder (Html-App) and inside it have everything related to github actions (learn, steps, etc) similar to what we did in Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-3-Deployment-Execution/deployment-execution-checklist.html, Admin-Local/0-Admin/zaj-Guides/1-Guides-Flows/B-Setup-New-Project/Phase-3-Deployment-Execution/1-Steps/step-21.1-collect-servers-info/SingleFile-Collect-info-HTML v1/Collect-Project-Server-Deploy-info-v2.html, etc - this will be the solution for ppl like visual, steps, learn- adhd, etc..
+Please QC .github/SocietyPal-GitHub-Actions-Implementation-Plan.md as i think it has several outdated parts.
+then Group things to 3 groups:
+H2: Background, info or any non step stuff, 
+H2: 1 Time Setup Steps: for things that are done once like collecting info, creating actions, setup github, etc
+H2: First Deploy Deployment Steps
+H2: Deploying a Vendor Update
+
+
+use H2 and H3 but for H3 use numbered H3 within H2.
+otherwise use numbered bullets and numbered sub-bullets: 1-Phase 1, 1-Step1
+
+note i moved the file to .github/SocietyPal-GitHub-Actions-Implementation-Plan.md as i want to have all github cicid here. central location.
+
+
+
+
+notes:
+- integrate .github/GitHub-Secrets-Variables-Management-Guide.md in the .github/SocietyPal-GitHub-Actions-Implementation-Plan.md
+- ✅ Better Approach: Minimal Secrets + Existing .env Files

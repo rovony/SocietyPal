@@ -1,0 +1,1717 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Phase 3: Deployment Execution Checklist</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+
+            .header {
+                text-align: center;
+                color: white;
+                margin-bottom: 30px;
+                padding: 20px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 15px;
+                backdrop-filter: blur(10px);
+            }
+
+            .header h1 {
+                font-size: 2.5em;
+                margin-bottom: 10px;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+
+            .header p {
+                font-size: 1.2em;
+                opacity: 0.9;
+            }
+
+            .checklist-container {
+                background: white;
+                border-radius: 15px;
+                padding: 30px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                margin-bottom: 20px;
+            }
+
+            .priority-legend {
+                background: #f8f9fa;
+                border: 1px solid #dee2e6;
+                border-radius: 8px;
+                padding: 20px;
+                margin-bottom: 30px;
+            }
+
+            .priority-legend h3 {
+                color: #495057;
+                margin-bottom: 15px;
+                font-size: 1.2em;
+            }
+
+            .legend-items {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+            }
+
+            .legend-item {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .priority-badge {
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-size: 0.75em;
+                font-weight: bold;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                min-width: 80px;
+                text-align: center;
+            }
+
+            .priority-must {
+                background: #dc3545;
+                color: white;
+            }
+
+            .priority-recommended {
+                background: #ffc107;
+                color: #212529;
+            }
+
+            .priority-optional {
+                background: #28a745;
+                color: white;
+            }
+
+            .scenario-selector {
+                background: #e9ecef;
+                border-radius: 8px;
+                padding: 20px;
+                margin-bottom: 30px;
+            }
+
+            .tab-container {
+                background: white;
+                border-radius: 8px;
+                margin-top: 20px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            }
+
+            .tab-nav {
+                display: flex;
+                background: #f8f9fa;
+                border-radius: 8px 8px 0 0;
+                overflow-x: auto;
+            }
+
+            .tab-button {
+                padding: 15px 20px;
+                border: none;
+                background: transparent;
+                cursor: pointer;
+                font-weight: 500;
+                color: #6c757d;
+                border-bottom: 3px solid transparent;
+                transition: all 0.3s ease;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+
+            .tab-button:hover {
+                background: rgba(102, 126, 234, 0.1);
+                color: #667eea;
+            }
+
+            .tab-button.active {
+                background: white;
+                color: #667eea;
+                border-bottom-color: #667eea;
+            }
+
+            .tab-content {
+                padding: 30px;
+                display: none;
+            }
+
+            .tab-content.active {
+                display: block;
+            }
+
+            .yaml-block {
+                background: #2d3748;
+                color: #e2e8f0;
+                border-radius: 6px;
+                padding: 20px;
+                font-family: "Courier New", monospace;
+                font-size: 0.85em;
+                margin: 12px 0;
+                overflow-x: auto;
+                position: relative;
+            }
+
+            .yaml-block::before {
+                content: "📄 YAML Configuration";
+                position: absolute;
+                top: 8px;
+                right: 15px;
+                background: #667eea;
+                color: white;
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-size: 0.7em;
+                font-weight: bold;
+            }
+
+            .yaml-block pre {
+                margin: 0;
+                white-space: pre-wrap;
+                word-wrap: break-word;
+            }
+
+            .section {
+                margin-bottom: 40px;
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                overflow: hidden;
+            }
+
+            .section-header {
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                color: white;
+                padding: 15px 20px;
+                cursor: pointer;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                transition: background 0.3s ease;
+            }
+
+            .section-header:hover {
+                background: linear-gradient(135deg, #5a6fd8, #6a4190);
+            }
+
+            .section-header h3 {
+                margin: 0;
+                font-size: 1.3em;
+            }
+
+            .toggle-icon {
+                font-size: 1.2em;
+                transition: transform 0.3s ease;
+            }
+
+            .section-content {
+                padding: 20px;
+                background: #fafafa;
+                display: none;
+            }
+
+            .section-content.active {
+                display: block;
+            }
+
+            .step-group {
+                margin-bottom: 25px;
+                background: white;
+                border-radius: 8px;
+                padding: 20px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .step-group h4 {
+                color: #495057;
+                margin-bottom: 15px;
+                font-size: 1.1em;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .checklist {
+                list-style: none;
+                padding: 0;
+            }
+
+            .checklist li {
+                margin: 12px 0;
+                padding: 12px 15px;
+                background: white;
+                border: 1px solid #e0e0e0;
+                border-radius: 6px;
+                display: flex;
+                align-items: flex-start;
+                gap: 12px;
+                transition: all 0.3s ease;
+            }
+
+            .checklist li:hover {
+                border-color: #667eea;
+                box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+            }
+
+            .checklist input[type="checkbox"] {
+                margin-top: 3px;
+                transform: scale(1.2);
+                cursor: pointer;
+            }
+
+            .checklist li.completed {
+                background: #d4edda;
+                border-color: #28a745;
+                opacity: 0.8;
+            }
+
+            .checklist li.completed .item-text {
+                text-decoration: line-through;
+                color: #6c757d;
+            }
+
+            .item-content {
+                flex: 1;
+            }
+
+            .item-text {
+                margin-bottom: 8px;
+                font-weight: 500;
+            }
+
+            .item-details {
+                font-size: 0.9em;
+                color: #6c757d;
+                margin-left: 15px;
+            }
+
+            .code-block {
+                background: #f8f9fa;
+                border: 1px solid #e9ecef;
+                border-radius: 4px;
+                padding: 10px;
+                font-family: "Courier New", monospace;
+                font-size: 0.85em;
+                margin: 8px 0;
+                overflow-x: auto;
+            }
+
+            .expected-result {
+                background: #e8f5e8;
+                border-left: 4px solid #28a745;
+                padding: 10px 15px;
+                margin: 8px 0;
+                border-radius: 0 4px 4px 0;
+                font-size: 0.9em;
+            }
+
+            .why-box {
+                background: #fff3cd;
+                border: 1px solid #ffeaa7;
+                border-radius: 6px;
+                padding: 15px;
+                margin: 12px 0;
+                border-left: 4px solid #f39c12;
+            }
+
+            .why-box h5 {
+                color: #856404;
+                margin: 0 0 8px 0;
+                font-size: 0.95em;
+            }
+
+            .why-box p {
+                color: #856404;
+                margin: 0;
+                font-size: 0.85em;
+                line-height: 1.5;
+            }
+
+            .final-checklist {
+                background: linear-gradient(135deg, #28a745, #20c997);
+                color: white;
+                padding: 25px;
+                border-radius: 12px;
+                margin-top: 30px;
+            }
+
+            .final-checklist h3 {
+                margin-bottom: 20px;
+                font-size: 1.4em;
+            }
+
+            .final-checklist .checklist li {
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                color: white;
+            }
+
+            .final-checklist .checklist li:hover {
+                background: rgba(255, 255, 255, 0.2);
+                border-color: rgba(255, 255, 255, 0.5);
+            }
+
+            .scenario-specific {
+                display: none;
+            }
+
+            .scenario-specific.active {
+                display: block;
+            }
+
+            @media (max-width: 768px) {
+                .container {
+                    padding: 10px;
+                }
+
+                .header h1 {
+                    font-size: 2em;
+                }
+
+                .checklist-container {
+                    padding: 20px;
+                }
+
+                .legend-items {
+                    grid-template-columns: 1fr;
+                }
+
+                .scenario-options {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>🚀 Phase 3: Deployment Execution</h1>
+                <p>
+                    Complete Laravel Application Deployment with Professional
+                    Monitoring & Management
+                </p>
+            </div>
+
+            <div class="checklist-container">
+                <!-- Priority Legend -->
+                <div class="priority-legend">
+                    <h3>📋 Priority Legend</h3>
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <span class="priority-badge priority-must"
+                                >MUST</span
+                            >
+                            <span>Critical for deployment success</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="priority-badge priority-recommended"
+                                >RECOMMENDED</span
+                            >
+                            <span>Important for production reliability</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="priority-badge priority-optional"
+                                >OPTIONAL</span
+                            >
+                            <span>Advanced features and optimization</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scenario Selection -->
+                <div class="scenario-selector">
+                    <h3>
+                        🎯 Step 21: Choose Your Deployment Scenario
+                        <span class="priority-badge priority-must">MUST</span>
+                    </h3>
+                    <p>
+                        Select the deployment approach that best fits your
+                        project requirements and team capabilities.
+                    </p>
+
+                    <div class="tab-container">
+                        <div class="tab-nav">
+                            <button
+                                class="tab-button active"
+                                onclick="openTab('local-ssh')"
+                            >
+                                🛠️ Local Build + SSH
+                            </button>
+                            <button
+                                class="tab-button"
+                                onclick="openTab('github-actions')"
+                            >
+                                🤖 GitHub Actions
+                            </button>
+                            <button
+                                class="tab-button"
+                                onclick="openTab('deployhq')"
+                            >
+                                🏭 DeployHQ Professional
+                            </button>
+                            <button
+                                class="tab-button"
+                                onclick="openTab('git-pull')"
+                            >
+                                📁 Git Pull + Manual
+                            </button>
+                        </div>
+
+                        <div id="local-ssh" class="tab-content active">
+                            <h4>🛠️ Scenario A: Local Build + SSH</h4>
+                            <p>
+                                <strong>Complexity:</strong> Low |
+                                <strong>Time:</strong> Medium |
+                                <strong>Control:</strong> High
+                            </p>
+                            <p>
+                                <strong>Best for:</strong> Simple projects, full
+                                control, no external dependencies
+                            </p>
+                            <div class="why-box">
+                                <h5>🎯 Why Choose This Method</h5>
+                                <p>
+                                    Perfect for developers who want complete
+                                    control over the deployment process with
+                                    minimal external dependencies. Ideal for
+                                    smaller projects or teams that prefer manual
+                                    oversight.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div id="github-actions" class="tab-content">
+                            <h4>🤖 Scenario B: GitHub Actions</h4>
+                            <p>
+                                <strong>Complexity:</strong> Medium |
+                                <strong>Time:</strong> Low |
+                                <strong>Control:</strong> Medium
+                            </p>
+                            <p>
+                                <strong>Best for:</strong> Team collaboration,
+                                CI/CD, automatic testing
+                            </p>
+                            <div class="why-box">
+                                <h5>🎯 Why Choose This Method</h5>
+                                <p>
+                                    Excellent for teams using GitHub who want
+                                    automated deployments with integrated
+                                    testing. Provides professional CI/CD
+                                    workflows with minimal maintenance overhead.
+                                </p>
+                            </div>
+                            <div class="yaml-block">
+                                <pre>
+name: Laravel Deployment
+
+on:
+  push:
+    branches: [ main, staging ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: laravel_test
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, dom, fileinfo, mysql
+        
+    - name: Copy .env
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      
+    - name: Install Dependencies
+      run: composer install --no-dev --prefer-dist --optimize-autoloader
+      
+    - name: Generate key
+      run: php artisan key:generate
+      
+    - name: Create Database
+      run: |
+        mkdir -p database
+        touch database/database.sqlite
+        
+    - name: Run Tests
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: database/database.sqlite
+      run: php artisan test
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Build assets
+      run: |
+        npm ci
+        npm run build
+        
+    - name: Deploy to server
+      uses: appleboy/ssh-action@v0.1.5
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.KEY }}
+        script: |
+          cd /var/www/html
+          git pull origin main
+          composer install --no-dev --optimize-autoloader
+          php artisan migrate --force
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache</pre
+                                >
+                            </div>
+                        </div>
+
+                        <div id="deployhq" class="tab-content">
+                            <h4>🏭 Scenario C: DeployHQ Professional</h4>
+                            <p>
+                                <strong>Complexity:</strong> Low |
+                                <strong>Time:</strong> Low |
+                                <strong>Control:</strong> High
+                            </p>
+                            <p>
+                                <strong>Best for:</strong> Professional
+                                deployments, enterprise features
+                            </p>
+                            <div class="why-box">
+                                <h5>🎯 Why Choose This Method</h5>
+                                <p>
+                                    Professional-grade deployment service with
+                                    advanced features, monitoring, and support.
+                                    Best for production applications requiring
+                                    enterprise-level deployment infrastructure.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div id="git-pull" class="tab-content">
+                            <h4>📁 Scenario D: Git Pull + Manual</h4>
+                            <p>
+                                <strong>Complexity:</strong> Very Low |
+                                <strong>Time:</strong> Medium |
+                                <strong>Control:</strong> Medium
+                            </p>
+                            <p>
+                                <strong>Best for:</strong> Hostinger/cPanel,
+                                familiar workflow, cost-effective
+                            </p>
+                            <div class="why-box">
+                                <h5>🎯 Why Choose This Method</h5>
+                                <p>
+                                    Most familiar approach for developers using
+                                    shared hosting or cPanel-based servers.
+                                    Cost-effective solution with straightforward
+                                    workflow and debugging capabilities.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- All Steps Overview -->
+                <div class="section">
+                    <div class="section-header" onclick="toggleSection(this)">
+                        <h3>📋 All Steps Overview</h3>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="step-group">
+                            <h4>
+                                🎯 Step 21: Deployment Scenario Selection
+                                <span class="priority-badge priority-must"
+                                    >MUST</span
+                                >
+                            </h4>
+                            <ul class="checklist">
+                                <li>
+                                    <input type="checkbox" id="step21-1" />
+                                    <div class="item-content">
+                                        <div class="item-text">
+                                            Analyze project requirements and
+                                            team capabilities
+                                        </div>
+                                        <div class="expected-result">
+                                            ✅ Expected: Clear understanding of
+                                            deployment constraints and
+                                            requirements
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <input type="checkbox" id="step21-2" />
+                                    <div class="item-content">
+                                        <div class="item-text">
+                                            Review deployment scenario
+                                            comparison matrix
+                                        </div>
+                                        <div class="expected-result">
+                                            ✅ Expected: Deployment approach
+                                            selected based on complexity, time,
+                                            and control needs
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <input type="checkbox" id="step21-3" />
+                                    <div class="item-content">
+                                        <div class="item-text">
+                                            Select optimal deployment scenario
+                                            for your project
+                                        </div>
+                                        <div class="expected-result">
+                                            ✅ Expected: One scenario chosen
+                                            with team consensus and documented
+                                            rationale
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="why-box">
+                                <h5>🤔 Why This Matters</h5>
+                                <p>
+                                    Choosing the right deployment scenario
+                                    upfront prevents costly rework and ensures
+                                    the deployment approach aligns with your
+                                    team's capabilities and project constraints.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Scenario-Specific Steps -->
+                        <div class="scenario-specific local-ssh">
+                            <div class="step-group">
+                                <h4>
+                                    🛠️ Step 22A: Local Build Process Setup
+                                    <span class="priority-badge priority-must"
+                                        >MUST</span
+                                    >
+                                </h4>
+                                <ul class="checklist">
+                                    <li>
+                                        <input type="checkbox" id="step22a-1" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Configure local build
+                                                environment with production
+                                                optimization
+                                            </div>
+                                            <div class="code-block">
+                                                php artisan config:cache && php
+                                                artisan route:cache && php
+                                                artisan view:cache
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: Optimized Laravel
+                                                caches generated for production
+                                                deployment
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" id="step22a-2" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Build and optimize frontend
+                                                assets
+                                            </div>
+                                            <div class="code-block">
+                                                npm run build
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: Minified and
+                                                optimized CSS/JS assets in
+                                                public/build/
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" id="step22a-3" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Create deployment package with
+                                                version control
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: Clean deployment
+                                                package ready for server upload
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="step-group">
+                                <h4>
+                                    🚀 Step 23A: Server Deployment Execution
+                                    <span class="priority-badge priority-must"
+                                        >MUST</span
+                                    >
+                                </h4>
+                                <ul class="checklist">
+                                    <li>
+                                        <input type="checkbox" id="step23a-1" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Establish secure SSH connection
+                                                and verify server readiness
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: SSH connection
+                                                established with proper
+                                                permissions verified
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" id="step23a-2" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Execute zero-downtime deployment
+                                                with atomic symlink switching
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: New release
+                                                deployed without service
+                                                interruption
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" id="step23a-3" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Run database migrations and
+                                                application optimization
+                                            </div>
+                                            <div class="code-block">
+                                                php artisan migrate --force &&
+                                                php artisan key:generate
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: Database updated
+                                                and application configured for
+                                                production
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="step-group">
+                                <h4>
+                                    📊 Step 24A: Post-Deployment Verification
+                                    <span class="priority-badge priority-must"
+                                        >MUST</span
+                                    >
+                                </h4>
+                                <ul class="checklist">
+                                    <li>
+                                        <input type="checkbox" id="step24a-1" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Verify application health and
+                                                database connectivity
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: All application
+                                                endpoints responding with 200
+                                                status
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" id="step24a-2" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Validate SSL certificate and
+                                                security headers
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: SSL certificate
+                                                valid and security headers
+                                                properly configured
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" id="step24a-3" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Setup basic monitoring and
+                                                backup verification
+                                                <span
+                                                    class="priority-badge priority-recommended"
+                                                    >RECOMMENDED</span
+                                                >
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: Monitoring script
+                                                active and backup system
+                                                functional
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="scenario-specific github-actions">
+                            <div class="step-group">
+                                <h4>
+                                    🤖 Step 22B: GitHub Actions Workflow Setup
+                                    <span class="priority-badge priority-must"
+                                        >MUST</span
+                                    >
+                                </h4>
+                                <ul class="checklist">
+                                    <li>
+                                        <input type="checkbox" id="step22b-1" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Create comprehensive CI/CD
+                                                workflow with CodeCanyon
+                                                optimization
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: GitHub Actions
+                                                workflow configured for
+                                                automated deployments
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" id="step22b-2" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Configure environment-specific
+                                                deployment targets
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: Separate staging
+                                                and production deployment
+                                                environments configured
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" id="step22b-3" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Setup automated testing and
+                                                quality gates
+                                                <span
+                                                    class="priority-badge priority-recommended"
+                                                    >RECOMMENDED</span
+                                                >
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: Automated tests
+                                                running before each deployment
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="step-group">
+                                <h4>
+                                    ⚡ Step 23B: Automated Build and Deployment
+                                    <span class="priority-badge priority-must"
+                                        >MUST</span
+                                    >
+                                </h4>
+                                <ul class="checklist">
+                                    <li>
+                                        <input type="checkbox" id="step23b-1" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Trigger automated deployment
+                                                with user confirmation for
+                                                critical changes
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: Deployment
+                                                initiated with proper approval
+                                                workflow
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" id="step23b-2" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Monitor automated build and
+                                                deployment process
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: Real-time
+                                                deployment status available
+                                                through GitHub Actions dashboard
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" id="step23b-3" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Verify automated rollback
+                                                capabilities
+                                                <span
+                                                    class="priority-badge priority-recommended"
+                                                    >RECOMMENDED</span
+                                                >
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: Rollback mechanism
+                                                tested and ready for emergency
+                                                use
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="step-group">
+                                <h4>
+                                    📈 Step 24B: Post-Deployment Monitoring
+                                    <span
+                                        class="priority-badge priority-recommended"
+                                        >RECOMMENDED</span
+                                    >
+                                </h4>
+                                <ul class="checklist">
+                                    <li>
+                                        <input type="checkbox" id="step24b-1" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Configure automated health
+                                                checks and performance
+                                                monitoring
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: Continuous
+                                                monitoring active with alert
+                                                notifications
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" id="step24b-2" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Setup notification channels for
+                                                deployment status and alerts
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: Team notifications
+                                                configured for Slack, email, or
+                                                SMS
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" id="step24b-3" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Verify backup automation and
+                                                dependency update monitoring
+                                                <span
+                                                    class="priority-badge priority-optional"
+                                                    >OPTIONAL</span
+                                                >
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: Automated
+                                                maintenance tasks configured and
+                                                operational
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="scenario-specific deployhq">
+                            <div class="step-group">
+                                <h4>
+                                    🏭 Step 22C: DeployHQ Professional Setup
+                                    <span class="priority-badge priority-must"
+                                        >MUST</span
+                                    >
+                                </h4>
+                                <ul class="checklist">
+                                    <li>
+                                        <input type="checkbox" id="step22c-1" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Configure DeployHQ project with
+                                                advanced build optimization
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: DeployHQ project
+                                                configured with optimized build
+                                                commands
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" id="step22c-2" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Setup multi-environment
+                                                deployment with staging
+                                                validation
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: Staging and
+                                                production environments
+                                                configured with approval
+                                                workflow
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" id="step22c-3" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Configure zero-downtime
+                                                deployment with rollback
+                                                capabilities
+                                                <span
+                                                    class="priority-badge priority-recommended"
+                                                    >RECOMMENDED</span
+                                                >
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: Professional
+                                                deployment pipeline with instant
+                                                rollback ready
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="step-group">
+                                <h4>
+                                    ⚡ Step 23C: Professional Build and
+                                    Deployment
+                                    <span class="priority-badge priority-must"
+                                        >MUST</span
+                                    >
+                                </h4>
+                                <ul class="checklist">
+                                    <li>
+                                        <input type="checkbox" id="step23c-1" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Execute professional deployment
+                                                with advanced monitoring
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: Deployment
+                                                completed with comprehensive
+                                                progress tracking
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" id="step23c-2" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Verify deployment success with
+                                                automated health checks
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: All health checks
+                                                passing with detailed status
+                                                reports
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" id="step23c-3" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Activate professional monitoring
+                                                and notification systems
+                                                <span
+                                                    class="priority-badge priority-recommended"
+                                                    >RECOMMENDED</span
+                                                >
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: Real-time
+                                                monitoring active with
+                                                enterprise-grade alerting
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="step-group">
+                                <h4>
+                                    📊 Step 24C: Enterprise Monitoring and
+                                    Management
+                                    <span
+                                        class="priority-badge priority-optional"
+                                        >OPTIONAL</span
+                                    >
+                                </h4>
+                                <ul class="checklist">
+                                    <li>
+                                        <input type="checkbox" id="step24c-1" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Setup enterprise monitoring
+                                                infrastructure with professional
+                                                dashboards
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: Comprehensive
+                                                monitoring dashboard with
+                                                real-time metrics
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" id="step24c-2" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Configure professional
+                                                operational management workflows
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: Advanced management
+                                                procedures and team
+                                                collaboration active
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" id="step24c-3" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Establish enterprise analytics
+                                                and optimization engine
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: Performance
+                                                analytics and automated
+                                                optimization recommendations
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="scenario-specific git-pull">
+                            <div class="step-group">
+                                <h4>
+                                    📁 Step 22D: Git Pull Configuration
+                                    <span class="priority-badge priority-must"
+                                        >MUST</span
+                                    >
+                                </h4>
+                                <ul class="checklist">
+                                    <li>
+                                        <input type="checkbox" id="step22d-1" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Configure server Git repository
+                                                with proper deployment structure
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: Git repository
+                                                configured on server with proper
+                                                permissions
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" id="step22d-2" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Setup local build process with
+                                                manual upload workflow
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: Local build process
+                                                documented with upload
+                                                procedures
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" id="step22d-3" />
+                                        <div class="item-content">
+                                            <div class="item-text">
+                                                Create deployment manifest and
+                                                shared resource linking
+                                            </div>
+                                            <div class="expected-result">
+                                                ✅ Expected: Deployment
+                                                checklist and shared resource
+                                                management ready
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Universal Post-Deployment Verification -->
+                        <div class="step-group">
+                            <h4>
+                                ✅ Step 24.1: Universal Post-Deployment
+                                Verification
+                                <span class="priority-badge priority-must"
+                                    >MUST</span
+                                >
+                            </h4>
+                            <ul class="checklist">
+                                <li>
+                                    <input type="checkbox" id="step24-1-1" />
+                                    <div class="item-content">
+                                        <div class="item-text">
+                                            Complete application functionality
+                                            verification across all critical
+                                            paths
+                                        </div>
+                                        <div class="code-block">
+                                            curl -s -o /dev/null -w
+                                            "%{http_code}"
+                                            https://yourdomain.com
+                                        </div>
+                                        <div class="expected-result">
+                                            ✅ Expected: All application
+                                            endpoints responding with HTTP 200
+                                            status
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <input type="checkbox" id="step24-1-2" />
+                                    <div class="item-content">
+                                        <div class="item-text">
+                                            Verify database connectivity and
+                                            data integrity
+                                        </div>
+                                        <div class="code-block">
+                                            php artisan tinker
+                                            --execute="\\DB::connection()->getPdo();"
+                                        </div>
+                                        <div class="expected-result">
+                                            ✅ Expected: Database connection
+                                            successful with query operations
+                                            functional
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <input type="checkbox" id="step24-1-3" />
+                                    <div class="item-content">
+                                        <div class="item-text">
+                                            Validate SSL certificate and
+                                            security configuration
+                                        </div>
+                                        <div class="expected-result">
+                                            ✅ Expected: SSL certificate valid
+                                            with proper security headers
+                                            configured
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <input type="checkbox" id="step24-1-4" />
+                                    <div class="item-content">
+                                        <div class="item-text">
+                                            Test file system permissions and
+                                            storage functionality
+                                        </div>
+                                        <div class="expected-result">
+                                            ✅ Expected: Storage directories
+                                            writable with symlinks properly
+                                            configured
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <input type="checkbox" id="step24-1-5" />
+                                    <div class="item-content">
+                                        <div class="item-text">
+                                            Establish basic monitoring and
+                                            backup verification systems
+                                        </div>
+                                        <div class="expected-result">
+                                            ✅ Expected: Monitoring script
+                                            active and backup system functional
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <input type="checkbox" id="step24-1-6" />
+                                    <div class="item-content">
+                                        <div class="item-text">
+                                            Create production configuration
+                                            documentation and team handoff
+                                        </div>
+                                        <div class="expected-result">
+                                            ✅ Expected: Complete production
+                                            documentation available for team
+                                            reference
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="why-box">
+                                <h5>🤔 Why Universal Verification Matters</h5>
+                                <p>
+                                    Regardless of deployment method, these
+                                    verification steps ensure your application
+                                    is production-ready with proper monitoring,
+                                    security, and documentation in place for
+                                    ongoing operations.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Final Deployment Checklist -->
+                <div class="final-checklist">
+                    <h3>🎯 Final Deployment Success Confirmation</h3>
+                    <ul class="checklist">
+                        <li>
+                            <input type="checkbox" id="final-1" />
+                            <div class="item-content">
+                                <div class="item-text">
+                                    Deployment scenario selected and executed
+                                    successfully
+                                    <span class="priority-badge priority-must"
+                                        >MUST</span
+                                    >
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <input type="checkbox" id="final-2" />
+                            <div class="item-content">
+                                <div class="item-text">
+                                    Application accessible at production URL
+                                    with SSL certificate valid
+                                    <span class="priority-badge priority-must"
+                                        >MUST</span
+                                    >
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <input type="checkbox" id="final-3" />
+                            <div class="item-content">
+                                <div class="item-text">
+                                    Database connectivity confirmed and
+                                    migrations completed
+                                    <span class="priority-badge priority-must"
+                                        >MUST</span
+                                    >
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <input type="checkbox" id="final-4" />
+                            <div class="item-content">
+                                <div class="item-text">
+                                    All 8 verification checks from Step 24.1
+                                    passed successfully
+                                    <span class="priority-badge priority-must"
+                                        >MUST</span
+                                    >
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <input type="checkbox" id="final-5" />
+                            <div class="item-content">
+                                <div class="item-text">
+                                    Basic monitoring and backup systems
+                                    operational
+                                    <span
+                                        class="priority-badge priority-recommended"
+                                        >RECOMMENDED</span
+                                    >
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <input type="checkbox" id="final-6" />
+                            <div class="item-content">
+                                <div class="item-text">
+                                    Production documentation complete and team
+                                    access configured
+                                    <span
+                                        class="priority-badge priority-recommended"
+                                        >RECOMMENDED</span
+                                    >
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <input type="checkbox" id="final-7" />
+                            <div class="item-content">
+                                <div class="item-text">
+                                    Advanced monitoring and enterprise features
+                                    configured
+                                    <span
+                                        class="priority-badge priority-optional"
+                                        >OPTIONAL</span
+                                    >
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <div
+                        style="
+                            margin-top: 20px;
+                            padding: 20px;
+                            background: rgba(255, 255, 255, 0.1);
+                            border-radius: 8px;
+                        "
+                    >
+                        <h4>
+                            🎉 Congratulations! Your Laravel Application is
+                            Production Ready
+                        </h4>
+                        <p><strong>What You've Accomplished:</strong></p>
+                        <ul style="margin-left: 20px; margin-top: 10px">
+                            <li>
+                                ✅ Professional deployment infrastructure
+                                operational
+                            </li>
+                            <li>
+                                ✅ Comprehensive verification and monitoring
+                                established
+                            </li>
+                            <li>
+                                ✅ Production documentation and team processes
+                                ready
+                            </li>
+                            <li>
+                                ✅ Foundation for ongoing maintenance and
+                                scaling prepared
+                            </li>
+                        </ul>
+                        <p style="margin-top: 15px">
+                            <strong>Next Steps:</strong> Refer to Phase 4
+                            (Maintenance & Operations) for ongoing management
+                            procedures.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // JavaScript functionality
+            function toggleSection(header) {
+                const content = header.nextElementSibling;
+                const icon = header.querySelector(".toggle-icon");
+
+                content.classList.toggle("active");
+                icon.style.transform = content.classList.contains("active")
+                    ? "rotate(180deg)"
+                    : "rotate(0deg)";
+            }
+
+            function openTab(scenario) {
+                // Update active tab button
+                document.querySelectorAll(".tab-button").forEach((button) => {
+                    button.classList.remove("active");
+                });
+                event.target.classList.add("active");
+
+                // Show/hide tab content
+                document.querySelectorAll(".tab-content").forEach((content) => {
+                    content.classList.remove("active");
+                });
+                document.getElementById(scenario).classList.add("active");
+
+                // Show/hide scenario-specific content in the main checklist
+                document
+                    .querySelectorAll(".scenario-specific")
+                    .forEach((section) => {
+                        section.classList.remove("active");
+                    });
+
+                const selectedSection = document.querySelector(
+                    `.scenario-specific.${scenario}`
+                );
+                if (selectedSection) {
+                    selectedSection.classList.add("active");
+                }
+
+                // Store selection
+                localStorage.setItem("selectedScenario", scenario);
+            }
+
+            // Handle checkbox interactions
+            document.addEventListener("change", function (e) {
+                if (e.target.type === "checkbox") {
+                    const listItem = e.target.closest("li");
+                    if (e.target.checked) {
+                        listItem.classList.add("completed");
+                    } else {
+                        listItem.classList.remove("completed");
+                    }
+
+                    // Save progress
+                    const checkboxId = e.target.id;
+                    if (checkboxId) {
+                        localStorage.setItem(checkboxId, e.target.checked);
+                    }
+                }
+            });
+
+            // Initialize page
+            document.addEventListener("DOMContentLoaded", function () {
+                // Restore selected scenario
+                const savedScenario = localStorage.getItem("selectedScenario");
+                if (savedScenario) {
+                    // Activate the correct tab
+                    document
+                        .querySelectorAll(".tab-button")
+                        .forEach((button) => {
+                            button.classList.remove("active");
+                        });
+                    document
+                        .querySelectorAll(".tab-content")
+                        .forEach((content) => {
+                            content.classList.remove("active");
+                        });
+
+                    // Find and activate the saved tab
+                    const savedTabButton = Array.from(
+                        document.querySelectorAll(".tab-button")
+                    ).find((btn) =>
+                        btn.onclick.toString().includes(savedScenario)
+                    );
+                    if (savedTabButton) {
+                        savedTabButton.classList.add("active");
+                    }
+
+                    const savedTabContent =
+                        document.getElementById(savedScenario);
+                    if (savedTabContent) {
+                        savedTabContent.classList.add("active");
+                    }
+
+                    // Show scenario-specific content in main checklist
+                    const selectedSection = document.querySelector(
+                        `.scenario-specific.${savedScenario}`
+                    );
+                    if (selectedSection) {
+                        selectedSection.classList.add("active");
+                    }
+                } else {
+                    // Default to first tab (local-ssh) if no saved preference
+                    document
+                        .getElementById("local-ssh")
+                        .classList.add("active");
+                    const localSshSection = document.querySelector(
+                        ".scenario-specific.local-ssh"
+                    );
+                    if (localSshSection) {
+                        localSshSection.classList.add("active");
+                    }
+                }
+
+                // Restore checkbox states
+                document
+                    .querySelectorAll('input[type="checkbox"]')
+                    .forEach((checkbox) => {
+                        const saved = localStorage.getItem(checkbox.id);
+                        if (saved === "true") {
+                            checkbox.checked = true;
+                            checkbox.closest("li").classList.add("completed");
+                        }
+                    });
+
+                // Auto-expand first section
+                const firstSection = document.querySelector(
+                    ".section .section-content"
+                );
+                if (firstSection) {
+                    firstSection.classList.add("active");
+                    const icon =
+                        firstSection.previousElementSibling.querySelector(
+                            ".toggle-icon"
+                        );
+                    icon.style.transform = "rotate(180deg)";
+                }
+            });
+
+            // Progress tracking
+            function calculateProgress() {
+                const allCheckboxes = document.querySelectorAll(
+                    'input[type="checkbox"]'
+                );
+                const checkedBoxes = document.querySelectorAll(
+                    'input[type="checkbox"]:checked'
+                );
+                return Math.round(
+                    (checkedBoxes.length / allCheckboxes.length) * 100
+                );
+            }
+
+            // Update progress periodically
+            setInterval(function () {
+                const progress = calculateProgress();
+                document.title = `Phase 3: Deployment Execution (${progress}% Complete)`;
+            }, 1000);
+        </script>
+    </body>
+</html>

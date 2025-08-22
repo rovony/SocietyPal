@@ -1,0 +1,22 @@
+now create a temp file cross compare the 0000--A---Build-and-Deploy/3-FINAL-DOCS/99-DevDrafts/combined/temp-summary-PRPX-B.md (from PRPX-B) Vs Master Steps (PRPX-A-D2) in this new temp give me in short compariosn, similar, new steps, diff steps, scripts, new or diff (note even if script name might be diff, but if they do similar thing, then say they same with note name diff), for smilar does PRPX-B have new info to add to master, diff in order of steps, if yes what better master or the new, etc- goal to incorporate into master without duplicates, with best order of steps, 
+
+Master: 
+0000--A---Build-and-Deploy/3-FINAL-DOCS/99-DevDrafts/combined/all-scripts-compiled-table.md
+0000--A---Build-and-Deploy/3-FINAL-DOCS/99-DevDrafts/combined/all-steps-compiled-table.md
+0000--A---Build-and-Deploy/3-FINAL-DOCS/99-DevDrafts/combined/all-steps-compiled.md
+
+
+additional sources to incorprate and 
+
+0000--A---Build-and-Deploy/3-FINAL-DOCS/99-DevDrafts/combined/temp-summary-master.md
+0000--A---Build-and-Deploy/3-FINAL-DOCS/99-DevDrafts/combined/temp-summary-PRPX-B.md
+
+
+
+Our goal to have master files Full and complete and have details of compariosn.
+
+Then we want to create a FINAL Steps - FINAL-Master-Steps-detailed.md, Final-Master-Steps-table.md, Final-Master-Scripts.md doesnt reference the 3 sources but include the final plan steps, scripts, in the right order with details similar to what we have now in Master but right order and final steps final scripts (like if 2 scripts same function diff name use 1 name, desc) goal these master 2 docs will be used to create the guides, cscripts, so we must ensure they are correct.
+
+
+think, compare, incorprate, evaluate each addition or change if new step before or after or is it better be in current master steps but maybe enhance details or are details enough then no change needed. same for scripts.
+and give me final 3 Masters 2 docs

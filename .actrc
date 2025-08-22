@@ -1,0 +1,4 @@
+# Act configuration for Laravel testing
+--platform ubuntu-latest=catthehacker/ubuntu:act-latest
+--container-architecture linux/amd64
+--job ultimate-dry-run
