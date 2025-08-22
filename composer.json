@@ -33,11 +33,11 @@
         "razorpay/razorpay": "^2.9",
         "spatie/laravel-permission": "^6.9",
         "spatie/laravel-translatable": "^6.11",
-        "unicodeveloper/laravel-paystack": "dev-l12-compatibility"
+        "unicodeveloper/laravel-paystack": "dev-l12-compatibility",
+        "fakerphp/faker": "^1.23"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.14",
-        "fakerphp/faker": "^1.23",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.26",
         "mockery/mockery": "^1.6",

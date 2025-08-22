@@ -230,3 +230,475 @@ deploy.php
 # • Scenario B: GitHub Actions build + deploy
 # • Scenario C: DeployHQ professional deploy
 # • Scenario D: Server pull + local build upload
+
+
+SSH-Commads/Version-4.2-simulate/TASK-METHODICAL-REBUILD/releases/*
+###############################################################################
+# UNIVERSAL .gitignore for PHP Apps (Laravel, CodeIgniter 4/3, Generic PHP)
+# Goals: 1-click clone → install → run; safe deploys; no user-data loss.
+# Strategy: Track ALL source; ignore only dependencies, build outputs,
+# runtime/writable paths, and secrets. Deployment uses /shared + symlinks.
+###############################################################################
+
+# -------------------------
+# 1) DEPENDENCIES (rebuilt during deployment)
+# -------------------------
+/vendor/
+/node_modules/
+npm-debug.log
+yarn-error.log
+
+# Lock files COMMITTED for deployment consistency across all scenarios (A,B,C,D)
+# This ensures identical dependency versions in: local builds, CI/CD, DeployHQ, server pulls
+# composer.lock and package-lock.json are included in repository
+
+# -------------------------
+# 2) FRONTEND BUILD OUTPUTS (rebuilt during deployment)
+# -------------------------
+/public/build/
+/public/hot
+/public/mix-manifest.json
+/public/js/app.js
+/public/css/app.css
+/public/assets/build/
+vite.config.js.timestamp-*
+/.vite/
+/dist/
+*-manifest.json
+*.manifest
+
+# -------------------------
+# 3) RUNTIME FILES (recreated by application)
+# -------------------------
+/public/storage
+/storage/*.key
+/storage/framework/cache/data/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/logs/*
+/storage/app/public/*
+/storage/pail
+/writable/cache/*
+/writable/logs/*
+/writable/session/*
+/writable/uploads/*
+
+# -------------------------
+# 4) ENVIRONMENT FILES (contain secrets)
+# -------------------------
+.env
+.env.*
+.env.backup
+.env.production
+!/.env.example
+!/.env.template
+
+# -------------------------
+# 5) TEST & CACHE FILES (rebuilt)
+# -------------------------
+/.phpunit.cache
+/.phpunit.result.cache
+.phpunit.result.cache
+/coverage
+auth.json
+.phpactor.json
+.phpmd.xml
+.php_cs.cache
+.php-cs-fixer.cache
+
+# -------------------------
+# 6) OS & IDE FILES
+# -------------------------
+/.fleet/
+/.idea/
+/.vscode/
+*.sublime-project
+*.sublime-workspace
+*.komodoproject
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+*.swp
+*.swo
+*.tmp
+*~
+desktop.ini
+
+# -------------------------
+# 7) LARAVEL SPECIFIC
+# -------------------------
+/bootstrap/cache/*.php
+Homestead.yaml
+Homestead.json
+/.vagrant
+/public_html/storage
+/public_html/hot
+/nova/
+.rr.yaml
+rr
+
+# -------------------------
+# 8) CODEIGNITER 4 (if applicable)
+# -------------------------
+/writable/*
+!/writable/.gitkeep
+!/writable/index.html
+
+# -------------------------
+# 9) CODEIGNITER 3 (if applicable)
+# -------------------------
+/application/cache/*
+/application/logs/*
+!/application/cache/.gitkeep
+!/application/logs/.gitkeep
+
+# -------------------------
+# 10) CODECANYON SPECIFIC
+# -------------------------
+#/admin-local/
+Admin-Local/codecanyon_management/installer_backup/*
+# -------------------------
+# 11) BACKUP & TEMP FILES
+# -------------------------
+/*.zip
+/*.tar
+/*.tar.gz
+/*.sql
+/*.gz
+/*.7z
+/*.dmg
+/*.iso
+/*.jar
+/*.rar
+*.backup
+*.bak
+*.sql
+*.dump
+/backups/
+/dumps/
+/tmp/
+/temp/
+# -------------------------
+# 12) SECURITY FILES (never commit)
+# -------------------------
+.htpasswd
+.htaccess.backup
+/.well-known/
+/ssl/
+*.pem
+*.key
+*.crt
+*.csr
+
+# -------------------------
+# 13) DEPLOYMENT SPECIFIC
+# -------------------------
+.deployment
+deployment-config.php
+deploy.php
+/.deployer/
+.dep/
+
+###############################################################################
+# DEPLOYMENT STRATEGY DOCUMENTATION
+# Keep these comments as on-repo runbook for team members
+###############################################################################
+#
+# SHARED DIRECTORY STRUCTURE (prevents user data loss):
+#   /var/www/societypal.com/
+#     ├─ releases/<timestamp>/          # Code releases (read-only)
+#     ├─ shared/                        # Persistent data (survives deployments)  
+#     │   ├─ .env                       # Environment config
+#     │   ├─ storage/                   # Laravel storage (logs, cache, sessions)
+#     │   └─ public/                    # User uploads, generated files
+#     │       ├─ uploads/               # User file uploads
+#     │       ├─ invoices/              # Generated invoices
+#     │       ├─ qrcodes/               # Generated QR codes
+#     │       └─ exports/               # Data exports
+#     └─ current -> releases/<timestamp> # Symlink to active release
+#
+# WHY SHARED PERSISTENCE?
+#   User-generated files (uploads, invoices, QR codes, exports) must live in
+#   /shared so deployments never overwrite or delete them. Releases are read-only.
+#
+# -------------------------------------------------------
+# QUICK DEPLOYMENT REFERENCE (choose your scenario):
+# -------------------------------------------------------
+# 
+# A) LOCAL BUILD + SSH DEPLOY:
+#    1) Build: composer install --no-dev && npm run build
+#    2) Package: tar -czf deploy.tar.gz [files]
+#    3) Upload: scp deploy.tar.gz server:~/domains/app/releases/
+#    4) Deploy: extract → link shared → migrate → switch current
+#
+# B) GITHUB ACTIONS AUTO DEPLOY:
+#    1) Push to staging/production branch
+#    2) GitHub builds and deploys automatically
+#    3) Zero-downtime atomic switching
+#
+# C) DEPLOYHQ PIPELINE DEPLOY:
+#    1) Push to repository
+#    2) DeployHQ builds on their VM
+#    3) Deploys with professional zero-downtime
+#
+# -------------------------------------------------------
+# CUSTOMIZATION PROTECTION (preserve your investment):
+# -------------------------------------------------------
+# NEVER edit vendor files directly! Use the layer system:
+#   - app/Custom/            # Your protected customizations
+#   - config/custom.php      # Your protected configuration  
+#   - CUSTOMIZATIONS.md      # Investment tracking document
+#
+# When vendor updates arrive:
+#   1) Backup: tar -czf custom_backup.tar.gz app/Custom/
+#   2) Update vendor files only (Custom/ never touched)
+#   3) Test and deploy normally
+#   4) Result: Updates applied, $15K customizations preserved
+#
+###############################################################################
+
+# DEPLOYMENT READY: This .gitignore works with:
+# • Scenario A: Local build + SSH deploy
+# • Scenario B: GitHub Actions build + deploy
+# • Scenario C: DeployHQ professional deploy
+# • Scenario D: Server pull + local build upload
+
+
+###############################################################################
+# UNIVERSAL .gitignore for PHP Apps (Laravel, CodeIgniter 4/3, Generic PHP)
+# Goals: 1-click clone → install → run; safe deploys; no user-data loss.
+# Strategy: Track ALL source; ignore only dependencies, build outputs,
+# runtime/writable paths, and secrets. Deployment uses /shared + symlinks.
+###############################################################################
+
+# -------------------------
+# 1) DEPENDENCIES (rebuilt during deployment)
+# -------------------------
+/vendor/
+/node_modules/
+npm-debug.log
+yarn-error.log
+
+# Lock files COMMITTED for deployment consistency across all scenarios (A,B,C,D)
+# This ensures identical dependency versions in: local builds, CI/CD, DeployHQ, server pulls
+# composer.lock and package-lock.json are included in repository
+
+# -------------------------
+# 2) FRONTEND BUILD OUTPUTS (rebuilt during deployment)
+# -------------------------
+/public/build/
+/public/hot
+/public/mix-manifest.json
+/public/js/app.js
+/public/css/app.css
+/public/assets/build/
+vite.config.js.timestamp-*
+/.vite/
+/dist/
+*-manifest.json
+*.manifest
+
+# -------------------------
+# 3) RUNTIME FILES (recreated by application)
+# -------------------------
+/public/storage
+/storage/*.key
+/storage/framework/cache/data/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/logs/*
+/storage/app/public/*
+/storage/pail
+/writable/cache/*
+/writable/logs/*
+/writable/session/*
+/writable/uploads/*
+
+# -------------------------
+# 4) ENVIRONMENT FILES (contain secrets)
+# -------------------------
+.env
+.env.*
+.env.backup
+.env.production
+!/.env.example
+!/.env.template
+
+# -------------------------
+# 5) TEST & CACHE FILES (rebuilt)
+# -------------------------
+/.phpunit.cache
+/.phpunit.result.cache
+.phpunit.result.cache
+/coverage
+auth.json
+.phpactor.json
+.phpmd.xml
+.php_cs.cache
+.php-cs-fixer.cache
+
+# -------------------------
+# 6) OS & IDE FILES
+# -------------------------
+/.fleet/
+/.idea/
+/.vscode/
+*.sublime-project
+*.sublime-workspace
+*.komodoproject
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+*.swp
+*.swo
+*.tmp
+*~
+desktop.ini
+
+# -------------------------
+# 7) LARAVEL SPECIFIC
+# -------------------------
+/bootstrap/cache/*.php
+Homestead.yaml
+Homestead.json
+/.vagrant
+/public_html/storage
+/public_html/hot
+/nova/
+.rr.yaml
+rr
+
+# -------------------------
+# 8) CODEIGNITER 4 (if applicable)
+# -------------------------
+/writable/*
+!/writable/.gitkeep
+!/writable/index.html
+
+# -------------------------
+# 9) CODEIGNITER 3 (if applicable)
+# -------------------------
+/application/cache/*
+/application/logs/*
+!/application/cache/.gitkeep
+!/application/logs/.gitkeep
+
+# -------------------------
+# 10) CODECANYON SPECIFIC
+# -------------------------
+#/admin-local/
+Admin-Local/codecanyon_management/installer_backup/*
+# -------------------------
+# 11) BACKUP & TEMP FILES
+# -------------------------
+/*.zip
+/*.tar
+/*.tar.gz
+/*.sql
+/*.gz
+/*.7z
+/*.dmg
+/*.iso
+/*.jar
+/*.rar
+*.backup
+*.bak
+*.sql
+*.dump
+/backups/
+/dumps/
+/tmp/
+/temp/
+# -------------------------
+# 12) SECURITY FILES (never commit)
+# -------------------------
+.htpasswd
+.htaccess.backup
+/.well-known/
+/ssl/
+*.pem
+*.key
+*.crt
+*.csr
+
+# -------------------------
+# 13) DEPLOYMENT SPECIFIC
+# -------------------------
+.deployment
+deployment-config.php
+deploy.php
+/.deployer/
+.dep/
+
+###############################################################################
+# DEPLOYMENT STRATEGY DOCUMENTATION
+# Keep these comments as on-repo runbook for team members
+###############################################################################
+#
+# SHARED DIRECTORY STRUCTURE (prevents user data loss):
+#   /var/www/societypal.com/
+#     ├─ releases/<timestamp>/          # Code releases (read-only)
+#     ├─ shared/                        # Persistent data (survives deployments)  
+#     │   ├─ .env                       # Environment config
+#     │   ├─ storage/                   # Laravel storage (logs, cache, sessions)
+#     │   └─ public/                    # User uploads, generated files
+#     │       ├─ uploads/               # User file uploads
+#     │       ├─ invoices/              # Generated invoices
+#     │       ├─ qrcodes/               # Generated QR codes
+#     │       └─ exports/               # Data exports
+#     └─ current -> releases/<timestamp> # Symlink to active release
+#
+# WHY SHARED PERSISTENCE?
+#   User-generated files (uploads, invoices, QR codes, exports) must live in
+#   /shared so deployments never overwrite or delete them. Releases are read-only.
+#
+# -------------------------------------------------------
+# QUICK DEPLOYMENT REFERENCE (choose your scenario):
+# -------------------------------------------------------
+# 
+# A) LOCAL BUILD + SSH DEPLOY:
+#    1) Build: composer install --no-dev && npm run build
+#    2) Package: tar -czf deploy.tar.gz [files]
+#    3) Upload: scp deploy.tar.gz server:~/domains/app/releases/
+#    4) Deploy: extract → link shared → migrate → switch current
+#
+# B) GITHUB ACTIONS AUTO DEPLOY:
+#    1) Push to staging/production branch
+#    2) GitHub builds and deploys automatically
+#    3) Zero-downtime atomic switching
+#
+# C) DEPLOYHQ PIPELINE DEPLOY:
+#    1) Push to repository
+#    2) DeployHQ builds on their VM
+#    3) Deploys with professional zero-downtime
+#
+# -------------------------------------------------------
+# CUSTOMIZATION PROTECTION (preserve your investment):
+# -------------------------------------------------------
+# NEVER edit vendor files directly! Use the layer system:
+#   - app/Custom/            # Your protected customizations
+#   - config/custom.php      # Your protected configuration  
+#   - CUSTOMIZATIONS.md      # Investment tracking document
+#
+# When vendor updates arrive:
+#   1) Backup: tar -czf custom_backup.tar.gz app/Custom/
+#   2) Update vendor files only (Custom/ never touched)
+#   3) Test and deploy normally
+#   4) Result: Updates applied, $15K customizations preserved
+#
+###############################################################################
+
+# DEPLOYMENT READY: This .gitignore works with:
+# • Scenario A: Local build + SSH deploy
+# • Scenario B: GitHub Actions build + deploy
+# • Scenario C: DeployHQ professional deploy
+# • Scenario D: Server pull + local build upload
+
+
+SSH-Commads/Version-4.2-simulate/TASK-METHODICAL-REBUILD/releases/
